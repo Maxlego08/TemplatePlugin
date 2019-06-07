@@ -37,7 +37,7 @@ public class Template extends ZPlugin{
 	@Override
 	public void onDisable() {
 		
-		preEnable();
+		preDisable();
 		
 		getSavers().forEach(saver -> saver.save(getPersist()));
 		
