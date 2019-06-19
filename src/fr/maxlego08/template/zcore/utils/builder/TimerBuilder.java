@@ -2,6 +2,13 @@ package fr.maxlego08.template.zcore.utils.builder;
 
 public class TimerBuilder {
 	
+	public static String getFormatLongDays(long temps) {
+		long totalSecs = temps / 1000L;
+		return String.format("%02d jour(s) %02d heure(s) %02d minute(s) %02d seconde(s)",
+				new Object[] { Long.valueOf(totalSecs / 86400l), Long.valueOf(totalSecs % 86400l / 3600l),
+						Long.valueOf(totalSecs % 3600L / 60L), Long.valueOf(totalSecs % 60L) });
+	}
+	
 	public static String getFormatLongHours(long temps) {
 		long totalSecs = temps / 1000L;
 		return String.format("%02d heure(s) %02d minute(s) %02d seconde(s)", new Object[] { Long.valueOf(totalSecs / 3600L), Long.valueOf(totalSecs % 3600L / 60L), Long.valueOf(totalSecs % 60L) });
