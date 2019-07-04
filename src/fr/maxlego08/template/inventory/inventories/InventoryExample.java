@@ -12,7 +12,7 @@ import fr.maxlego08.template.inventory.VInventory;
 public class InventoryExample extends VInventory {
 	
 	@Override
-	protected boolean openMenu(Template plguin, Player player, int page) {
+	protected boolean openMenu(Template plguin, Player player, int page, Object... args) {
 
 		Inventory inv = createInventory("§aExample", 9);
 		

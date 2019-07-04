@@ -4,15 +4,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.maxlego08.template.Template;
@@ -83,5 +88,30 @@ public class AdapterListener implements Listener {
 	@EventHandler
 	public void onClose(InventoryCloseEvent event){
 		template.getListenerAdapters().forEach(adapter -> adapter.onInventoryClose(event));
+	}
+	
+	@EventHandler
+	public void onCommand(PlayerCommandPreprocessEvent event){
+		template.getListenerAdapters().forEach(adapter -> adapter.onCommand(event));
+	}
+	
+	@EventHandler
+	public void onGamemodeChange(PlayerGameModeChangeEvent event){
+		template.getListenerAdapters().forEach(adapter -> adapter.onGamemodeChange(event));
+	}	
+	
+	@EventHandler
+	public void onDrop(PlayerDropItemEvent event){
+		template.getListenerAdapters().forEach(adapter -> adapter.onDrop(event));
+	}
+	
+	@EventHandler
+	public void onPick(PlayerPickupItemEvent event){
+		template.getListenerAdapters().forEach(adapter -> adapter.onPickUp(event));
+	}
+	
+	@EventHandler
+	public void onMobSpawn(CreatureSpawnEvent event){
+		template.getListenerAdapters().forEach(adapter -> adapter.onMobSpawn(event));
 	}
 }

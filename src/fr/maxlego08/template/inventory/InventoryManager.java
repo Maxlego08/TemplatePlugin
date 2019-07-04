@@ -38,6 +38,7 @@ public class InventoryManager extends ListenerAdapter {
 
 	private void addInventory(int id, VInventory inventory) throws InventoryAlreadyExistException {
 		if (!inventories.containsKey(inventory.getMenuId())) {
+			inventory.setMenuId(id);
 			inventories.put(id, inventory.getClass());
 		} else
 			throw new InventoryAlreadyExistException("Inventory with id " + inventory.getMenuId() + " already exist !");
@@ -55,8 +56,8 @@ public class InventoryManager extends ListenerAdapter {
 	 * @return boolean - Returns true if the menu is open otherwise it returns
 	 *         false
 	 */
-	public boolean createMenu(int id, Player player, int page) {
-		if (existe(player))
+	public boolean createMenu(int id, Player player, int page, Object... objects) {
+		if (exist(player))
 			return false;
 		if (getInventory(id) == null)
 			return false;
@@ -64,21 +65,24 @@ public class InventoryManager extends ListenerAdapter {
 			VInventory gui;
 			gui = getInventory(id).newInstance();
 			gui.setPlayer(player);
-			gui.openMenu(plugin, player, page);
+			gui.setArgs(objects);
+			gui.setPage(id);
+			gui.openMenu(plugin, player, page, objects);
 			playerInventories.put(player, gui);
 			return true;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException e) {
+			System.out.println("salut ?");
 			e.printStackTrace();
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Function to check the player to already have an open menu
 	 * 
 	 * @return boolean - return true if the player already has an open menu
 	 */
-	public boolean existe(Player player) {
+	public boolean exist(Player player) {
 		return playerInventories.containsKey(player);
 	}
 
@@ -102,7 +106,7 @@ public class InventoryManager extends ListenerAdapter {
 			return;
 		if (event.getWhoClicked() instanceof Player) {
 			Player player = (Player) event.getWhoClicked();
-			if (!existe(player))
+			if (!exist(player))
 				return;
 			VInventory gui = playerInventories.get(player);
 			if (gui.getGuiName() == null || gui.getGuiName().length() == 0) {
@@ -123,7 +127,7 @@ public class InventoryManager extends ListenerAdapter {
 	@Override
 	protected void onInventoryClose(InventoryCloseEvent event) {
 		Player player = (Player) event.getPlayer();
-		if (!existe(player))
+		if (!exist(player))
 			return;
 		VInventory inventory = playerInventories.get(player);
 		remove(player);
@@ -134,7 +138,7 @@ public class InventoryManager extends ListenerAdapter {
 	protected void onInventoryDrag(InventoryDragEvent event) {
 		if (event.getWhoClicked() instanceof Player) {
 			Player player = (Player) event.getWhoClicked();
-			if (!existe(player))
+			if (!exist(player))
 				return;
 			playerInventories.get(player).onDrag(event, plugin, player);
 		}

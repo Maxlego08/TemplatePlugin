@@ -3,6 +3,7 @@ package fr.maxlego08.template.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -25,6 +26,7 @@ public abstract class VCommand extends ZUtils {
 	private final VCommand parent;
 	private final boolean isNoConsole;
 	private final List<String> subCommands;
+	private String[] args;
 	
 	/**
 	 * Contructor Vcommand
@@ -89,6 +91,30 @@ public abstract class VCommand extends ZUtils {
 		return subCommands;
 	}
 
+	public Player getPlayer(int arg){
+		return Bukkit.getPlayer(args[arg]);
+	}
+	
+	public boolean existPlayer(int arg){
+		return getPlayer(arg) != null;
+	}
+	
+	public int getInt(int arg){
+		try{
+			return Integer.valueOf(args[arg]);
+		}catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+	
+	public double getDouble(int arg){
+		try{
+			return Double.valueOf(args[arg]);
+		}catch (NumberFormatException e) {
+			return 0.0;
+		}
+	}
+	
 	/**
 	 * Add subCommand to subCommands list
 	 * 
@@ -104,6 +130,10 @@ public abstract class VCommand extends ZUtils {
 	public abstract String getPermission();
 	
 	public abstract String getSyntax();
+	
+	public String getDescription(){
+		return null;
+	}
 	
 	private CommandSender sender;
 
@@ -131,6 +161,10 @@ public abstract class VCommand extends ZUtils {
 		if (sender instanceof Player)
 			return (Player) sender;
 		throw new IllegalArgumentException("Sender is not a player !");
+	}
+	
+	public void setArgs(String[] args) {
+		this.args = args;
 	}
 
 }
