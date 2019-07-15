@@ -1,5 +1,6 @@
 package fr.maxlego08.template.zcore.utils;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
@@ -9,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+@SuppressWarnings("deprecation")
 public abstract class ZUtils {
 
 	/**
@@ -91,6 +93,24 @@ public abstract class ZUtils {
 			player.getWorld().dropItem(player.getLocation(), item);
 		else
 			player.getInventory().addItem(item);
+	}
+	
+	private static Material[] byId;
+
+	static {
+		byId = new Material[0];
+		for (Material material : Material.values()) {
+			if (byId.length > material.getId()) {
+				byId[material.getId()] = material;
+			} else {
+				byId = Arrays.copyOfRange(byId, 0, material.getId() + 2);
+				byId[material.getId()] = material;
+			}
+		}
+	}
+
+	public Material getMaterial(int id) {
+		return byId.length > id && id >= 0 ? byId[id] : null;
 	}
 
 }

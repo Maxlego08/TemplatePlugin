@@ -66,7 +66,7 @@ public class InventoryManager extends ListenerAdapter {
 			gui = getInventory(id).newInstance();
 			gui.setPlayer(player);
 			gui.setArgs(objects);
-			gui.setPage(id);
+			gui.setPage(page);
 			gui.openMenu(plugin, player, page, objects);
 			playerInventories.put(player, gui);
 			return true;
