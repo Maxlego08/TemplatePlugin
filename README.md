@@ -12,6 +12,8 @@ Works from version 1.7.10 to version 1.14.2
 * ItemBuilder
 * CooldownBuilder
 * TimerBuilder
+* Pagination
+* Inventory button
 
 ## Commande example:
 Add a command<br>
@@ -111,6 +113,62 @@ public class InventoryExample extends VInventory {
 
 }
 ```
+* InventoryPagination <br>
+You have a paging system, you can use it just like this:
+
+```java
+public class InventoryPagination extends VInventory {
+
+	@Override
+	protected boolean openMenu(Template plguin, Player player, int page, Object... args) {
+		Inventory inventory = createInventory("§ePagination " + page +" / " + getMaxPage(plguin));
+		AtomicInteger slot = new AtomicInteger(0);
+		Pagination<PaginationExample> pagination = new Pagination<>();
+		pagination.paginate(plguin.getExamples(), 45, page).forEach(p -> {
+			inventory.setItem(slot.getAndIncrement(), ItemBuilder.getCreatedItem(Material.STONE, 1, "Test " + p.getId()));
+		});
+		if (page < getMaxPage(plguin))
+			inventory.setItem(50, plguin.getNext().getInitButton());
+		if (page != 1 && page <= getMaxPage(plguin))
+			inventory.setItem(48, plguin.getPrevious().getInitButton());
+		openInventory(inventory);
+		return true;
+	}
+
+	public int getMaxPage(Template plguin){
+		return (plguin.getExamples().size() / 45) + 1;
+	}
+	
+	@Override
+	protected void onClick(InventoryClickEvent event, Template plguin, Player player) {
+		if (getItem().isSimilar(plguin.getNext().getInitButton()) && getSlot() == 50) {
+			int newPage = getPage() + 1;
+			plguin.getInventoryManager().createMenu(2, player, true, newPage);
+		} else if (getItem().isSimilar(plguin.getPrevious().getInitButton()) && getSlot() == 48) {
+			int newPage = getPage() - 1;
+			plguin.getInventoryManager().createMenu(2, player, true, newPage);
+		}
+	}
+
+	@Override
+	protected void onClose(InventoryCloseEvent event, Template plugin, Player player) {
+		
+	}
+
+	@Override
+	protected void onDrag(InventoryDragEvent event, Template plugin, Player player) {
+
+	}
+
+}
+```
+
+* Button <br>
+You can simply create buttons for you inventory
+```java
+Button example = new Button("§eExample", 360);
+Button example2 = new Button("§eExample 2", 360, Arrays.asList("line 1", "line 2", "line 3"));
+```
 
 ## Json Saver
 
@@ -136,4 +194,25 @@ public class ConfigExample implements Saver {
 You must then add the class like this in the main class
 ```java
 addSave(new ConfigExample());
+```
+
+## Pagination
+
+You can easily make list or map pagination
+
+* Create a pagination
+```java
+Pagination<T> pagination = new Pagination<T>();
+```
+
+* Simple pagination
+```java
+List<T> list = pagination.paginate(List<T> list, int size, int page)
+List<T> list = pagination.paginate(Map<?, T> map, int size, int page)
+```
+
+* Reverse pagination
+```java
+List<T> list = pagination.paginateReverse(List<T> list, int size, int page)
+List<T> list = pagination.paginateReverse(Map<?, T> map, int size, int page)
 ```

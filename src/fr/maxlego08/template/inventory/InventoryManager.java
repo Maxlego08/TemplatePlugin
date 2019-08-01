@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.template.inventory.inventories.InventoryExample;
+import fr.maxlego08.template.inventory.inventories.InventoryPagination;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
@@ -27,6 +28,7 @@ public class InventoryManager extends ListenerAdapter {
 		try {
 
 			addInventory(1, new InventoryExample());
+			addInventory(2, new InventoryPagination());
 
 		} catch (InventoryAlreadyExistException e) {
 			e.printStackTrace();
@@ -75,6 +77,11 @@ public class InventoryManager extends ListenerAdapter {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	public boolean createMenu(int id, Player player, boolean b, int page, Object... objects) {
+		remove(player);
+		return createMenu(id, player, page, objects);
 	}
 	
 	/**

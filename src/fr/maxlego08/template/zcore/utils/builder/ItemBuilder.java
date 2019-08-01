@@ -64,43 +64,5 @@ public class ItemBuilder {
         item.setItemMeta(meta);
         return item;
     }
-
-    // Gestions des têtes
-	public static ItemStack getCreatedSkullPlayer(String Player) {
-        ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta meta = (SkullMeta)item.getItemMeta();
-        meta.setOwner(Player);
-        item.setItemMeta(meta);
-        return item;
-    }
-
-	public static ItemStack getCreatedSkullPlayerWithLore(String Player, List<String> Lore) {
-        ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta meta = (SkullMeta)item.getItemMeta();
-        meta.setOwner(Player);
-        meta.setLore(Lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-
-	public static ItemStack getCreatedSkullPlayerWithName(String Player, String Name) {
-        ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta meta = (SkullMeta)item.getItemMeta();
-        meta.setOwner(Player);
-        meta.setDisplayName(Name);
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    @SuppressWarnings("deprecation")
-	public static ItemStack getCreatedSkullPlayerWithLoreAndName(String Player, String Name ,List<String> Lore) {
-        ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 0, Byte.valueOf((byte) 3));
-        SkullMeta meta = (SkullMeta)item.getItemMeta();
-        meta.setOwner(Player);
-        meta.setDisplayName(Name);
-        meta.setLore(Lore);
-        item.setItemMeta(meta);
-        return item;
-    }
 	
 }

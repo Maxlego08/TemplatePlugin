@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.command.VCommand.CommandType;
 import fr.maxlego08.template.command.commands.CommandExample;
+import fr.maxlego08.template.command.commands.CommandExamplePaginate;
 import fr.maxlego08.template.command.commands.CommandExampleSub;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.TextUtil;
@@ -25,6 +26,7 @@ public class CommandManager implements CommandExecutor {
 
 		VCommand command = addCommand("example", new CommandExample());
 		addCommand(new CommandExampleSub(command));
+		addCommand(new CommandExamplePaginate(command, true));
 
 		main.getLog().log("Loading " + getUniqueCommand() + " commands", LogType.SUCCESS);
 

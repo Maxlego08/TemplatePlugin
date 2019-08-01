@@ -1,7 +1,11 @@
 package fr.maxlego08.template.zcore.utils;
 
 import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -95,7 +99,7 @@ public abstract class ZUtils {
 			player.getInventory().addItem(item);
 	}
 	
-	private static Material[] byId;
+	private static transient Material[] byId;
 
 	static {
 		byId = new Material[0];
@@ -111,6 +115,50 @@ public abstract class ZUtils {
 
 	public Material getMaterial(int id) {
 		return byId.length > id && id >= 0 ? byId[id] : null;
+	}
+	
+	protected boolean same(ItemStack stack, String name) {
+		return stack.hasItemMeta() && stack.getItemMeta().hasDisplayName()
+				&& stack.getItemMeta().getDisplayName().equals(name);
+	}
+
+	protected boolean contains(ItemStack stack, String name) {
+		return stack.hasItemMeta() && stack.getItemMeta().hasDisplayName()
+				&& stack.getItemMeta().getDisplayName().contains(name);
+	}
+
+	protected void removeItemInItem(Player player, int how) {
+		if (player.getItemInHand().getAmount() > how)
+			player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
+		else
+			player.setItemInHand(new ItemStack(Material.AIR));
+		player.updateInventory();
+	}
+
+	protected boolean same(Location l, Location l2) {
+		return (l.getBlockX() == l2.getBlockX()) && (l.getBlockY() == l2.getBlockY())
+				&& (l.getBlockZ() == l2.getBlockZ());
+	}
+	
+	protected void teleport(Player player, int delay, Location location) {
+		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+		Location playerLocation = player.getLocation();
+		AtomicInteger verif = new AtomicInteger(delay);
+		if (!location.getChunk().isLoaded())
+			location.getChunk().load();
+		ses.scheduleWithFixedDelay(() -> {
+			if (!same(playerLocation, player.getLocation())) {
+				player.sendMessage("&cVous ne devez pas bouger !");
+				ses.shutdown();
+				return;
+			}
+			int s = verif.getAndDecrement();
+			player.sendMessage(s != 0 ? "&eTéléportatio dans &6" + s + " &esecondes !" : "&eTéléportation !");
+			if (s == 0) {
+				ses.shutdown();
+				player.teleport(location);
+			}
+		}, 0, 1, TimeUnit.SECONDS);
 	}
 
 }
