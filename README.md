@@ -23,6 +23,25 @@ To add a command with an argument you must pass in setting the parent class
 VCommand command = addCommand("example", new CommandExample());
 addCommand(new CommandExampleSub(command));
 ```
+Or you can create a command directly like this:
+```java
+addCommand("sphaleria", new VCommand() {   
+  @Override
+  protected CommandType perform(Sphaleria main, CommandSender sender, String... args) {
+    sendMessage(main.getPrefix() + " §eVersion§7: §c" + main.getDescription().getFullName());
+    sendMessage(main.getPrefix() + " §eCréer par Maxlego08 pour §6sphaleria §e!");
+    return CommandType.SUCCESS;
+  }
+  @Override
+  public String getSyntax() {
+     return null;
+  }
+  @Override
+  public String getPermission() {
+    return null;
+  }
+}.addSubCommand("sphaleria").setOneClass(true));
+```
 * CommandExample
 ```java
 public class CommandExample extends VCommand {
@@ -79,6 +98,19 @@ public class CommandExampleSub extends VCommand {
 	}
 }
 ```
+
+* ZCommand
+```java
+addCommand("test", new ZCommand()
+                .setCommand(command -> command.sendMessage("Hello world !"))
+                .setPermission("admin.command")
+                .setDescription("Example command !")
+                .setSyntaxe("/test")
+                .addSubCommand("test", "test2", "test3")
+                .setOneClass(true)
+        );
+```
+
 ## Inventories
 You can create inventories with the same principle as for commands.<br>
 So, you will create your class that will be extended from VInventory and then add it to the InventoryManager class with a unique ID

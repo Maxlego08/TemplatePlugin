@@ -199,4 +199,8 @@ public abstract class VCommand extends ZUtils {
 		this.args = args;
 	}
 
+	public String[] getArgs() {
+		return args;
+	}
+
 }

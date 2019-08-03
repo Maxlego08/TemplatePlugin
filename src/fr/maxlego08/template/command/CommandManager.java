@@ -24,9 +24,17 @@ public class CommandManager implements CommandExecutor {
 	public CommandManager(Template main) {
 		this.main = main;
 
-		VCommand command = addCommand("example", new CommandExample());
-		addCommand(new CommandExampleSub(command));
-		addCommand(new CommandExamplePaginate(command, true));
+		VCommand exampelCommand = addCommand("example", new CommandExample());
+		addCommand(new CommandExampleSub(exampelCommand));
+		addCommand(new CommandExamplePaginate(exampelCommand, true));
+		addCommand("test", new ZCommand()
+				.setCommand(command -> command.sendMessage("Hello world !"))
+				.setPermission("admin.command")
+				.setDescription("Example command !")
+				.setSyntaxe("/test")
+				.addSubCommand("test", "test2", "test3")
+				.setOneClass(true)
+		);
 
 		main.getLog().log("Loading " + getUniqueCommand() + " commands", LogType.SUCCESS);
 
