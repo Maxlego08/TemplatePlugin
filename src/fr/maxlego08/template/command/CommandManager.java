@@ -30,6 +30,7 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 
 		addCommand("test", new ZCommand().createInventory(1, 1));
 		
+		
 		main.getLog().log("Loading " + getUniqueCommand() + " commands", LogType.SUCCESS);
 	}
 
