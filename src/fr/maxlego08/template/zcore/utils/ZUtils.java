@@ -43,6 +43,8 @@ public abstract class ZUtils {
 	 */
 	protected Location changeStringLocationToLocation(String s) {
 		String[] a = s.split(",");
+		if (a.length == 6)
+			return changeStringLocationToLocationEye(s);
 		World w = Bukkit.getServer().getWorld(a[0]);
 		float x = Float.parseFloat(a[1]);
 		float y = Float.parseFloat(a[2]);
@@ -61,8 +63,8 @@ public abstract class ZUtils {
 		float x = Float.parseFloat(a[1]);
 		float y = Float.parseFloat(a[2]);
 		float z = Float.parseFloat(a[3]);
-		float yaw = Float.parseFloat(a[3]);
-		float pitch = Float.parseFloat(a[3]);
+		float yaw = Float.parseFloat(a[4]);
+		float pitch = Float.parseFloat(a[5]);
 		return new Location(w, x, y, z, yaw, pitch);
 	}
 
@@ -618,6 +620,10 @@ public abstract class ZUtils {
 
 	protected void message(CommandSender player, Message message) {
 		player.sendMessage(Message.PREFIX.msg() + " " + message.msg());
+	}
+	
+	protected void message(CommandSender player, String message) {
+		player.sendMessage(Message.PREFIX.msg() + " " + message);
 	}
 
 	protected void messageWO(CommandSender player, Message message) {

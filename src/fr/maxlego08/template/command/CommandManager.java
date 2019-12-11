@@ -9,7 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.Template;
+import fr.maxlego08.template.command.commands.CommandTest;
 import fr.maxlego08.template.zcore.ZPlugin;
+import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.ZUtils;
@@ -22,16 +24,14 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 
 	public CommandManager(Template template) {
 		this.main = template;
-		this.registerCommands();
-		this.commandChecking();
 	}
 
-	private void registerCommands() {
+	public void registerCommands() {
 
-		addCommand("test", new ZCommand().createInventory(1, 1));
-		
-		
+		addCommand("test", new CommandTest());
+
 		main.getLog().log("Loading " + getUniqueCommand() + " commands", LogType.SUCCESS);
+		this.commandChecking();
 	}
 
 	public VCommand addCommand(VCommand command) {
@@ -62,7 +62,7 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 					return true;
 			}
 		}
-		// sender.sendMessage(Lang.prefix + " " + Lang.commandError);
+		message(sender, Message.COMMAND_NO_ARG);
 		return true;
 	}
 
@@ -112,36 +112,21 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 	private CommandType processRequirements(VCommand command, CommandSender sender, String[] strings) {
 
 		if (!(sender instanceof Player) && !command.isConsoleCanUse()) {
-			// sender.sendMessage(Lang.prefix + " " + Lang.onlinePlayerCanUse);
+			message(sender, Message.COMMAND_NO_CONSOLE);
 			return CommandType.DEFAULT;
 		}
 		if (command.getPermission() == null || hasPermission(sender, command.getPermission())) {
-			if (command.getArgsMinLength() != 0 && command.getArgsMaxLength() != 0
-					&& !(strings.length >= command.getArgsMinLength()
-							&& strings.length <= command.getArgsMaxLength())) {
-				if (command.getSyntaxe() != null)
-					// sender.sendMessage(
-					// Lang.prefix + " " +
-					// Lang.syntaxeError.replace("%command%",
-					// command.getSyntaxe()));
-					return CommandType.SYNTAX_ERROR;
-			}
-			command.setSender(sender);
-			command.setArgs(strings);
 			if (command.getInventory() != null && sender instanceof Player) {
 				IIventory iIventory = command.getInventory();
 				main.getInventoryManager().createInventory(iIventory.getId(), command.getPlayer(), iIventory.getPage(),
 						iIventory.getArgs());
 			}
-			CommandType returnType = command.perform(main);
-			if (returnType == CommandType.SYNTAX_ERROR) {
-				// sender.sendMessage(Lang.prefix + " " +
-				// Lang.syntaxeError.replace("%command%",
-				// command.getSyntaxe()));
-			}
+			CommandType returnType = command.prePerform(main, sender, strings);
+			if (returnType == CommandType.SYNTAX_ERROR) 
+				message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntaxe());
 			return returnType;
 		}
-		// sender.sendMessage(Lang.prefix + " " + Lang.noPermission);
+		message(sender, Message.COMMAND_NO_PERMISSION);
 		return CommandType.DEFAULT;
 	}
 
@@ -161,8 +146,9 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 		commands.forEach(command -> {
 			if (isValid(command, commandString) && command.getDescription() != null
 					&& (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
-//				sender.sendMessage(Lang.commandHelp.replace("%syntaxe%", command.getSyntaxe()).replace("%description%",
-//						command.getDescription()));
+				// sender.sendMessage(Lang.commandHelp.replace("%syntaxe%",
+				// command.getSyntaxe()).replace("%description%",
+				// command.getDescription()));
 			}
 		});
 	}

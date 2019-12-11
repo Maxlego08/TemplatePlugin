@@ -20,6 +20,8 @@ public class Template extends ZPlugin {
 		preEnable();
 
 		commandManager = new CommandManager(this);
+		commandManager.registerCommands();
+		
 		if (!isEnabled())
 			return;
 		inventoryManager = InventoryManager.getInstance();

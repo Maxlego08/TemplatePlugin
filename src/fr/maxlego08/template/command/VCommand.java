@@ -9,11 +9,10 @@ import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.enums.Permission;
-import fr.maxlego08.template.zcore.utils.TextUtil;
-import fr.maxlego08.template.zcore.utils.ZUtils;
+import fr.maxlego08.template.zcore.utils.Arguments;
 import fr.maxlego08.template.zcore.utils.inventory.IIventory;
 
-public abstract class VCommand extends ZUtils {
+public abstract class VCommand extends Arguments {
 
 	/**
 	 * Permission used for the command, if it is a null then everyone can
@@ -31,6 +30,9 @@ public abstract class VCommand extends ZUtils {
 	 */
 	private List<String> subCommands = new ArrayList<String>();
 
+	private List<String> requireArgs = new ArrayList<String>();
+	private List<String> optionalArgs = new ArrayList<String>();
+
 	/**
 	 * If this variable is false the command will not be able to use this
 	 * command
@@ -43,6 +45,7 @@ public abstract class VCommand extends ZUtils {
 	 */
 	private boolean ignoreParent = false;
 	private boolean ignoreArgs = false;
+	protected boolean DEBUG = false;
 
 	/**
 	 * This is the person who executes the command
@@ -56,11 +59,6 @@ public abstract class VCommand extends ZUtils {
 	private IIventory inventory;
 
 	private String syntaxe;
-
-	/*
-	 * Args
-	 */
-	public String[] args;
 
 	private String description;
 
@@ -155,30 +153,21 @@ public abstract class VCommand extends ZUtils {
 	//
 
 	/**
-	 * @param argsMinLength
-	 *            the argsMinLength to set
-	 */
-	public void setArgsMinLength(int argsMinLength) {
-		this.argsMinLength = argsMinLength;
-	}
-
-	/**
-	 * @param argsMaxLength
-	 *            the argsMaxLength to set
-	 */
-	public void setArgsMaxLength(int argsMaxLength) {
-		this.argsMaxLength = argsMaxLength;
-	}
-
-	/**
 	 * @param syntaxe
 	 *            the syntaxe to set
 	 */
-	public VCommand setSyntaxe(String syntaxe) {
+	protected VCommand setSyntaxe(String syntaxe) {
 		this.syntaxe = syntaxe;
 		return this;
 	}
 
+	/**
+	 * Permet de créer un inventaire, doit être mis dans le constructeur de la commande
+	 * @param id
+	 * @param page
+	 * @param objects
+	 * @return
+	 */
 	public VCommand createInventory(int id, int page, Object... objects) {
 		inventory = new IIventory(id, page, objects);
 		return this;
@@ -188,7 +177,7 @@ public abstract class VCommand extends ZUtils {
 	 * @param permission
 	 *            the permission to set
 	 */
-	public VCommand setPermission(Permission permission) {
+	protected VCommand setPermission(Permission permission) {
 		this.permission = permission;
 		return this;
 	}
@@ -197,7 +186,7 @@ public abstract class VCommand extends ZUtils {
 	 * @param parent
 	 *            the parent to set
 	 */
-	public VCommand setParent(VCommand parent) {
+	protected VCommand setParent(VCommand parent) {
 		this.parent = parent;
 		return this;
 	}
@@ -206,42 +195,38 @@ public abstract class VCommand extends ZUtils {
 	 * @param consoleCanUse
 	 *            the consoleCanUse to set
 	 */
-	public VCommand setConsoleCanUse(boolean consoleCanUse) {
+	protected VCommand setConsoleCanUse(boolean consoleCanUse) {
 		this.consoleCanUse = consoleCanUse;
 		return this;
 	}
 
 	/**
-	 * @param ignoreParent
-	 *            the ignoreParent to set
+	 * Mettre la description de la commande
+	 * @param description
+	 * @return
 	 */
-	public VCommand setIgnoreParent(boolean ignoreParent) {
-		this.ignoreParent = ignoreParent;
+	protected VCommand setDescription(String description) {
+		this.description = description;
 		return this;
+	}
+
+	/*
+	 * Ajouter un argument obligatoire
+	 */
+	protected void addRequireArg(String message) {
+		this.requireArgs.add(message);
+		this.ignoreParent = parent == null ? true : false;
+		this.ignoreArgs = true;
 	}
 
 	/**
-	 * @param args
-	 *            the args to set
+	 * Ajouter un argument optionel
+	 * @param message
 	 */
-	public void setArgs(String[] args) {
-		this.args = args;
-	}
-
-	public void setSender(CommandSender sender) {
-		this.sender = sender;
-		if (sender instanceof Player)
-			player = (Player) sender;
-	}
-
-	public VCommand setIgnoreArgs(boolean ignoreArgs) {
-		this.ignoreArgs = ignoreArgs;
-		return this;
-	}
-
-	public VCommand setDescription(String description) {
-		this.description = description;
-		return this;
+	protected void addOptionalArg(String message) {
+		this.optionalArgs.add(message);
+		this.ignoreParent = parent == null ? true : false;
+		this.ignoreArgs = true;
 	}
 
 	//
@@ -258,7 +243,7 @@ public abstract class VCommand extends ZUtils {
 		this.subCommands.add(subCommand);
 		return this;
 	}
-	
+
 	/**
 	 * Adds sub orders
 	 * 
@@ -267,7 +252,7 @@ public abstract class VCommand extends ZUtils {
 	 */
 	public VCommand addSubCommand(VCommand command) {
 		command.setParent(this);
-		plugin.getCommandManager().addCommand(command);
+		Template.getInstance().getCommandManager().addCommand(command);
 		return this;
 	}
 
@@ -282,22 +267,80 @@ public abstract class VCommand extends ZUtils {
 		return this;
 	}
 
-	public void msg(String str, Object... args) {
-		sender.sendMessage(TextUtil.color(TextUtil.parse(str, args)));
+	/**
+	 * Permet de générer la syntaxe de la commande manuellement Mais vous pouvez
+	 * la mettre vous même avec le setSyntaxe()
+	 * 
+	 * @param syntaxe
+	 * @return generate syntaxe
+	 */
+	private String generateDefaultSyntaxe(String syntaxe) {
+
+		String tmpString = subCommands.get(0);
+
+		if (requireArgs.size() != 0)
+			for (String requireArg : requireArgs) {
+				requireArg = "<" + requireArg + ">";
+				syntaxe += " " + requireArg;
+			}
+		if (optionalArgs.size() != 0)
+			for (String optionalArg : optionalArgs) {
+				optionalArg = "[<" + optionalArg + ">]";
+				syntaxe += " " + optionalArg;
+			}
+
+		tmpString += syntaxe;
+
+		if (parent == null)
+			return "/" + tmpString;
+
+		return parent.generateDefaultSyntaxe(" " + tmpString);
 	}
 
-	public void sendMessage(String msg) {
-		sender.sendMessage(TextUtil.color(msg));
+	/**
+	 * Permet de savoir le nombre de parent de façon récursive
+	 * @param defaultParent
+	 * @return
+	 */
+	private int parentCount(int defaultParent) {
+		return parent == null ? defaultParent : parent.parentCount(defaultParent + 1);
 	}
 
-	public void sendMessage(List<String> msgs) {
-		msgs.forEach(msg -> sendMessage(msg));
+	public CommandType prePerform(Template main, CommandSender commandSender, String[] args) {
+
+		// On met à jour le nombre d'argument en fonction du nombre de parent
+
+		parentCount = parentCount(0);
+		argsMaxLength = requireArgs.size() + optionalArgs.size() + parentCount;
+		argsMinLength = requireArgs.size() + parentCount;
+
+		// On génère le syntaxe de base s'il y est impossible de la trouver
+		if (syntaxe == null)
+			syntaxe = generateDefaultSyntaxe("");
+
+		if (argsMinLength != 0 && argsMaxLength != 0
+				&& !(args.length >= argsMinLength && args.length <= argsMaxLength)) {
+			return CommandType.SYNTAX_ERROR;
+		}
+
+		this.sender = commandSender;
+		if (sender instanceof Player)
+			player = (Player) commandSender;
+		this.args = args;
+
+		try {
+			return perform(main);
+		} catch (Exception e) {
+			if (DEBUG)
+				e.printStackTrace();
+			return CommandType.SYNTAX_ERROR;
+		}
 	}
 
 	/**
 	 * method that allows you to execute the command
 	 */
-	public abstract CommandType perform(Template main);
+	protected abstract CommandType perform(Template main);
 
 	public boolean sameSubCommands() {
 		if (parent == null)

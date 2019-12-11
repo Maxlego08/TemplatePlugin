@@ -1,6 +1,5 @@
 package fr.maxlego08.template.command;
 
-import java.util.List;
 import java.util.function.BiConsumer;
 
 import fr.maxlego08.template.Template;
@@ -21,16 +20,6 @@ public class ZCommand extends VCommand {
 
 	public VCommand setCommand(BiConsumer<VCommand, Template> command) {
 		this.command = command;
-		return this;
-	}
-
-	public VCommand msg(String message) {
-		command = (cmd, main) -> cmd.sendMessage(message);
-		return this;
-	}
-
-	public VCommand msg(List<String> message) {
-		command = (cmd, main) -> cmd.sendMessage(message);
 		return this;
 	}
 
