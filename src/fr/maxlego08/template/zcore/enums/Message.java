@@ -9,6 +9,7 @@ public enum Message {
 	TELEPORT_ERROR("§cVous avez déjà une téléportation en cours !"),
 	TELEPORT_SUCCESS("§7Téléportation effectué !"),
 	
+	INVENTORY_NULL("§cImpossible de trouver l'inventaire avec l'id §6%s§c."),
 	INVENTORY_CLONE_NULL("§cLe clone de l'inventaire est null !"),
 	INVENTORY_OPEN_ERROR("§cUne erreur est survenu avec l'ouverture de l'inventaire §6%s§c."),
 	INVENTORY_BUTTON_PREVIOUS("§f» §7Page précédente"),

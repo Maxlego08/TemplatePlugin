@@ -10,17 +10,15 @@ public class CommanndTestSub extends VCommand {
 
 	public CommanndTestSub() {
 		this.addSubCommand("proute");
-		this.addRequireArg("ta faction");
-		this.addOptionalArg("une autre faction");
+		this.addRequireArg("location");
 	}
 
 	@Override
 	public CommandType perform(Template main) {
 
-		Location d = argAsLocation(0);
-
-		message(sender, "§2Mon d§3 " + d);
-
+		Location location = argAsLocation(0);
+		player.teleport(location);
+		
 		return CommandType.SUCCESS;
 	}
 

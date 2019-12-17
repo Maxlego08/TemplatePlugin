@@ -162,7 +162,9 @@ public abstract class VCommand extends Arguments {
 	}
 
 	/**
-	 * Permet de créer un inventaire, doit être mis dans le constructeur de la commande
+	 * Permet de créer un inventaire, doit être mis dans le constructeur de la
+	 * commande
+	 * 
 	 * @param id
 	 * @param page
 	 * @param objects
@@ -202,6 +204,7 @@ public abstract class VCommand extends Arguments {
 
 	/**
 	 * Mettre la description de la commande
+	 * 
 	 * @param description
 	 * @return
 	 */
@@ -221,6 +224,7 @@ public abstract class VCommand extends Arguments {
 
 	/**
 	 * Ajouter un argument optionel
+	 * 
 	 * @param message
 	 */
 	protected void addOptionalArg(String message) {
@@ -299,6 +303,7 @@ public abstract class VCommand extends Arguments {
 
 	/**
 	 * Permet de savoir le nombre de parent de façon récursive
+	 * 
 	 * @param defaultParent
 	 * @return
 	 */
@@ -322,7 +327,7 @@ public abstract class VCommand extends Arguments {
 				&& !(args.length >= argsMinLength && args.length <= argsMaxLength)) {
 			return CommandType.SYNTAX_ERROR;
 		}
-
+		
 		this.sender = commandSender;
 		if (sender instanceof Player)
 			player = (Player) commandSender;

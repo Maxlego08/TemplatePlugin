@@ -12,6 +12,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -657,5 +658,20 @@ public abstract class ZUtils {
 
 	protected boolean hasPermission(Permissible permissible, Permission permission) {
 		return permissible.hasPermission(permission.getPermission());
+	}
+	
+
+	protected void scheduleFix(long delay, BiConsumer<TimerTask, Boolean> runnable) {
+		new Timer().scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				if (!ZPlugin.z().isEnabled()) {
+					cancel();
+					runnable.accept(this, false);
+					return;
+				}
+				Bukkit.getScheduler().runTask(ZPlugin.z(), () -> runnable.accept(this, true));
+			}
+		}, delay, delay);
 	}
 }

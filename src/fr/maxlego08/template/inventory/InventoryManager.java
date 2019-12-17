@@ -15,6 +15,7 @@ import fr.maxlego08.template.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.template.inventory.inventories.InventoryTestPagination;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.zcore.ZPlugin;
+import fr.maxlego08.template.zcore.enums.Inventory;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
@@ -27,7 +28,7 @@ public class InventoryManager extends ListenerAdapter {
 	private InventoryManager() {
 
 		try {
-			addInventory(1, new InventoryTestPagination("§dTest §6%p%§5/§3%mp%", 54));
+			addInventory(Inventory.INVENTORY_TEST, new InventoryTestPagination("§dTest §6%p%§5/§3%mp%", 54));
 		} catch (InventoryAlreadyExistException e) {
 			e.printStackTrace();
 		}
@@ -35,17 +36,23 @@ public class InventoryManager extends ListenerAdapter {
 		plugin.getLog().log("Loading " + inventories.size() + " inventories", LogType.SUCCESS);
 	}
 
-	private void addInventory(int id, VInventory inventory) throws InventoryAlreadyExistException {
-		if (!inventories.containsKey(id))
-			inventories.put(id, inventory);
+	private void addInventory(Inventory inv, VInventory inventory) throws InventoryAlreadyExistException {
+		if (!inventories.containsKey(inv.getId()))
+			inventories.put(inv.getId(), inventory);
 		else
-			throw new InventoryAlreadyExistException("Inventory with id " + id + " already exist !");
+			throw new InventoryAlreadyExistException("Inventory with id " + inv.getId() + " already exist !");
+	}
+
+	public void createInventory(Inventory inv, Player player, int page, Object... objects) {
+		createInventory(inv.getId(), player, page, objects);
 	}
 
 	public void createInventory(int id, Player player, int page, Object... objects) {
 		VInventory inventory = getInventory(id);
-		if (inventory == null)
+		if (inventory == null) {
+			message(player, Message.INVENTORY_CLONE_NULL, id);
 			return;
+		}
 		VInventory clonedInventory = inventory.clone();
 
 		if (clonedInventory == null) {
