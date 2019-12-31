@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.Template;
-import fr.maxlego08.template.command.commands.CommandTest;
 import fr.maxlego08.template.zcore.ZPlugin;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.logger.Logger;
@@ -27,8 +26,6 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 	}
 
 	public void registerCommands() {
-
-		addCommand("test", new CommandTest());
 
 		main.getLog().log("Loading " + getUniqueCommand() + " commands", LogType.SUCCESS);
 		this.commandChecking();
@@ -138,6 +135,7 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 		return (int) commands.stream().filter(command -> command.getParent() == null).count();
 	}
 
+
 	/**
 	 * @param commandString
 	 * @param sender
@@ -146,9 +144,7 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 		commands.forEach(command -> {
 			if (isValid(command, commandString) && command.getDescription() != null
 					&& (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
-				// sender.sendMessage(Lang.commandHelp.replace("%syntaxe%",
-				// command.getSyntaxe()).replace("%description%",
-				// command.getDescription()));
+				message(sender, Message.COMMAND_SYNTAXE_HELP, command.getSyntaxe(), command.getDescription());
 			}
 		});
 	}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
@@ -673,5 +674,14 @@ public abstract class ZUtils {
 				Bukkit.getScheduler().runTask(ZPlugin.z(), () -> runnable.accept(this, true));
 			}
 		}, delay, delay);
+	}
+	
+	protected <T> T randomElement(List<T> element) {
+		if (element.size() == 0)
+			return null;
+		if (element.size() == 1)
+			return element.get(0);
+		Random random = new Random();
+		return element.get(random.nextInt(element.size() - 1));
 	}
 }

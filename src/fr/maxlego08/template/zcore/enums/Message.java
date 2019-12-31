@@ -25,6 +25,8 @@ public enum Message {
 	COMMAND_NO_PERMISSION("§cVous n'avez pas la permission d'exécuter cette commande."),
 	COMMAND_NO_CONSOLE("§cSeul un joueur peut exécuter cette commande."),
 	COMMAND_NO_ARG("§cImpossible de trouver la commande avec ses arguments."),
+	COMMAND_SYNTAXE_HELP("§a%s §b» §7%s"),
+	
 	
 	;
 
