@@ -623,7 +623,7 @@ public abstract class ZUtils {
 	protected void message(CommandSender player, Message message) {
 		player.sendMessage(Message.PREFIX.msg() + " " + message.msg());
 	}
-	
+
 	protected void message(CommandSender player, String message) {
 		player.sendMessage(Message.PREFIX.msg() + " " + message);
 	}
@@ -660,7 +660,6 @@ public abstract class ZUtils {
 	protected boolean hasPermission(Permissible permissible, Permission permission) {
 		return permissible.hasPermission(permission.getPermission());
 	}
-	
 
 	protected void scheduleFix(long delay, BiConsumer<TimerTask, Boolean> runnable) {
 		new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -675,7 +674,7 @@ public abstract class ZUtils {
 			}
 		}, delay, delay);
 	}
-	
+
 	protected <T> T randomElement(List<T> element) {
 		if (element.size() == 0)
 			return null;
@@ -683,5 +682,14 @@ public abstract class ZUtils {
 			return element.get(0);
 		Random random = new Random();
 		return element.get(random.nextInt(element.size() - 1));
+	}
+
+	public String getItemName(ItemStack item) {
+		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+			return item.getItemMeta().getDisplayName();
+		if (item.hasItemMeta() && item.getItemMeta().hasLocalizedName())
+			return item.getItemMeta().getLocalizedName();
+		String name = item.serialize().get("type").toString().replace("_", " ").toLowerCase();
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 }

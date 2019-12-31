@@ -1,25 +1,25 @@
 package fr.maxlego08.template.zcore.utils.gson;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.lang.reflect.Type;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.*;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import fr.maxlego08.template.zcore.ZPlugin;
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
+import net.minecraft.server.v1_15_R1.NBTTagCompound;
 
 public class ItemStackAdapter extends TypeAdapter<ItemStack>{
 
@@ -101,7 +101,7 @@ public class ItemStackAdapter extends TypeAdapter<ItemStack>{
 	private static ItemStack removeSlotNBT (ItemStack item) {
 		if (item == null)
 			return null;
-		net.minecraft.server.v1_14_R1.ItemStack nmsi = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_15_R1.ItemStack nmsi = CraftItemStack.asNMSCopy(item);
 		if (nmsi == null)
 			return null;
 		NBTTagCompound nbtt = nmsi.getTag();
