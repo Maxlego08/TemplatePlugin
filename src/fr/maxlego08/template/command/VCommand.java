@@ -29,7 +29,8 @@ public abstract class VCommand extends Arguments {
 	 * Are all sub commands used
 	 */
 	private List<String> subCommands = new ArrayList<String>();
-
+	protected List<VCommand> subVCommands = new ArrayList<VCommand>();
+	
 	private List<String> requireArgs = new ArrayList<String>();
 	private List<String> optionalArgs = new ArrayList<String>();
 
@@ -152,6 +153,14 @@ public abstract class VCommand extends Arguments {
 	// SETTER
 	//
 
+	public void setIgnoreArgs(boolean ignoreArgs) {
+		this.ignoreArgs = ignoreArgs;
+	}
+	
+	public void setIgnoreParent(boolean ignoreParent) {
+		this.ignoreParent = ignoreParent;
+	}
+	
 	/**
 	 * @param syntaxe
 	 *            the syntaxe to set
@@ -257,6 +266,7 @@ public abstract class VCommand extends Arguments {
 	public VCommand addSubCommand(VCommand command) {
 		command.setParent(this);
 		Template.getInstance().getCommandManager().addCommand(command);
+		this.subVCommands.add(command);
 		return this;
 	}
 
@@ -282,12 +292,12 @@ public abstract class VCommand extends Arguments {
 
 		String tmpString = subCommands.get(0);
 
-		if (requireArgs.size() != 0)
+		if (requireArgs.size() != 0 && syntaxe.equals(""))
 			for (String requireArg : requireArgs) {
 				requireArg = "<" + requireArg + ">";
 				syntaxe += " " + requireArg;
 			}
-		if (optionalArgs.size() != 0)
+		if (optionalArgs.size() != 0 && syntaxe.equals(""))
 			for (String optionalArg : optionalArgs) {
 				optionalArg = "[<" + optionalArg + ">]";
 				syntaxe += " " + optionalArg;
@@ -323,6 +333,17 @@ public abstract class VCommand extends Arguments {
 		if (syntaxe == null)
 			syntaxe = generateDefaultSyntaxe("");
 
+		this.args = args;
+
+		String defaultString = argAsString(0);
+
+		if (defaultString != null) {
+			for (VCommand subCommand : subVCommands) {
+				if (subCommand.getSubCommands().contains(defaultString.toLowerCase()))
+					return CommandType.CONTINUE;
+			}
+		}
+		
 		if (argsMinLength != 0 && argsMaxLength != 0
 				&& !(args.length >= argsMinLength && args.length <= argsMaxLength)) {
 			return CommandType.SYNTAX_ERROR;
@@ -331,7 +352,6 @@ public abstract class VCommand extends Arguments {
 		this.sender = commandSender;
 		if (sender instanceof Player)
 			player = (Player) commandSender;
-		this.args = args;
 
 		try {
 			return perform(main);

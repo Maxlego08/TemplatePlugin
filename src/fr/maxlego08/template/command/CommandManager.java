@@ -52,7 +52,6 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 						return true;
 				}
 			} else if (args.length >= 1 && command.getParent() != null
-					&& command.getParent().getSubCommands().contains(cmd.getName().toLowerCase())
 					&& canExecute(args, cmd.getName().toLowerCase(), command)) {
 				CommandType type = processRequirements(command, sender, args);
 				if (!type.equals(CommandType.CONTINUE))
@@ -119,7 +118,7 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 						iIventory.getArgs());
 			}
 			CommandType returnType = command.prePerform(main, sender, strings);
-			if (returnType == CommandType.SYNTAX_ERROR) 
+			if (returnType == CommandType.SYNTAX_ERROR)
 				message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntaxe());
 			return returnType;
 		}
@@ -142,16 +141,21 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 	 */
 	public void sendHelp(String commandString, CommandSender sender) {
 		commands.forEach(command -> {
-			if (isValid(command, commandString) && command.getDescription() != null
+			if (isValid(command, commandString)
 					&& (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
 				message(sender, Message.COMMAND_SYNTAXE_HELP, command.getSyntaxe(), command.getDescription());
 			}
 		});
 	}
 
+	/**
+	 * @param command
+	 * @param commandString
+	 * @return
+	 */
 	public boolean isValid(VCommand command, String commandString) {
-		return (command.getSubCommands().contains(commandString)
-				|| command.getParent() != null && command.getParent().getSubCommands().contains(commandString));
+		return command.getParent() != null ? isValid(command.getParent(), commandString)
+				: command.getSubCommands().contains(commandString.toLowerCase());
 	}
 
 	/**

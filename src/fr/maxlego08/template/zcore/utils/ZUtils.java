@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -23,6 +24,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 
@@ -684,12 +686,35 @@ public abstract class ZUtils {
 		return element.get(random.nextInt(element.size() - 1));
 	}
 
-	public String getItemName(ItemStack item) {
+	protected String getItemName(ItemStack item) {
 		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
 			return item.getItemMeta().getDisplayName();
 		if (item.hasItemMeta() && item.getItemMeta().hasLocalizedName())
 			return item.getItemMeta().getLocalizedName();
 		String name = item.serialize().get("type").toString().replace("_", " ").toLowerCase();
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+
+	protected String color(String message) {
+		return message.replace("&", "§");
+	}
+
+	protected List<String> color(List<String> messages) {
+		return messages.stream().map(message -> color(message)).collect(Collectors.toList());
+	}
+
+	protected ItemFlag getFlag(String flagString) {
+		for (ItemFlag flag : ItemFlag.values()) {
+			if (flag.name().equalsIgnoreCase(flagString))
+				return flag;
+		}
+		return null;
+	}
+
+	protected <T> List<T> reverse(List<T> list) {
+		List<T> tmpList = new ArrayList<>();
+		for (int index = list.size() - 1; index != -1; index--)
+			tmpList.add(list.get(index));
+		return tmpList;
 	}
 }
