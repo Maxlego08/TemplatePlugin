@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -13,11 +15,17 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 public class ItemDecoder {
 
+	private static volatile Map<ItemStack, String> itemstackSerialized = new HashMap<ItemStack, String>();
+	
 	public static String serializeItemStack(ItemStack paramItemStack) {
 
 		if (paramItemStack == null) {
 			return "null";
 		}
+		
+		if (itemstackSerialized.containsKey(paramItemStack))
+			return itemstackSerialized.get(paramItemStack);
+		
 		ByteArrayOutputStream localByteArrayOutputStream = null;
 		try {
 			Class<?> localClass = getNMSClass("NBTTagCompound");
@@ -34,7 +42,9 @@ public class ItemDecoder {
 		} catch (Exception localException) {
 			localException.printStackTrace();
 		}
-		return Base64.encode(localByteArrayOutputStream.toByteArray());
+		String string = Base64.encode(localByteArrayOutputStream.toByteArray());
+		itemstackSerialized.put(paramItemStack, string);
+		return string;
 	}
 
 	public static ItemStack deserializeItemStack(String paramString) {
@@ -72,6 +82,8 @@ public class ItemDecoder {
 		} catch (Exception localException) {
 			localException.printStackTrace();
 		}
+		if (localItemStack != null && !itemstackSerialized.containsKey(localItemStack))
+			itemstackSerialized.put(localItemStack, paramString);
 		return localItemStack;
 	}
 
@@ -102,11 +114,15 @@ public class ItemDecoder {
 		return localClass;
 	}
 
-	private static double getNMSVersion() {
+	public static double version;
+	
+	public static double getNMSVersion() {
+		if (version != 0)
+			return version;
 		String var1 = Bukkit.getServer().getClass().getPackage().getName();
 		String[] arrayOfString = var1.replace(".", ",").split(",")[3].split("_");
 		String var2 = arrayOfString[0].replace("v", "");
 		String var3 = arrayOfString[1];
-		return Double.parseDouble(var2 + "." + var3);
+		return version = Double.parseDouble(var2 + "." + var3);
 	}
 }
