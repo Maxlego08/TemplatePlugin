@@ -1,12 +1,18 @@
 package fr.maxlego08.template.command;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.ZPlugin;
@@ -42,6 +48,29 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 		return command;
 	}
 
+	public void registerCommand(String string, VCommand vCommand){
+		try {
+			Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+			bukkitCommandMap.setAccessible(true);
+			
+			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+
+			Class<? extends PluginCommand> class1 = PluginCommand.class;
+			Constructor<? extends PluginCommand> constructor = class1.getDeclaredConstructor(String.class, Plugin.class);
+			constructor.setAccessible(true);
+			
+			PluginCommand command = constructor.newInstance(string, ZPlugin.z());
+			command.setExecutor(this);
+			
+			commands.add(vCommand.addSubCommand(string));
+			
+			commandMap.register(command.getName(), ZPlugin.z().getDescription().getName(), command);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		for (VCommand command : commands) {

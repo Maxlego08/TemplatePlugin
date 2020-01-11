@@ -10,7 +10,11 @@ public abstract class Arguments extends ZUtils {
 	protected int parentCount = 0;
 
 	protected String argAsString(int index) {
-		return args[index + parentCount];
+		try {
+			return args[index + parentCount];
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	protected int argAsInteger(int index) {

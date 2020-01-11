@@ -30,7 +30,7 @@ public abstract class VCommand extends Arguments {
 	 */
 	private List<String> subCommands = new ArrayList<String>();
 	protected List<VCommand> subVCommands = new ArrayList<VCommand>();
-	
+
 	private List<String> requireArgs = new ArrayList<String>();
 	private List<String> optionalArgs = new ArrayList<String>();
 
@@ -134,6 +134,9 @@ public abstract class VCommand extends Arguments {
 	 * @return the syntaxe
 	 */
 	public String getSyntaxe() {
+		if (syntaxe == null) {
+			syntaxe = generateDefaultSyntaxe("");
+		}
 		return syntaxe;
 	}
 
@@ -156,11 +159,11 @@ public abstract class VCommand extends Arguments {
 	public void setIgnoreArgs(boolean ignoreArgs) {
 		this.ignoreArgs = ignoreArgs;
 	}
-	
+
 	public void setIgnoreParent(boolean ignoreParent) {
 		this.ignoreParent = ignoreParent;
 	}
-	
+
 	/**
 	 * @param syntaxe
 	 *            the syntaxe to set
@@ -343,12 +346,12 @@ public abstract class VCommand extends Arguments {
 					return CommandType.CONTINUE;
 			}
 		}
-		
+
 		if (argsMinLength != 0 && argsMaxLength != 0
 				&& !(args.length >= argsMinLength && args.length <= argsMaxLength)) {
 			return CommandType.SYNTAX_ERROR;
 		}
-		
+
 		this.sender = commandSender;
 		if (sender instanceof Player)
 			player = (Player) commandSender;
