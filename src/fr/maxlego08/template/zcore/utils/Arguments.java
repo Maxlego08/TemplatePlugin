@@ -2,6 +2,7 @@ package fr.maxlego08.template.zcore.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 public abstract class Arguments extends ZUtils {
@@ -35,6 +36,10 @@ public abstract class Arguments extends ZUtils {
 
 	protected Location argAsLocation(int index) {
 		return changeStringLocationToLocation(argAsString(index));
+	}
+	
+	protected EntityType argAsEntityType(int index) {
+		return EntityType.valueOf(argAsString(index).toUpperCase());
 	}
 
 }

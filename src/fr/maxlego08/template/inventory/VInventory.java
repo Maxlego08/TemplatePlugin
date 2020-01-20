@@ -173,5 +173,13 @@ public abstract class VInventory extends ZUtils {
 
 	protected abstract void onDrag(InventoryDragEvent event, Template plugin, Player player);
 
-	public abstract VInventory clone();
+	@Override
+	protected VInventory clone()  {
+		try {
+			return (VInventory) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

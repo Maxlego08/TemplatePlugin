@@ -42,7 +42,10 @@ public abstract class PaginateInventory<T> extends VInventory {
 		List<T> tmpList = isReverse ? pagination.paginateReverse(collections, paginationSize, page)
 				: pagination.paginate(collections, paginationSize, page);
 
-		tmpList.forEach(tmpItem -> onClick(tmpItem, addItem(slot.getAndIncrement(), buildItem(tmpItem))));
+		tmpList.forEach(tmpItem -> {
+			ItemButton button = addItem(slot.getAndIncrement(), buildItem(tmpItem));
+			button.setClick((event) -> onClick(tmpItem, button));
+		});
 
 		if (getPage() != 1)
 			addItem(previousSlot, ItemBuilder.getCreatedItem(Material.ARROW, 1, "§f» §7Page précédente"))
