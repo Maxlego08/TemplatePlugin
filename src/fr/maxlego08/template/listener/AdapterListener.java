@@ -1,11 +1,17 @@
 package fr.maxlego08.template.listener;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -22,9 +28,11 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.maxlego08.template.Template;
+import fr.maxlego08.template.save.Config;
+import fr.maxlego08.template.zcore.utils.ZUtils;
 
 @SuppressWarnings("deprecation")
-public class AdapterListener implements Listener {
+public class AdapterListener extends ZUtils implements Listener {
 
 	private final Template template;
 
@@ -38,7 +46,7 @@ public class AdapterListener implements Listener {
 	}
 
 	@EventHandler
-	public void onQuite(PlayerQuitEvent event) {
+	public void onQuit(PlayerQuitEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onQuit(event, event.getPlayer()));
 	}
 
@@ -108,6 +116,20 @@ public class AdapterListener implements Listener {
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onDrop(event, event.getPlayer()));
+		if (!Config.useItemFallEvent)
+			return;
+		Item item = event.getItemDrop();
+		AtomicBoolean hasSendEvent = new AtomicBoolean(false);
+		scheduleFix(100, (task, isActive) -> {
+			if (!isActive)
+				return;
+			if (item.isOnGround() && !hasSendEvent.get()) {
+				task.cancel();
+				hasSendEvent.set(true);
+				template.getListenerAdapters().forEach(
+						adapter -> adapter.onItemisOnGround(event, event.getPlayer(), item, item.getLocation()));
+			}
+		});
 	}
 
 	@EventHandler
@@ -118,5 +140,18 @@ public class AdapterListener implements Listener {
 	@EventHandler
 	public void onMobSpawn(CreatureSpawnEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onMobSpawn(event));
+	}
+
+	@EventHandler
+	public void onDamage(EntityDamageByEntityEvent event) {
+		if (event.getEntity() instanceof LivingEntity && event.getDamager() instanceof LivingEntity)
+			template.getListenerAdapters().forEach(adapter -> adapter.onDamageByEntity(event, event.getCause(),
+					event.getDamage(), (LivingEntity) event.getDamager(), (LivingEntity) event.getEntity()));
+		if (event.getEntity() instanceof Player && event.getDamager() instanceof Player)
+			template.getListenerAdapters().forEach(adapter -> adapter.onPlayerDamagaByPlayer(event, event.getCause(),
+					event.getDamage(), (Player) event.getDamager(), (Player) event.getEntity()));
+		if (event.getEntity() instanceof Player && event.getDamager() instanceof Projectile)
+			template.getListenerAdapters().forEach(adapter -> adapter.onPlayerDamagaByArrow(event, event.getCause(),
+					event.getDamage(), (Projectile) event.getDamager(), (Player) event.getEntity()));
 	}
 }

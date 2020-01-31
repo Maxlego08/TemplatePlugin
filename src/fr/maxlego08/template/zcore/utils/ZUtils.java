@@ -548,6 +548,12 @@ public abstract class ZUtils {
 		return economy;
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param item
+	 * @param itemStack
+	 */
 	protected void removeItems(Player player, int item, ItemStack itemStack) {
 		for (ItemStack is : player.getInventory().getContents()) {
 			if (is != null && is.isSimilar(itemStack)) {
@@ -562,6 +568,10 @@ public abstract class ZUtils {
 		player.updateInventory();
 	}
 
+	/**
+	 * @param delay
+	 * @param runnable
+	 */
 	protected void schedule(long delay, Runnable runnable) {
 		new Timer().schedule(new TimerTask() {
 
@@ -573,31 +583,60 @@ public abstract class ZUtils {
 		}, delay);
 	}
 
+	/**
+	 * 
+	 * @param string
+	 * @return
+	 */
 	protected String name(String string) {
 		return TextUtil.name(string);
 	}
 
-	protected String itemName(ItemStack item) {
-		return item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName()
-				: "x" + item.getAmount() + " " + TextUtil.getMaterialLowerAndMajAndSpace(item.getType());
-	}
-
+	/**
+	 * 
+	 * @param items
+	 * @return
+	 */
 	protected int getMaxPage(Collection<?> items) {
 		return (items.size() / 45) + 1;
 	}
 
+	/**
+	 * 
+	 * @param items
+	 * @param a
+	 * @return
+	 */
 	protected int getMaxPage(Collection<?> items, int a) {
 		return (items.size() / a) + 1;
 	}
 
+	/**
+	 * 
+	 * @param value
+	 * @param total
+	 * @return
+	 */
 	protected double percent(double value, double total) {
 		return (double) ((value * 100) / total);
 	}
 
+	/**
+	 * 
+	 * @param total
+	 * @param percent
+	 * @return
+	 */
 	protected double percentNum(double total, double percent) {
 		return (double) (total * (percent / 100));
 	}
 
+	/**
+	 * 
+	 * @param delay
+	 * @param count
+	 * @param runnable
+	 */
 	protected void schedule(long delay, int count, Runnable runnable) {
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			int tmpCount = 0;
@@ -622,47 +661,108 @@ public abstract class ZUtils {
 		}, 0, delay);
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param message
+	 */
 	protected void message(CommandSender player, Message message) {
 		player.sendMessage(Message.PREFIX.msg() + " " + message.msg());
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param message
+	 */
 	protected void message(CommandSender player, String message) {
 		player.sendMessage(Message.PREFIX.msg() + " " + message);
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param message
+	 */
 	protected void messageWO(CommandSender player, Message message) {
 		player.sendMessage(message.msg());
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param message
+	 * @param args
+	 */
 	protected void messageWO(CommandSender player, Message message, Object... args) {
 		player.sendMessage(String.format(message.msg(), args));
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param message
+	 * @param args
+	 */
 	protected void message(CommandSender player, Message message, Object... args) {
 		player.sendMessage(Message.PREFIX.msg() + " " + String.format(message.msg(), args));
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param message
+	 * @param args
+	 */
 	protected void actionMessage(Player player, Message message, Object... args) {
 		ActionBar.sendActionBar(player, String.format(message.msg(), args));
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param inventoryId
+	 */
 	protected void createInventory(Player player, int inventoryId) {
 		createInventory(player, inventoryId, 1);
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param inventoryId
+	 * @param page
+	 */
 	protected void createInventory(Player player, int inventoryId, int page) {
 		createInventory(player, inventoryId, page, new Object() {
 		});
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param inventoryId
+	 * @param page
+	 * @param objects
+	 */
 	protected void createInventory(Player player, int inventoryId, int page, Object... objects) {
 		plugin.getInventoryManager().createInventory(inventoryId, player, page, objects);
 	}
 
+	/**
+	 * 
+	 * @param permissible
+	 * @param permission
+	 * @return
+	 */
 	protected boolean hasPermission(Permissible permissible, Permission permission) {
 		return permissible.hasPermission(permission.getPermission());
 	}
 
+	/**
+	 * @param delay
+	 * @param runnable
+	 */
 	protected void scheduleFix(long delay, BiConsumer<TimerTask, Boolean> runnable) {
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			@Override
@@ -677,6 +777,11 @@ public abstract class ZUtils {
 		}, delay, delay);
 	}
 
+	/**
+	 * 
+	 * @param element
+	 * @return
+	 */
 	protected <T> T randomElement(List<T> element) {
 		if (element.size() == 0)
 			return null;
@@ -686,23 +791,59 @@ public abstract class ZUtils {
 		return element.get(random.nextInt(element.size() - 1));
 	}
 
+	/**
+	 * 
+	 * @param item
+	 * @return
+	 */
 	protected String getItemName(ItemStack item) {
 		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
 			return item.getItemMeta().getDisplayName();
-		if (item.hasItemMeta() && item.getItemMeta().hasLocalizedName())
-			return item.getItemMeta().getLocalizedName();
 		String name = item.serialize().get("type").toString().replace("_", " ").toLowerCase();
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 
+	/**
+	 * 
+	 * @param message
+	 * @return
+	 */
 	protected String color(String message) {
 		return message.replace("&", "§");
 	}
 
+	/**
+	 * 
+	 * @param message
+	 * @return
+	 */
+	public String colorReverse(String message) {
+		return message.replace("§", "&");
+	}
+
+	/**
+	 * 
+	 * @param messages
+	 * @return
+	 */
 	protected List<String> color(List<String> messages) {
 		return messages.stream().map(message -> color(message)).collect(Collectors.toList());
 	}
 
+	/**
+	 * 
+	 * @param messages
+	 * @return
+	 */
+	public List<String> colorReverse(List<String> messages) {
+		return messages.stream().map(message -> colorReverse(message)).collect(Collectors.toList());
+	}
+
+	/**
+	 * 
+	 * @param flagString
+	 * @return
+	 */
 	protected ItemFlag getFlag(String flagString) {
 		for (ItemFlag flag : ItemFlag.values()) {
 			if (flag.name().equalsIgnoreCase(flagString))
@@ -711,6 +852,11 @@ public abstract class ZUtils {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param list
+	 * @return
+	 */
 	protected <T> List<T> reverse(List<T> list) {
 		List<T> tmpList = new ArrayList<>();
 		for (int index = list.size() - 1; index != -1; index--)

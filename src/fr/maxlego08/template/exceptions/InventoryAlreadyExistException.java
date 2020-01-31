@@ -1,6 +1,6 @@
 package fr.maxlego08.template.exceptions;
 
-public class InventoryAlreadyExistException extends Exception {
+public class InventoryAlreadyExistException extends Error {
 
 	public InventoryAlreadyExistException() {
 		super();

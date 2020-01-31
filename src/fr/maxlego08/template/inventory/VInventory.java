@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.template.Template;
+import fr.maxlego08.template.exceptions.InventoryOpenException;
 import fr.maxlego08.template.zcore.utils.ZUtils;
 
 public abstract class VInventory extends ZUtils {
@@ -157,7 +158,7 @@ public abstract class VInventory extends ZUtils {
 		return guiName;
 	}
 
-	protected InventoryResult preOpenInventory(Template main, Player player, int page, Object... args) throws Exception{
+	protected InventoryResult preOpenInventory(Template main, Player player, int page, Object... args) throws InventoryOpenException{
 		
 		this.page = page;
 		this.args = args;
@@ -167,7 +168,7 @@ public abstract class VInventory extends ZUtils {
 		return openInventory(main, player, page, args);
 	}
 	
-	public abstract InventoryResult openInventory(Template main, Player player, int page, Object... args) throws Exception;
+	public abstract InventoryResult openInventory(Template main, Player player, int page, Object... args) throws InventoryOpenException;
 
 	protected abstract void onClose(InventoryCloseEvent event, Template plugin, Player player);
 

@@ -3,6 +3,7 @@ package fr.maxlego08.template.command;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -42,13 +43,23 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 		return command;
 	}
 
+	/**
+	 * @param string
+	 * @param command
+	 * @return
+	 */
 	public VCommand addCommand(String string, VCommand command) {
 		commands.add(command.addSubCommand(string));
 		ZPlugin.z().getCommand(string).setExecutor(this);
 		return command;
 	}
 
-	public void registerCommand(String string, VCommand vCommand){
+	/**
+	 * @param string
+	 * @param vCommand
+	 * @param aliases
+	 */
+	public void registerCommand(String string, VCommand vCommand, String... aliases){
 		try {
 			Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
 			bukkitCommandMap.setAccessible(true);
@@ -59,10 +70,14 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 			Constructor<? extends PluginCommand> constructor = class1.getDeclaredConstructor(String.class, Plugin.class);
 			constructor.setAccessible(true);
 			
+			List<String> lists = Arrays.asList(aliases);
+			
 			PluginCommand command = constructor.newInstance(string, ZPlugin.z());
 			command.setExecutor(this);
+			command.setAliases(lists);
 			
 			commands.add(vCommand.addSubCommand(string));
+			vCommand.addSubCommand(aliases);
 			
 			commandMap.register(command.getName(), ZPlugin.z().getDescription().getName(), command);
 			

@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 
 import fr.maxlego08.template.exceptions.InventoryAlreadyExistException;
+import fr.maxlego08.template.exceptions.InventoryOpenException;
 import fr.maxlego08.template.inventory.inventories.InventoryTestPagination;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.zcore.ZPlugin;
@@ -27,16 +28,12 @@ public class InventoryManager extends ListenerAdapter {
 
 	private InventoryManager() {
 
-		try {
-			addInventory(Inventory.INVENTORY_TEST, new InventoryTestPagination("§dTest §6%p%§5/§3%mp%", 54));
-		} catch (InventoryAlreadyExistException e) {
-			e.printStackTrace();
-		}
+		addInventory(Inventory.INVENTORY_TEST, new InventoryTestPagination("§dTest §6%p%§5/§3%mp%", 54));
 
 		plugin.getLog().log("Loading " + inventories.size() + " inventories", LogType.SUCCESS);
 	}
 
-	private void addInventory(Inventory inv, VInventory inventory) throws InventoryAlreadyExistException {
+	private void addInventory(Inventory inv, VInventory inventory) {
 		if (!inventories.containsKey(inv.getId()))
 			inventories.put(inv.getId(), inventory);
 		else
@@ -68,7 +65,7 @@ public class InventoryManager extends ListenerAdapter {
 				playerInventories.put(player, clonedInventory);
 			} else if (result.equals(InventoryResult.ERROR))
 				message(player, Message.INVENTORY_OPEN_ERROR, id);
-		} catch (Exception e) {
+		} catch (InventoryOpenException e) {
 			message(player, Message.INVENTORY_OPEN_ERROR, id);
 			e.printStackTrace();
 		}

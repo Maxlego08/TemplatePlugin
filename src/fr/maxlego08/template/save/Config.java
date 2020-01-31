@@ -6,6 +6,7 @@ import fr.maxlego08.template.zcore.utils.storage.Saveable;
 public class Config implements Saveable {
 
 	public static String version = "0.0.0.1";
+	public static boolean useItemFallEvent = false;
 	
 	/**
 	 * static Singleton instance.
@@ -34,11 +35,11 @@ public class Config implements Saveable {
 	}
 
 	public void save(Persist persist) {
-		persist.save(getInstance(), "name");
+		persist.save(getInstance());
 	}
 
 	public void load(Persist persist) {
-		persist.loadOrSaveDefault(getInstance(), Config.class, "name");
+		persist.loadOrSaveDefault(getInstance(), Config.class);
 	}
 
 }

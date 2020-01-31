@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.template.Template;
+import fr.maxlego08.template.exceptions.InventoryOpenException;
 import fr.maxlego08.template.zcore.utils.builder.ItemBuilder;
 import fr.maxlego08.template.zcore.utils.inventory.Pagination;
 
@@ -29,7 +30,7 @@ public abstract class PaginateInventory<T> extends VInventory {
 	}
 
 	@Override
-	public InventoryResult openInventory(Template main, Player player, int page, Object... args) throws Exception {
+	public InventoryResult openInventory(Template main, Player player, int page, Object... args) throws InventoryOpenException {
 
 		preOpenInventory();
 		

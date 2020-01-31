@@ -1,11 +1,17 @@
 package fr.maxlego08.template.listener;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -74,5 +80,20 @@ public abstract class ListenerAdapter extends ZUtils{
 	}
 
 	public void onMobSpawn(CreatureSpawnEvent event) {
+	}
+	
+	public void onDamageByEntity(EntityDamageByEntityEvent event, DamageCause cause, double damage, LivingEntity damager,
+			LivingEntity entity) {
+	}
+
+	public void onPlayerDamagaByPlayer(EntityDamageByEntityEvent event, DamageCause cause, double damage,
+			Player damager, Player entity) {
+	}
+
+	public void onPlayerDamagaByArrow(EntityDamageByEntityEvent event, DamageCause cause, double damage,
+			Projectile damager, Player entity) {
+	}
+
+	public void onItemisOnGround(PlayerDropItemEvent event, Player player, Item item, Location location) {
 	}
 }
