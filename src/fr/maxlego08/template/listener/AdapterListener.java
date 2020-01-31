@@ -123,6 +123,8 @@ public class AdapterListener extends ZUtils implements Listener {
 		scheduleFix(100, (task, isActive) -> {
 			if (!isActive)
 				return;
+			template.getListenerAdapters().forEach(adapter -> adapter.onItemMove(event, event.getPlayer(), item,
+					item.getLocation(), item.getLocation().getBlock()));
 			if (item.isOnGround() && !hasSendEvent.get()) {
 				task.cancel();
 				hasSendEvent.set(true);

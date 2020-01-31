@@ -1,6 +1,7 @@
 package fr.maxlego08.template.listener;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -95,5 +96,8 @@ public abstract class ListenerAdapter extends ZUtils{
 	}
 
 	public void onItemisOnGround(PlayerDropItemEvent event, Player player, Item item, Location location) {
+	}
+
+	public void onItemMove(PlayerDropItemEvent event, Player player, Item item, Location location, Block block) {
 	}
 }
