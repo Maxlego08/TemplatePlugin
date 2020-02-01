@@ -24,19 +24,19 @@ public class ItemButton {
 	}
 
 	public ItemButton(Material material, int id, String name, String... lore) {
-		this(ItemBuilder.getCreatedItemWithLoreAndShort(material, 1, (short)id, name, Arrays.asList(lore)));
+		this(new ItemBuilder(material, id, 1, name, Arrays.asList(lore), null, null).build());
 	}
 
 	public ItemButton(Material material, String name, String... lore) {
-		this(ItemBuilder.getCreatedItemWithLore(material, 1, name, lore));
+		this(new ItemBuilder(material, name).setLore(lore).build());
 	}
-	
+
 	public ItemButton(Material material) {
-		this(ItemBuilder.getCreatedItemWithLore(material, 1, null));
+		this(new ItemBuilder(material).build());
 	}
-	
+
 	public ItemButton(Material material, String name) {
-		this(ItemBuilder.getCreatedItemWithLore(material, 1, name));
+		this(new ItemBuilder(material, name).build());
 	}
 
 	public ItemButton setClick(Consumer<InventoryClickEvent> onClick) {
@@ -50,7 +50,8 @@ public class ItemButton {
 	}
 
 	/**
-	 * @param onLeftClick the onLeftClick to set
+	 * @param onLeftClick
+	 *            the onLeftClick to set
 	 */
 	public ItemButton setLeftClick(Consumer<InventoryClickEvent> onLeftClick) {
 		this.onLeftClick = onLeftClick;
@@ -58,7 +59,8 @@ public class ItemButton {
 	}
 
 	/**
-	 * @param onRightClick the onRightClick to set
+	 * @param onRightClick
+	 *            the onRightClick to set
 	 */
 	public ItemButton setRightClick(Consumer<InventoryClickEvent> onRightClick) {
 		this.onRightClick = onRightClick;

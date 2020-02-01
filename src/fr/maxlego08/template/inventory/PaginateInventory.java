@@ -30,10 +30,11 @@ public abstract class PaginateInventory<T> extends VInventory {
 	}
 
 	@Override
-	public InventoryResult openInventory(Template main, Player player, int page, Object... args) throws InventoryOpenException {
+	public InventoryResult openInventory(Template main, Player player, int page, Object... args)
+			throws InventoryOpenException {
 
 		preOpenInventory();
-		
+
 		super.createInventory(inventoryName.replace("%mp%", String.valueOf(getMaxPage(collections))).replace("%p%",
 				String.valueOf(page)), inventorySize);
 
@@ -49,14 +50,14 @@ public abstract class PaginateInventory<T> extends VInventory {
 		});
 
 		if (getPage() != 1)
-			addItem(previousSlot, ItemBuilder.getCreatedItem(Material.ARROW, 1, "§f» §7Page précédente"))
+			addItem(previousSlot, Material.ARROW, "§f» §7Page précédente")
 					.setClick(event -> createInventory(player, getId(), getPage() - 1, args));
 		if (getPage() != getMaxPage(collections))
-			addItem(nextSlot, ItemBuilder.getCreatedItem(Material.ARROW, 1, "§f» §7Page suivante"))
+			addItem(nextSlot, Material.ARROW, "§f» §7Page suivante")
 					.setClick(event -> createInventory(player, getId(), getPage() + 1, args));
 
 		postOpenInventory();
-		
+
 		return InventoryResult.SUCCESS;
 	}
 
@@ -75,20 +76,20 @@ public abstract class PaginateInventory<T> extends VInventory {
 	protected void setNextSlot(int nextSlot) {
 		this.nextSlot = nextSlot;
 	}
-	
+
 	protected void setPreviousSlot(int previousSlot) {
 		this.previousSlot = previousSlot;
 	}
-	
+
 	protected void setDefaultSlot(int defaultSlot) {
 		this.defaultSlot = defaultSlot;
 	}
-	
+
 	public abstract ItemStack buildItem(T object);
-	
+
 	public abstract void onClick(T object, ItemButton button);
-	
+
 	public abstract List<T> preOpenInventory();
-	
+
 	public abstract void postOpenInventory();
 }

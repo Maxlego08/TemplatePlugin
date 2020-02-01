@@ -13,7 +13,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 
 import fr.maxlego08.template.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.template.exceptions.InventoryOpenException;
-import fr.maxlego08.template.inventory.inventories.InventoryTestPagination;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.zcore.ZPlugin;
 import fr.maxlego08.template.zcore.enums.Inventory;
@@ -28,7 +27,6 @@ public class InventoryManager extends ListenerAdapter {
 
 	private InventoryManager() {
 
-		addInventory(Inventory.INVENTORY_TEST, new InventoryTestPagination("§dTest §6%p%§5/§3%mp%", 54));
 
 		plugin.getLog().log("Loading " + inventories.size() + " inventories", LogType.SUCCESS);
 	}

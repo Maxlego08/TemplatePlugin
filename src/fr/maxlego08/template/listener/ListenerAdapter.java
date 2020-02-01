@@ -100,4 +100,7 @@ public abstract class ListenerAdapter extends ZUtils{
 
 	public void onItemMove(PlayerDropItemEvent event, Player player, Item item, Location location, Block block) {
 	}
+
+	public void onPlayerWalk(PlayerMoveEvent event, Player player, int i) {
+	}
 }

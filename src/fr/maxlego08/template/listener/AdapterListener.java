@@ -53,6 +53,11 @@ public class AdapterListener extends ZUtils implements Listener {
 	@EventHandler
 	public void onMove(PlayerMoveEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onMove(event, event.getPlayer()));
+		if (event.getFrom().getBlockX() >> 1 == event.getTo().getBlockX() >> 1
+				&& event.getFrom().getBlockZ() >> 1 == event.getTo().getBlockZ() >> 1
+				&& event.getFrom().getWorld() == event.getTo().getWorld())
+			return;
+		template.getListenerAdapters().forEach(adapter -> adapter.onPlayerWalk(event, event.getPlayer(), 1));
 	}
 
 	@EventHandler

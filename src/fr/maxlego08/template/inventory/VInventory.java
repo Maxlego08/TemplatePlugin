@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.exceptions.InventoryOpenException;
 import fr.maxlego08.template.zcore.utils.ZUtils;
+import fr.maxlego08.template.zcore.utils.builder.ItemBuilder;
 
 public abstract class VInventory extends ZUtils {
 
@@ -72,6 +74,10 @@ public abstract class VInventory extends ZUtils {
 	 * @param item
 	 * @return
 	 */
+	public ItemButton addItem(int slot, Material material, String name) {
+		return addItem(slot, new ItemBuilder(material, name).build());
+	}
+	
 	public ItemButton addItem(int slot, ItemStack item) {
 		// Pour éviter les erreurs, on crée un inventaire
 		createDefaultInventory();

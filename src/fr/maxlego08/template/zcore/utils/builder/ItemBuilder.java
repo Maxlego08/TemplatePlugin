@@ -2,190 +2,229 @@ package fr.maxlego08.template.zcore.utils.builder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import fr.maxlego08.template.zcore.utils.CustomEnchant;
+import org.bukkit.inventory.meta.SkullMeta;
 
-public class ItemBuilder {
+import fr.maxlego08.template.zcore.utils.ZUtils;
 
-	// Gestions des objets
-	public static ItemStack getCreatedItem(Material Material, int Number, int id) {
-		return getCreatedItemAndData(Material, Number, (byte) id, "");
+public class ItemBuilder extends ZUtils implements Cloneable {
+
+	private ItemStack item;
+	private final Material material;
+	private ItemMeta meta;
+	private int data;
+	private int amount;
+	private String name;
+	private List<String> lore;
+	private List<ItemFlag> flags;
+	private int durability;
+	private Map<Enchantment, Integer> enchantments;
+
+	public ItemBuilder(Material material, int data, int amount, String name, List<String> lore, List<ItemFlag> flags,
+			Map<Enchantment, Integer> enchantments) {
+		super();
+		this.material = material;
+		this.data = data;
+		this.amount = amount;
+		this.name = name;
+		this.lore = lore;
+		this.flags = flags;
+		this.enchantments = enchantments;
 	}
 
-	public static ItemStack getCreatedItem(Material Material, int Number, String... name) {
-		return getCreatedItemWithLore(Material, Number, null, name);
+	public ItemBuilder(Material material) {
+		this(material, 1);
 	}
 
-	public static ItemStack getCreatedItem(String name, Material Material, int Number, String... lore) {
-		return getCreatedItemWithLore(Material, Number, name, lore);
+	public ItemBuilder(Material material, int amount) {
+		this(material, 0, amount);
 	}
 
-	public static ItemStack getCreatedItem(String name, Material Material, int Number, int data, String... lore) {
-		return getCreatedItemWithLoreAndShort(Material, Number, (byte) data, name, Arrays.asList(lore));
+	public ItemBuilder(Material material, int amount, int data) {
+		this(material, data, amount, null);
 	}
 
-	public static ItemStack getCreatedItem(Material Material, int Number, String Name) {
-		ItemStack item = new ItemStack(Material, Number);
-		ItemMeta meta = item.getItemMeta();
-		item.setAmount(Number);
-		meta.setDisplayName(Name);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder(Material material, int amount, int data, String name) {
+		this(material, data, amount, name, null, null, null);
 	}
 
-	public static ItemStack getCreatedItem(Material Material, int Number, int data, String Name) {
-		@SuppressWarnings("deprecation")
-		ItemStack item = new ItemStack(Material, Number, (byte) data);
-		ItemMeta meta = item.getItemMeta();
-		item.setAmount(Number);
-		meta.setDisplayName(Name);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder(Material material, int amount, String name) {
+		this(material, 0, amount, name, null, null, null);
 	}
 
-	public static ItemStack getCreatedItemFlag(Material Material, int Number, String Name) {
-		ItemStack item = new ItemStack(Material, Number);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(Name);
-		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder(Material material, String name) {
+		this(material, 0, 1, name, null, null, null);
 	}
 
-	public static ItemStack getCreatedItemEnchantFlag(Material Material, int Number, String Name) {
-		ItemStack item = new ItemStack(Material, Number);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(Name);
-		meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
-		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder(Material material, ItemFlag... flags) {
+		this(material, 0, 1, null, null, Arrays.asList(flags), null);
 	}
 
-	public static ItemStack getCreatedItemAndData(Material Material, int Number, byte Data, String Name) {
-		ItemStack item = new ItemStack(Material, Number, Data);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(Name);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder(Material material, String... lore) {
+		this(material, 0, 1, null, Arrays.asList(lore), null, null);
 	}
 
-	public static ItemStack getCreatedItemWithEnchantement(Material Material, int Number, String Name,
-			Enchantment Enchant, int EnchantLevel, boolean Visibility) {
-		ItemStack item = new ItemStack(Material, Number);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(Name);
-		meta.addEnchant(Enchant, EnchantLevel, Visibility);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder addEnchant(Enchantment enchantment, int value) {
+		if (enchantments == null)
+			enchantments = new HashMap<Enchantment, Integer>();
+		enchantments.put(enchantment, value);
+		return this;
 	}
 
-	public static ItemStack getCreatedItemWithLore(Material material, int number, String name, List<String> strings) {
-		ItemStack item = new ItemStack(material, number);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(name);
-		meta.setLore(strings);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder setFlag(ItemFlag... flags) {
+		this.flags = Arrays.asList(flags);
+		return this;
 	}
 
-	public static ItemStack getCreatedItemWithLore(Material material, int number, String name, String... strings) {
-		ItemStack item = new ItemStack(material, number);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(name);
-		meta.setLore(Arrays.asList(strings));
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder setFlag(ItemFlag flag) {
+		if (flags == null)
+			flags = new ArrayList<>();
+		this.flags.add(flag);
+		return this;
 	}
 
-	public static ItemStack getCreatedItemFlag(Material material, int number, String name, String... strings) {
-		return getCreatedItemFlag(material, number, name, Arrays.asList(strings));
+	public ItemBuilder setLore(String... lores) {
+		this.lore = Arrays.asList(lores);
+		return this;
 	}
 
-	public static ItemStack getCreatedItemFlag(Material material, int number, String name, List<String> strings) {
-		ItemStack item = new ItemStack(material, number);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(name);
-		meta.setLore(strings);
-		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder setName(String name) {
+		this.name = name;
+		return this;
 	}
 
-	public static ItemStack getCreatedItemWithLoreAndShort(Material Material, int Number, short data, String Name,
-			List<String> Lore) {
-		@SuppressWarnings("deprecation")
-		ItemStack item = new ItemStack(Material, Number, data);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(Name);
-		meta.setLore(Lore);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder durability(int durability) {
+		this.durability = durability;
+		return this;
 	}
 
-	public static ItemStack getCreatedItemWithEnchantementAndLore(Material Material, int Number, String Name,
-			Enchantment Enchant, int EnchantLevel, boolean Visibility, List<String> Lore) {
-		ItemStack item = new ItemStack(Material, Number);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(Name);
-		meta.addEnchant(Enchant, EnchantLevel, Visibility);
-		meta.setLore(Lore);
-		item.setItemMeta(meta);
-		return item;
+	public ItemBuilder glow() {
+		addEnchant(material != Material.BOW ? Enchantment.ARROW_INFINITE : Enchantment.LUCK, 10);
+		setFlag(ItemFlag.HIDE_ENCHANTS);
+		return this;
 	}
 
-	public static ItemStack enchant(Material material, CustomEnchant... customEnchants) {
-		return enchant(material, null, null, customEnchants);
+	public ItemBuilder owner(Player name) {
+		return owner(name.getName());
 	}
 
-	public static ItemStack enchant(Material material, String name, List<String> lore,
-			CustomEnchant... customEnchants) {
-		ItemStack item = new ItemStack(material);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(name);
-		for (CustomEnchant customEnchant : customEnchants)
-			meta.addEnchant(customEnchant.getEnchantment(), customEnchant.getLevel(), true);
+	@SuppressWarnings("deprecation")
+	public ItemBuilder owner(String name) {
+		if ((material == getMaterial(144)) || (material == getMaterial(397))) {
+			SkullMeta smeta = (SkullMeta) meta;
+			smeta.setOwner(name);
+			if (meta == null)
+				build();
+			meta = smeta;
+		}
+		return this;
+	}
+
+	@SuppressWarnings("deprecation")
+	public ItemStack build() {
+		item = new ItemStack(material, amount, (short) data);
+		if (meta == null)
+			meta = item.getItemMeta();
+
+		if (flags != null && flags.size() == 0) 
+			flags.forEach(flag -> meta.addItemFlags(flag));
+
+		if (name != null)
+			meta.setDisplayName(name);
+		
 		if (lore != null)
-			meta.setLore(lore);
+			meta.setDisplayName(name);
+		
 		item.setItemMeta(meta);
 		return item;
 	}
 
-	public static ItemStack getCreatedItemWithLoreTicket(Material material, int number, String name,
-			String... strings) {
-		ItemStack item = new ItemStack(material, number);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(name);
-		meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
-		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		meta.setLore(Arrays.asList(strings));
-		item.setItemMeta(meta);
+	public ItemBuilder clone() {
+		try {
+			return (ItemBuilder) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * @return the item
+	 */
+	public ItemStack getItem() {
 		return item;
 	}
 
-	public static ItemStack createBook(Enchantment enchantment, int level) {
-		ItemStack item = new ItemStack(Material.ENCHANTED_BOOK, 1);
-		EnchantmentStorageMeta enchantmentStorageMeta = (EnchantmentStorageMeta) item.getItemMeta();
-		enchantmentStorageMeta.addStoredEnchant(enchantment, level, true);
-		item.setItemMeta(enchantmentStorageMeta);
-		return item;
+	/**
+	 * @return the material
+	 */
+	public Material getMaterial() {
+		return material;
 	}
 
-	public static ItemStack clone(ItemStack item, String... lores){
-		ItemStack currentItem = item.clone();
-		ItemMeta itemMeta = currentItem.getItemMeta();
-		List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
-		lore.addAll(Arrays.asList(lores));
-		itemMeta.setLore(lore);
-		currentItem.setItemMeta(itemMeta);
-		return currentItem;
+	/**
+	 * @return the meta
+	 */
+	public ItemMeta getMeta() {
+		return meta;
 	}
-	
+
+	/**
+	 * @return the data
+	 */
+	public int getData() {
+		return data;
+	}
+
+	/**
+	 * @return the amount
+	 */
+	public int getAmount() {
+		return amount;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @return the lore
+	 */
+	public List<String> getLore() {
+		return lore;
+	}
+
+	/**
+	 * @return the flags
+	 */
+	public List<ItemFlag> getFlags() {
+		return flags;
+	}
+
+	/**
+	 * @return the durability
+	 */
+	public int getDurability() {
+		return durability;
+	}
+
+	/**
+	 * @return the enchantments
+	 */
+	public Map<Enchantment, Integer> getEnchantments() {
+		return enchantments;
+	}
+
 }
