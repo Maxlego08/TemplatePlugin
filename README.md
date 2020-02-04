@@ -14,37 +14,48 @@ Works from version 1.7.10 to version 1.14.2
 * TimerBuilder
 * Pagination
 * Inventory button
+* Custom Event
 
 ## Commande example:
 Add a command<br>
 You will create a command with the addCommand (command, class extant VCommand), this will save your command and add its executor in the class CommandManager <br>
 To add a command with an argument you must pass in setting the parent class
 ```java
-VCommand command = addCommand("test", new CommandTest());
-VCommand command2 = addCommand(new CommandTest2().addSubCommand("old").setParent(command));
-addCommand(new ZCommand().setCommand((cmd, main) -> cmd.sendMessage("cc §dcc")).addSubCommand("open", "ouvrir").setParent(command2));
+addCommand("test", new CommandTest());
+register("test", new CommandTest());
 ```
-* CommandExample
+* CommandTest
 ```java
 public class CommandTest extends VCommand {
 
+	public CommandTest() {
+		this.addSubCommand(new CommanndTestSub());
+	}
+	
 	@Override
 	public CommandType perform(Template main) {
 		
-		sendMessage("wesh !");
+		ModuleTest.getInstance().test(sender);
 		
 		return CommandType.SUCCESS;
 	}
-
 }
 ```
-* CommandeExampleSub
+* CommanndTestSub
 ```java
-public class CommandTest2 extends VCommand{
+public class CommanndTestSub extends VCommand {
+
+	public CommanndTestSub() {
+		this.addSubCommand("sub");
+		this.addRequireArg("location");
+	}
 
 	@Override
 	public CommandType perform(Template main) {
-		sendMessage("cc");
+
+		Location location = argAsLocation(0);
+		player.teleport(location);
+		
 		return CommandType.SUCCESS;
 	}
 
@@ -77,7 +88,7 @@ public class InventoryExample extends VInventory {
 	@Override
 	public boolean openInventory(Template main, Player player, int page, Object... args) throws Exception {
 
-		createInventory("§aVote", 27);
+		createInventory("Â§aVote", 27);
 		
 		return true;
 	}
@@ -88,10 +99,6 @@ public class InventoryExample extends VInventory {
 	@Override
 	protected void onDrag(InventoryDragEvent event, Template plugin, Player player) { }
 
-	@Override
-	public VInventory clone() {
-		return new InventoryExample();
-	}
 
 }
 ```
@@ -104,7 +111,7 @@ public class InventoryExample extends VInventory {
 	@Override
 	public boolean openInventory(SphaleriaFaction main, Player player, int page, Object... args) throws Exception {
 
-		createInventory("§bInventoryName §7" + page + "§8/§7" + getMaxPage(your list));
+		createInventory("Â§bInventoryName Â§7" + page + "Â§8/Â§7" + getMaxPage(your list));
 
 		AtomicInteger slot = new AtomicInteger();
 
@@ -114,10 +121,10 @@ public class InventoryExample extends VInventory {
 		});
 
 		if (getPage() != 1)
-			addItem(48, new ItemButton(ItemBuilder.getCreatedItem(Material.ARROW, 1, "§f» §7Previous"))
+			addItem(48, new ItemButton(ItemBuilder.getCreatedItem(Material.ARROW, 1, "Â§fÂ» Â§7Previous"))
 					.setClick(event -> createInventory(1, player, getPage() - 1, args)));
 		if (getPage() != getMaxPage(your list))
-			addItem(50, new ItemButton(ItemBuilder.getCreatedItem(Material.ARROW, 1, "§f» §7Next"))
+			addItem(50, new ItemButton(ItemBuilder.getCreatedItem(Material.ARROW, 1, "Â§fÂ» Â§7Next"))
 					.setClick(event -> createInventory(1, player, getPage() + 1, args)));
 
 		return true;
@@ -133,19 +140,14 @@ public class InventoryExample extends VInventory {
 	@Override
 	protected void onDrag(InventoryDragEvent event, SphaleriaFaction plugin, Player player) { }
 
-	@Override
-	public VInventory clone() {
-		return new InventoryWarList();
-	}
-
 }
 ```
 
 * Button <br>
 You can simply create buttons for you inventory
 ```java
-Button example = new Button("§eExample", 360);
-Button example2 = new Button("§eExample 2", 360, Arrays.asList("line 1", "line 2", "line 3"));
+Button example = new Button("Â§eExample", 360);
+Button example2 = new Button("Â§eExample 2", 360, Arrays.asList("line 1", "line 2", "line 3"));
 ```
 
 ## Json Saver
