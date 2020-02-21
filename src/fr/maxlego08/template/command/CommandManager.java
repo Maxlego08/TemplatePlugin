@@ -59,33 +59,34 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 	 * @param vCommand
 	 * @param aliases
 	 */
-	public void registerCommand(String string, VCommand vCommand, String... aliases){
+	public void registerCommand(String string, VCommand vCommand, String... aliases) {
 		try {
 			Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
 			bukkitCommandMap.setAccessible(true);
-			
+
 			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 
 			Class<? extends PluginCommand> class1 = PluginCommand.class;
-			Constructor<? extends PluginCommand> constructor = class1.getDeclaredConstructor(String.class, Plugin.class);
+			Constructor<? extends PluginCommand> constructor = class1.getDeclaredConstructor(String.class,
+					Plugin.class);
 			constructor.setAccessible(true);
-			
+
 			List<String> lists = Arrays.asList(aliases);
-			
+
 			PluginCommand command = constructor.newInstance(string, ZPlugin.z());
 			command.setExecutor(this);
 			command.setAliases(lists);
-			
+
 			commands.add(vCommand.addSubCommand(string));
 			vCommand.addSubCommand(aliases);
-			
+
 			commandMap.register(command.getName(), ZPlugin.z().getDescription().getName(), command);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		for (VCommand command : commands) {
@@ -115,7 +116,8 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 	private boolean canExecute(String[] args, String cmd, VCommand command) {
 		for (int index = args.length - 1; index > -1; index--) {
 			if (command.getSubCommands().contains(args[index].toLowerCase())) {
-				if (command.isIgnoreArgs())
+				if (command.isIgnoreArgs()
+						&& (command.getParent() != null ? canExecute(args, cmd, command.getParent(), index - 1) : true))
 					return true;
 				if (index < args.length - 1)
 					return false;
@@ -177,7 +179,6 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 	private int getUniqueCommand() {
 		return (int) commands.stream().filter(command -> command.getParent() == null).count();
 	}
-
 
 	/**
 	 * @param commandString
