@@ -135,7 +135,7 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 		if (meta == null)
 			meta = item.getItemMeta();
 
-		if (flags != null && flags.size() == 0) 
+		if (flags != null && flags.size() > 0) 
 			flags.forEach(flag -> meta.addItemFlags(flag));
 
 		if (name != null)
