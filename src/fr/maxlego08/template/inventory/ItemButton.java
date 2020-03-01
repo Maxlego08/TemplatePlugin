@@ -71,14 +71,18 @@ public class ItemButton {
 		return displayItem;
 	}
 
+	/**
+	 * Permet de gérer le click du joueur
+	 * @param event
+	 */
 	public void onClick(InventoryClickEvent event) {
 		if (onClick != null)
 			onClick.accept(event);
 		if (event.getClick().equals(ClickType.MIDDLE) && onMiddleClick != null)
 			onMiddleClick.accept(event);
-		if (event.getClick().equals(ClickType.RIGHT) && onRightClick != null)
+		else if (event.getClick().equals(ClickType.RIGHT) && onRightClick != null)
 			onRightClick.accept(event);
-		if (event.getClick().equals(ClickType.LEFT) && onLeftClick != null)
+		else if (event.getClick().equals(ClickType.LEFT) && onLeftClick != null)
 			onLeftClick.accept(event);
 	}
 
