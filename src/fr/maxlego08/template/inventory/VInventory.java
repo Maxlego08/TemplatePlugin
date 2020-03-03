@@ -183,8 +183,12 @@ public abstract class VInventory extends ZUtils implements Cloneable{
 	@Override
 	protected VInventory clone()  {
 		try {
-			return (VInventory) super.clone();
-		} catch (CloneNotSupportedException e) {
+			return (VInventory) getClass().newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
