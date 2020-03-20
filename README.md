@@ -1,4 +1,4 @@
-# TempltePlugin
+# Template Plugin
 
 Here is a simple project for the quick creation of minecraft plugin.
 Works from version 1.7.10 to version 1.14.2
