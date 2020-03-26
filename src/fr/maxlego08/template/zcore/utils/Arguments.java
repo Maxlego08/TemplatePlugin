@@ -6,6 +6,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 
+@SuppressWarnings("deprecation")
 public abstract class Arguments extends ZUtils {
 
 	protected String[] args;
@@ -99,7 +100,6 @@ public abstract class Arguments extends ZUtils {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	protected MaterialData argAsMaterialData(int index) {
 		String str = argAsString(index);
 		if (str == null)
