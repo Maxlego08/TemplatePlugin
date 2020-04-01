@@ -38,7 +38,7 @@ import net.milkbowl.vault.economy.Economy;
 public abstract class ZUtils {
 
 	private static transient List<String> teleportPlayers = new ArrayList<String>();
-	protected transient Template plugin = Template.getInstance();
+	protected transient Template plugin = (Template) ZPlugin.z();
 
 	/**
 	 * @param location

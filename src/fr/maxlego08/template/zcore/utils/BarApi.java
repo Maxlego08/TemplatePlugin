@@ -11,6 +11,7 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.zcore.ZPlugin;
+import fr.maxlego08.template.zcore.utils.interfaces.StringConsumer;
 
 public class BarApi {
 

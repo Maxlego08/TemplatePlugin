@@ -4,27 +4,36 @@ import fr.maxlego08.template.command.CommandManager;
 import fr.maxlego08.template.inventory.InventoryManager;
 import fr.maxlego08.template.listener.AdapterListener;
 import fr.maxlego08.template.save.Config;
+import fr.maxlego08.template.scoreboard.ScoreBoardManager;
 import fr.maxlego08.template.zcore.ZPlugin;
 import fr.maxlego08.template.zcore.utils.builder.CooldownBuilder;
 
+/**
+ * System to create your plugins very simply Projet:
+ * https://github.com/Maxlego08/TemplatePlugin
+ * 
+ * @author Maxlego08
+ *
+ */
 public class Template extends ZPlugin {
 
 	private CommandManager commandManager;
 	private InventoryManager inventoryManager;
+	private ScoreBoardManager scoreboardManager;
 
 	@Override
 	public void onEnable() {
 
-		instance = this;
-		
 		preEnable();
 
 		commandManager = new CommandManager(this);
 		commandManager.registerCommands();
-		
+
 		if (!isEnabled())
 			return;
 		inventoryManager = InventoryManager.getInstance();
+
+		scoreboardManager = new ScoreBoardManager(1000);
 
 		/* Add Listener */
 
@@ -53,25 +62,25 @@ public class Template extends ZPlugin {
 
 	}
 
+	/**
+	 * @return the commandManager
+	 */
 	public CommandManager getCommandManager() {
 		return commandManager;
 	}
 
+	/**
+	 * @return the inventoryManager
+	 */
 	public InventoryManager getInventoryManager() {
 		return inventoryManager;
 	}
 
 	/**
-	 * static Singleton instance.
+	 * @return the scoreboardManager
 	 */
-	private static volatile Template instance;
-
-
-	/**
-	 * Return a singleton instance of Template.
-	 */
-	public static Template getInstance() {
-		return instance;
+	public ScoreBoardManager getScoreboardManager() {
+		return scoreboardManager;
 	}
-	
+
 }

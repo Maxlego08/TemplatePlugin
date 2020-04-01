@@ -77,6 +77,10 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	}
 
+	/**
+	 * Build gson
+	 * @return
+	 */
 	public GsonBuilder getGsonBuilder() {
 		return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls()
 				.excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.VOLATILE)
@@ -85,25 +89,46 @@ public abstract class ZPlugin extends JavaPlugin {
 				.registerTypeAdapter(Location.class, new LocationAdapter());
 	}
 
+	/**
+	 * Add a listener
+	 * @param listener
+	 */
 	public void addListener(Listener listener) {
+		if (listener instanceof Saveable) 
+			addSave((Saveable) listener);
 		Bukkit.getPluginManager().registerEvents(listener, this);
 	}
 
+	/**
+	 * Add a listener from ListenerAdapter
+	 * @param adapter
+	 */
 	public void addListener(ListenerAdapter adapter) {
-		if (adapter instanceof Saveable) {
+		if (adapter instanceof Saveable) 
 			addSave((Saveable) adapter);
-		}
 		listenerAdapters.add(adapter);
 	}
 
+	/**
+	 * Add a Saveable
+	 * @param saver
+	 */
 	public void addSave(Saveable saver) {
 		this.savers.add(saver);
 	}
 
+	/**
+	 * Get logger
+	 * @return loggers
+	 */
 	public Logger getLog() {
 		return this.log;
 	}
 
+	/**
+	 * Get gson
+	 * @return {@link Gson}
+	 */
 	public Gson getGson() {
 		return gson;
 	}
@@ -112,6 +137,10 @@ public abstract class ZPlugin extends JavaPlugin {
 		return persist;
 	}
 
+	/**
+	 * Get all saveables
+	 * @return savers
+	 */
 	public List<Saveable> getSavers() {
 		return savers;
 	}
@@ -139,6 +168,10 @@ public abstract class ZPlugin extends JavaPlugin {
 		return economy;
 	}
 
+	/**
+	 * 
+	 * @return listenerAdapters
+	 */
 	public List<ListenerAdapter> getListenerAdapters() {
 		return listenerAdapters;
 	}
