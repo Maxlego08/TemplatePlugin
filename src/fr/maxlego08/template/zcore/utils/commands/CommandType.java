@@ -1,4 +1,4 @@
-package fr.maxlego08.template.command;
+package fr.maxlego08.template.zcore.utils.commands;
 
 public enum CommandType {
 

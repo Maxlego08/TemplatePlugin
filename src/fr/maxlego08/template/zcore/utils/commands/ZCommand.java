@@ -1,8 +1,9 @@
-package fr.maxlego08.template.command;
+package fr.maxlego08.template.zcore.utils.commands;
 
 import java.util.function.BiConsumer;
 
 import fr.maxlego08.template.Template;
+import fr.maxlego08.template.command.VCommand;
 
 public class ZCommand extends VCommand {
 

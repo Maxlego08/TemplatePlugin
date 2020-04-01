@@ -21,6 +21,7 @@ import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.ZUtils;
+import fr.maxlego08.template.zcore.utils.commands.CommandType;
 import fr.maxlego08.template.zcore.utils.inventory.IIventory;
 
 public class CommandManager extends ZUtils implements CommandExecutor {
@@ -163,6 +164,16 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 				main.getInventoryManager().createInventory(iIventory.getId(), command.getPlayer(), iIventory.getPage(),
 						iIventory.getArgs());
 			}
+
+			if (command.runAsync) {
+				Bukkit.getScheduler().runTask(main, () -> {
+					CommandType returnType = command.prePerform(main, sender, strings);
+					if (returnType == CommandType.SYNTAX_ERROR)
+						message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntaxe());
+				});
+				return CommandType.DEFAULT;
+			}
+
 			CommandType returnType = command.prePerform(main, sender, strings);
 			if (returnType == CommandType.SYNTAX_ERROR)
 				message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntaxe());

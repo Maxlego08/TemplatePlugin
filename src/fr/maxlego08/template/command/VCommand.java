@@ -9,7 +9,8 @@ import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.enums.Permission;
-import fr.maxlego08.template.zcore.utils.Arguments;
+import fr.maxlego08.template.zcore.utils.commands.Arguments;
+import fr.maxlego08.template.zcore.utils.commands.CommandType;
 import fr.maxlego08.template.zcore.utils.inventory.IIventory;
 
 public abstract class VCommand extends Arguments {
@@ -47,6 +48,7 @@ public abstract class VCommand extends Arguments {
 	private boolean ignoreParent = false;
 	private boolean ignoreArgs = false;
 	protected boolean DEBUG = false;
+	protected boolean runAsync = false;
 
 	/**
 	 * This is the person who executes the command
@@ -268,7 +270,7 @@ public abstract class VCommand extends Arguments {
 	 */
 	public VCommand addSubCommand(VCommand command) {
 		command.setParent(this);
-		Template.getInstance().getCommandManager().addCommand(command);
+		plugin.getCommandManager().addCommand(command);
 		this.subVCommands.add(command);
 		return this;
 	}
@@ -295,12 +297,14 @@ public abstract class VCommand extends Arguments {
 
 		String tmpString = subCommands.get(0);
 
-		if (requireArgs.size() != 0 && syntaxe.equals(""))
+		boolean update = syntaxe.equals("");
+
+		if (requireArgs.size() != 0 && update)
 			for (String requireArg : requireArgs) {
 				requireArg = "<" + requireArg + ">";
 				syntaxe += " " + requireArg;
 			}
-		if (optionalArgs.size() != 0 && syntaxe.equals(""))
+		if (optionalArgs.size() != 0 && update)
 			for (String optionalArg : optionalArgs) {
 				optionalArg = "[<" + optionalArg + ">]";
 				syntaxe += " " + optionalArg;

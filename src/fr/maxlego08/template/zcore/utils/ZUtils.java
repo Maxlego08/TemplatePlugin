@@ -16,13 +16,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +35,13 @@ import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.ZPlugin;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.enums.Permission;
+import fr.maxlego08.template.zcore.utils.builder.CooldownBuilder;
+import fr.maxlego08.template.zcore.utils.builder.TimerBuilder;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.HoverEvent.Action;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
 
 @SuppressWarnings("deprecation")
@@ -862,5 +872,311 @@ public abstract class ZUtils {
 		for (int index = list.size() - 1; index != -1; index--)
 			tmpList.add(list.get(index));
 		return tmpList;
+	}
+
+	/**
+	 * 
+	 * @param price
+	 * @return
+	 */
+	protected String price(long price) {
+		return String.format("%,d", price);
+	}
+
+	/**
+	 * Permet de générer un string
+	 * 
+	 * @param length
+	 * @return
+	 */
+	protected String generateRandomString(int length) {
+		int leftLimit = 97; // letter 'a'
+		int rightLimit = 122; // letter 'z'
+		int targetStringLength = 5;
+		Random random = new Random();
+		StringBuilder buffer = new StringBuilder(targetStringLength);
+		for (int i = 0; i < targetStringLength; i++) {
+			int randomLimitedInt = leftLimit + (int) (random.nextFloat() * (rightLimit - leftLimit + 1));
+			buffer.append((char) randomLimitedInt);
+		}
+		String generatedString = buffer.toString();
+		return generatedString;
+	}
+
+	/**
+	 * 
+	 * @param message
+	 * @return
+	 */
+	protected TextComponent buildTextComponent(String message) {
+		return new TextComponent(message);
+	}
+
+	/**
+	 * 
+	 * @param message
+	 * @return
+	 */
+	protected TextComponent setHoverMessage(TextComponent component, String... messages) {
+		BaseComponent[] list = new BaseComponent[messages.length];
+		for (int a = 0; a != messages.length; a++)
+			list[a] = new TextComponent(messages[a] + (messages.length - 1 == a ? "" : "\n"));
+		component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, list));
+		return component;
+	}
+
+	/**
+	 * 
+	 * @param message
+	 * @return
+	 */
+	protected TextComponent setHoverMessage(TextComponent component, List<String> messages) {
+		BaseComponent[] list = new BaseComponent[messages.size()];
+		for (int a = 0; a != messages.size(); a++)
+			list[a] = new TextComponent(messages.get(a) + (messages.size() - 1 == a ? "" : "\n"));
+		component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, list));
+		return component;
+	}
+
+	/**
+	 * 
+	 * @param component
+	 * @param action
+	 * @param command
+	 * @return
+	 */
+	protected TextComponent setClickAction(TextComponent component, net.md_5.bungee.api.chat.ClickEvent.Action action,
+			String command) {
+		component.setClickEvent(new ClickEvent(action, command));
+		return component;
+	}
+
+	/**
+	 * Permet de retirer les items d'un inventaire en fonction d'un item stack
+	 * et d'un nombre
+	 * 
+	 * @param inventory
+	 * @param removeItemStack
+	 * @param amount
+	 */
+	protected void removeItems(org.bukkit.inventory.Inventory inventory, ItemStack removeItemStack, int amount) {
+		for (ItemStack itemStack : inventory.getContents()) {
+			if (itemStack != null && itemStack.isSimilar(itemStack) && amount > 0) {
+				int currentAmount = itemStack.getAmount() - amount;
+				amount -= itemStack.getAmount();
+				if (currentAmount <= 0)
+					inventory.removeItem(itemStack);
+				else
+					itemStack.setAmount(currentAmount);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param value
+	 * @return
+	 */
+	protected String getDisplayBalence(double value) {
+		if (value < 10000)
+			return format(value, "#.#");
+		else if (value < 1000000)
+			return String.valueOf(Integer.valueOf((int) (value / 1000))) + "k ";
+		else if (value < 1000000000)
+			return String.valueOf(format((value / 1000) / 1000, "#.#")) + "m ";
+		else if (value < 1000000000000l)
+			return String.valueOf(Integer.valueOf((int) (((value / 1000) / 1000) / 1000))) + "M ";
+		else
+			return "to much";
+	}
+
+	/**
+	 * 
+	 * @param value
+	 * @return
+	 */
+	protected String getDisplayBalence(long value) {
+		if (value < 10000)
+			return format(value, "#.#");
+		else if (value < 1000000)
+			return String.valueOf(Integer.valueOf((int) (value / 1000))) + "k ";
+		else if (value < 1000000000)
+			return String.valueOf(format((value / 1000) / 1000, "#.#")) + "m ";
+		else if (value < 1000000000000l)
+			return String.valueOf(Integer.valueOf((int) (((value / 1000) / 1000) / 1000))) + "M ";
+		else
+			return "to much";
+	}
+	
+
+	/**
+	 * Permet de conter le nombre d'item
+	 * 
+	 * @param inventory
+	 * @param material
+	 * @return
+	 */
+	protected int count(org.bukkit.inventory.Inventory inventory, Material material) {
+		int count = 0;
+		for (ItemStack itemStack : inventory.getContents())
+			if (itemStack != null && itemStack.getType().equals(material))
+				count += itemStack.getAmount();
+		return count;
+	}
+	
+
+	protected Enchantment enchantFromString(String str) {
+		for (Enchantment enchantment : Enchantment.values())
+			if (enchantment.getName().equalsIgnoreCase(str))
+				return enchantment;
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param direction
+	 * @return
+	 */
+	protected BlockFace getClosestFace(float direction) {
+
+		direction = direction % 360;
+
+		if (direction < 0)
+			direction += 360;
+
+		direction = Math.round(direction / 45);
+
+		switch ((int) direction) {
+		case 0:
+			return BlockFace.WEST;
+		case 1:
+			return BlockFace.NORTH_WEST;
+		case 2:
+			return BlockFace.NORTH;
+		case 3:
+			return BlockFace.NORTH_EAST;
+		case 4:
+			return BlockFace.EAST;
+		case 5:
+			return BlockFace.SOUTH_EAST;
+		case 6:
+			return BlockFace.SOUTH;
+		case 7:
+			return BlockFace.SOUTH_WEST;
+		default:
+			return BlockFace.WEST;
+		}
+	}
+	
+
+	/**
+	 * 
+	 * @param price
+	 * @return
+	 */
+	protected String betterPrice(long price) {
+		String betterPrice = "";
+		String[] splitPrice = String.valueOf(price).split("");
+		int current = 0;
+		for (int a = splitPrice.length - 1; a > -1; a--) {
+			current++;
+			if (current > 3) {
+				betterPrice += ".";
+				current = 1;
+			}
+			betterPrice += splitPrice[a];
+		}
+		StringBuilder builder = new StringBuilder().append(betterPrice);
+		builder.reverse();
+		return builder.toString();
+	}
+
+	/**
+	 * 
+	 * @param enchantment
+	 * @param itemStack
+	 * @return
+	 */
+	protected boolean hasEnchant(Enchantment enchantment, ItemStack itemStack) {
+		return itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants()
+				&& itemStack.getItemMeta().hasEnchant(enchantment);
+	}
+
+	/**
+	 * 
+	 * @param player
+	 * @param cooldown
+	 * @return
+	 */
+	protected String timerFormat(Player player, String cooldown) {
+		return TimerBuilder.getStringTime(CooldownBuilder.getCooldownPlayer(cooldown, player) / 1000);
+	}
+
+	/**
+	 * 
+	 * @param player
+	 * @param cooldown
+	 * @return
+	 */
+	protected boolean isCooldown(Player player, String cooldown) {
+		return isCooldown(player, cooldown, 0);
+	}
+
+	/**
+	 * 
+	 * @param player
+	 * @param cooldown
+	 * @param timer
+	 * @return
+	 */
+	protected boolean isCooldown(Player player, String cooldown, int timer) {
+		if (CooldownBuilder.isCooldown(cooldown, player)) {
+			ActionBar.sendActionBar(player,
+					String.format("§cVous devez attendre encore §6%s §cavant de pouvoir faire cette action.",
+							timerFormat(player, cooldown)));
+			return true;
+		}
+		if (timer != 0)
+			CooldownBuilder.addCooldown(cooldown, player, timer);
+		return false;
+	}
+	
+
+	/**
+	 * @param list
+	 * @return
+	 */
+	protected String toList(Stream<String> list) {
+		return toList(list.collect(Collectors.toList()), "§e", "§6");
+	}
+
+	/**
+	 * @param list
+	 * @return
+	 */
+	protected String toList(List<String> list) {
+		return toList(list, "§e", "§6§n");
+	}
+
+	/**
+	 * @param list
+	 * @param color
+	 * @param color2
+	 * @return
+	 */
+	protected String toList(List<String> list, String color, String color2) {
+		if (list == null || list.size() == 0)
+			return null;
+		if (list.size() == 1)
+			return list.get(0);
+		String str = "";
+		for (int a = 0; a != list.size(); a++) {
+			if (a == list.size() - 1 && a != 0)
+				str += color + " et " + color2;
+			else if (a != 0)
+				str += color + ", " + color2;
+			str += list.get(a);
+		}
+		return str;
 	}
 }
