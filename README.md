@@ -1,7 +1,7 @@
 # Template Plugin
 
 Here is a simple project for the quick creation of minecraft plugin.
-Works from version 1.7.10 to version 1.14.2
+Works from version 1.7.10 to version 1.15.2
 
 ## Features
 
@@ -196,7 +196,7 @@ List<T> list = pagination.paginateReverse(List<T> list, int size, int page)
 List<T> list = pagination.paginateReverse(Map<?, T> map, int size, int page)
 ```
 
-## Scoreboard
+## Scoreboard (https://github.com/MrMicky-FR/FastBoard)
 You will be able to manage scoreboards very simply with the ScoreBoardManager class. It is initialized directly in the main class but you will have to make additions to make the scoreboard work
 
 * Update lines
