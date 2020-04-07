@@ -92,6 +92,19 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param format
+	 * @param args
+	 * @return
+	 */
+	public ItemBuilder addLine(String format, Object... args) {
+		if (lore == null)
+			lore = new ArrayList<>();
+		lore.add(String.format(format, args));
+		return this;
+	}
+
 	public ItemBuilder setLore(String... lores) {
 		this.lore = Arrays.asList(lores);
 		return this;
@@ -135,15 +148,15 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 		if (meta == null)
 			meta = item.getItemMeta();
 
-		if (flags != null && flags.size() > 0) 
+		if (flags != null && flags.size() > 0)
 			flags.forEach(flag -> meta.addItemFlags(flag));
 
 		if (name != null)
 			meta.setDisplayName(name);
-		
+
 		if (lore != null)
-			meta.setDisplayName(name);
-		
+			meta.setLore(lore);
+
 		item.setItemMeta(meta);
 		return item;
 	}
