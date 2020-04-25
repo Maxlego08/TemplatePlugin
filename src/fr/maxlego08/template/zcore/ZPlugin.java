@@ -28,6 +28,7 @@ import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.gson.ItemStackAdapter;
 import fr.maxlego08.template.zcore.utils.gson.LocationAdapter;
 import fr.maxlego08.template.zcore.utils.gson.PotionEffectAdapter;
+import fr.maxlego08.template.zcore.utils.plugins.Plugins;
 import fr.maxlego08.template.zcore.utils.storage.Persist;
 import fr.maxlego08.template.zcore.utils.storage.Saveable;
 import net.milkbowl.vault.economy.Economy;
@@ -63,7 +64,7 @@ public abstract class ZPlugin extends JavaPlugin {
 		gson = getGsonBuilder().create();
 		persist = new Persist(this);
 
-		if (getPlugin("Vault") != null)
+		if (getPlugin(Plugins.VAULT) != null)
 			economy = getProvider(Economy.class);
 
 		return true;
@@ -228,8 +229,8 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param pluginName
 	 * @return
 	 */
-	protected boolean isEnable(String pluginName) {
-		Plugin plugin = getPlugin(pluginName);
+	protected boolean isEnable(Plugins pl) {
+		Plugin plugin = getPlugin(pl);
 		return plugin == null ? false : plugin.isEnabled();
 	}
 
@@ -238,8 +239,8 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param pluginName
 	 * @return
 	 */
-	protected Plugin getPlugin(String pluginName) {
-		return Bukkit.getPluginManager().getPlugin(pluginName);
+	protected Plugin getPlugin(Plugins plugin) {
+		return Bukkit.getPluginManager().getPlugin(plugin.getName());
 	}
 
 	/**
