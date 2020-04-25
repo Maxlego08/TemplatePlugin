@@ -19,19 +19,19 @@ import fr.maxlego08.template.zcore.enums.Inventory;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
+import fr.maxlego08.template.zcore.utils.inventory.InventoryResult;
+import fr.maxlego08.template.zcore.utils.inventory.ItemButton;
 
 public class InventoryManager extends ListenerAdapter {
 
 	private Map<Integer, VInventory> inventories = new HashMap<>();
 	private Map<Player, VInventory> playerInventories = new HashMap<>();
 
-	private InventoryManager() {
-
-
+	public void sendLog(){
 		plugin.getLog().log("Loading " + inventories.size() + " inventories", LogType.SUCCESS);
 	}
 
-	private void addInventory(Inventory inv, VInventory inventory) {
+	public void addInventory(Inventory inv, VInventory inventory) {
 		if (!inventories.containsKey(inv.getId()))
 			inventories.put(inv.getId(), inventory);
 		else

@@ -25,6 +25,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.util.CraftChatMessage;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -33,6 +35,7 @@ import org.bukkit.permissions.Permissible;
 
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.ZPlugin;
+import fr.maxlego08.template.zcore.enums.Inventory;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.enums.Permission;
 import fr.maxlego08.template.zcore.utils.builder.CooldownBuilder;
@@ -44,6 +47,8 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
+import net.minecraft.server.v1_15_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_15_R1.PacketPlayOutTitle.EnumTitleAction;
 
 @SuppressWarnings("deprecation")
 public abstract class ZUtils {
@@ -734,8 +739,8 @@ public abstract class ZUtils {
 	 * @param player
 	 * @param inventoryId
 	 */
-	protected void createInventory(Player player, int inventoryId) {
-		createInventory(player, inventoryId, 1);
+	protected void createInventory(Player player, Inventory inventory) {
+		createInventory(player, inventory, 1);
 	}
 
 	/**
@@ -744,8 +749,8 @@ public abstract class ZUtils {
 	 * @param inventoryId
 	 * @param page
 	 */
-	protected void createInventory(Player player, int inventoryId, int page) {
-		createInventory(player, inventoryId, page, new Object() {
+	protected void createInventory(Player player, Inventory inventory, int page) {
+		createInventory(player, inventory, page, new Object() {
 		});
 	}
 
@@ -756,8 +761,19 @@ public abstract class ZUtils {
 	 * @param page
 	 * @param objects
 	 */
-	protected void createInventory(Player player, int inventoryId, int page, Object... objects) {
-		plugin.getInventoryManager().createInventory(inventoryId, player, page, objects);
+	protected void createInventory(Player player, Inventory inventory, int page, Object... objects) {
+		plugin.getInventoryManager().createInventory(inventory, player, page, objects);
+	}
+	
+	/**
+	 * 
+	 * @param player
+	 * @param inventory
+	 * @param page
+	 * @param objects
+	 */
+	protected void createInventory(Player player, int inventory, int page, Object... objects) {
+		plugin.getInventoryManager().createInventory(inventory, player, page, objects);
 	}
 
 	/**
@@ -1137,7 +1153,7 @@ public abstract class ZUtils {
 							timerFormat(player, cooldown)));
 			return true;
 		}
-		if (timer != 0)
+		if (timer > 0)
 			CooldownBuilder.addCooldown(cooldown, player, timer);
 		return false;
 	}
@@ -1179,5 +1195,34 @@ public abstract class ZUtils {
 			str += list.get(a);
 		}
 		return str;
+	}
+	
+	/**
+	 * 
+	 * @param player
+	 * @param title
+	 * @param subtitle
+	 * @param start
+	 * @param time
+	 * @param end
+	 */
+	public void sendTitle(Player player, String title, String subtitle, int start, int time, int end) {
+
+		CraftPlayer craftPlayer = (CraftPlayer) player;
+
+		PacketPlayOutTitle packetTimes = new PacketPlayOutTitle(start, time, end);
+		craftPlayer.getHandle().playerConnection.sendPacket(packetTimes);
+
+		if (title != null) {
+			PacketPlayOutTitle packetTitle = new PacketPlayOutTitle(EnumTitleAction.TITLE,
+					CraftChatMessage.fromString(title)[0], start, time, end);
+			craftPlayer.getHandle().playerConnection.sendPacket(packetTitle);
+		}
+
+		if (subtitle != null) {
+			PacketPlayOutTitle packetSubtitle = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE,
+					CraftChatMessage.fromString(subtitle)[0], start, time, end);
+			craftPlayer.getHandle().playerConnection.sendPacket(packetSubtitle);
+		}
 	}
 }

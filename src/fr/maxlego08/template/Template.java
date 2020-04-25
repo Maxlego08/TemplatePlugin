@@ -23,21 +23,19 @@ public class Template extends ZPlugin {
 		preEnable();
 
 		commandManager = new CommandManager(this);
-		commandManager.registerCommands();
 
 		if (!isEnabled())
 			return;
 		inventoryManager = InventoryManager.getInstance();
 
 		scoreboardManager = new ScoreBoardManager(1000);
-
+		
 		/* Add Listener */
 
 		addListener(new AdapterListener(this));
 		addListener(inventoryManager);
 
 		/* Add Saver */
-
 		addSave(Config.getInstance());
 		addSave(new CooldownBuilder());
 

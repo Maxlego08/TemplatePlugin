@@ -15,6 +15,8 @@ import fr.maxlego08.template.Template;
 import fr.maxlego08.template.exceptions.InventoryOpenException;
 import fr.maxlego08.template.zcore.utils.ZUtils;
 import fr.maxlego08.template.zcore.utils.builder.ItemBuilder;
+import fr.maxlego08.template.zcore.utils.inventory.InventoryResult;
+import fr.maxlego08.template.zcore.utils.inventory.ItemButton;
 
 public abstract class VInventory extends ZUtils implements Cloneable{
 

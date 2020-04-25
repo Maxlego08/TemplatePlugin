@@ -17,9 +17,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import fr.maxlego08.template.command.CommandManager;
+import fr.maxlego08.template.command.VCommand;
 import fr.maxlego08.template.inventory.InventoryManager;
+import fr.maxlego08.template.inventory.VInventory;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.scoreboard.ScoreBoardManager;
+import fr.maxlego08.template.zcore.enums.Inventory;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.gson.ItemStackAdapter;
@@ -68,6 +71,12 @@ public abstract class ZPlugin extends JavaPlugin {
 	}
 
 	protected void postEnable() {
+
+		if (inventoryManager != null)
+			inventoryManager.sendLog();
+
+		if (commandManager != null)
+			commandManager.registerCommands();
 
 		log.log("=== ENABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
@@ -231,6 +240,27 @@ public abstract class ZPlugin extends JavaPlugin {
 	 */
 	protected Plugin getPlugin(String pluginName) {
 		return Bukkit.getPluginManager().getPlugin(pluginName);
+	}
+
+	/**
+	 * Register command
+	 * 
+	 * @param command
+	 * @param vCommand
+	 * @param aliases
+	 */
+	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
+		commandManager.registerCommand(command, vCommand, aliases);
+	}
+
+	/**
+	 * Register Inventory
+	 * 
+	 * @param inventory
+	 * @param vInventory
+	 */
+	protected void registerInventory(Inventory inventory, VInventory vInventory) {
+		inventoryManager.addInventory(inventory, vInventory);
 	}
 
 }
