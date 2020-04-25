@@ -1,4 +1,4 @@
-package fr.maxlego08.template.zcore.utils;
+package fr.maxlego08.template.zcore.utils.players;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

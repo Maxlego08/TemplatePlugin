@@ -29,13 +29,11 @@ public class TextUtil {
 				Character.toUpperCase(material.name().toCharArray()[0]));
 	}
 
-	
-
 	public static String name(String m) {
-		String name =  m.replace("_", " ").toLowerCase();
+		String name = m.replace("_", " ").toLowerCase();
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
-	
+
 	/*
 	 * Parse text
 	 */

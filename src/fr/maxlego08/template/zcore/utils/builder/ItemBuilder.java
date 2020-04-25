@@ -145,10 +145,11 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 	@SuppressWarnings("deprecation")
 	public ItemStack build() {
 		item = new ItemStack(material, amount, (short) data);
+
 		if (meta == null)
 			meta = item.getItemMeta();
 
-		if (flags != null && flags.size() > 0)
+		if (flags != null)
 			flags.forEach(flag -> meta.addItemFlags(flag));
 
 		if (name != null)
@@ -156,6 +157,9 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 
 		if (lore != null)
 			meta.setLore(lore);
+
+		if (enchantments != null)
+			enchantments.forEach((e, l) -> meta.addEnchant(e, l, true));
 
 		item.setItemMeta(meta);
 		return item;
@@ -187,7 +191,10 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 	/**
 	 * @return the meta
 	 */
+	@SuppressWarnings("deprecation")
 	public ItemMeta getMeta() {
+		if (meta == null)
+			meta = new ItemStack(material, amount, (short) data).getItemMeta();
 		return meta;
 	}
 
