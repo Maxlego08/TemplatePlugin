@@ -22,7 +22,6 @@ import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.ZUtils;
 import fr.maxlego08.template.zcore.utils.commands.CommandType;
-import fr.maxlego08.template.zcore.utils.inventory.IIventory;
 
 public class CommandManager extends ZUtils implements CommandExecutor {
 
@@ -159,11 +158,6 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 			return CommandType.DEFAULT;
 		}
 		if (command.getPermission() == null || hasPermission(sender, command.getPermission())) {
-			if (command.getInventory() != null && sender instanceof Player) {
-				IIventory iIventory = command.getInventory();
-				main.getInventoryManager().createInventory(iIventory.getId(), command.getPlayer(), iIventory.getPage(),
-						iIventory.getArgs());
-			}
 
 			if (command.runAsync) {
 				Bukkit.getScheduler().runTask(main, () -> {

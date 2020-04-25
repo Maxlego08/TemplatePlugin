@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -15,7 +16,13 @@ import org.bukkit.potion.PotionEffect;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import fr.maxlego08.template.command.CommandManager;
+import fr.maxlego08.template.command.VCommand;
+import fr.maxlego08.template.inventory.InventoryManager;
+import fr.maxlego08.template.inventory.VInventory;
 import fr.maxlego08.template.listener.ListenerAdapter;
+import fr.maxlego08.template.scoreboard.ScoreBoardManager;
+import fr.maxlego08.template.zcore.enums.Inventory;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.gson.ItemStackAdapter;
@@ -36,6 +43,10 @@ public abstract class ZPlugin extends JavaPlugin {
 	private List<ListenerAdapter> listenerAdapters = new ArrayList<>();
 	private Economy economy = null;
 
+	protected CommandManager commandManager;
+	protected InventoryManager inventoryManager;
+	protected ScoreBoardManager scoreboardManager;
+
 	public ZPlugin() {
 		plugin = this;
 	}
@@ -52,13 +63,20 @@ public abstract class ZPlugin extends JavaPlugin {
 		gson = getGsonBuilder().create();
 		persist = new Persist(this);
 
-		setupEconomy();
+		if (getPlugin("Vault") != null)
+			economy = getProvider(Economy.class);
 
 		return true;
 
 	}
 
 	protected void postEnable() {
+
+		if (inventoryManager != null)
+			inventoryManager.sendLog();
+
+		if (commandManager != null)
+			commandManager.registerCommands();
 
 		log.log("=== ENABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
@@ -79,6 +97,7 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	/**
 	 * Build gson
+	 * 
 	 * @return
 	 */
 	public GsonBuilder getGsonBuilder() {
@@ -91,26 +110,29 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	/**
 	 * Add a listener
+	 * 
 	 * @param listener
 	 */
 	public void addListener(Listener listener) {
-		if (listener instanceof Saveable) 
+		if (listener instanceof Saveable)
 			addSave((Saveable) listener);
 		Bukkit.getPluginManager().registerEvents(listener, this);
 	}
 
 	/**
 	 * Add a listener from ListenerAdapter
+	 * 
 	 * @param adapter
 	 */
 	public void addListener(ListenerAdapter adapter) {
-		if (adapter instanceof Saveable) 
+		if (adapter instanceof Saveable)
 			addSave((Saveable) adapter);
 		listenerAdapters.add(adapter);
 	}
 
 	/**
 	 * Add a Saveable
+	 * 
 	 * @param saver
 	 */
 	public void addSave(Saveable saver) {
@@ -119,6 +141,7 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	/**
 	 * Get logger
+	 * 
 	 * @return loggers
 	 */
 	public Logger getLog() {
@@ -127,6 +150,7 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	/**
 	 * Get gson
+	 * 
 	 * @return {@link Gson}
 	 */
 	public Gson getGson() {
@@ -139,6 +163,7 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	/**
 	 * Get all saveables
+	 * 
 	 * @return savers
 	 */
 	public List<Saveable> getSavers() {
@@ -150,18 +175,19 @@ public abstract class ZPlugin extends JavaPlugin {
 	}
 
 	/**
-	 * @return boolean ture if economy is setup
+	 * 
+	 * @param classz
+	 * @return
 	 */
-	protected boolean setupEconomy() {
-		try {
-			RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager()
-					.getRegistration(Economy.class);
-			if (economyProvider != null) {
-				economy = economyProvider.getProvider();
-			}
-		} catch (NoClassDefFoundError e) {
+	@SuppressWarnings("unchecked")
+	protected <T> T getProvider(Class<T> classz) {
+		RegisteredServiceProvider<? extends Object> provider = getServer().getServicesManager()
+				.getRegistration(classz.getClass());
+		if (provider == null) {
+			log.log("Unable to retrieve the provider " + classz.toString(), LogType.WARNING);
+			return null;
 		}
-		return (economy != null);
+		return provider.getProvider() != null ? (T) provider.getProvider() : null;
 	}
 
 	public Economy getEconomy() {
@@ -174,6 +200,67 @@ public abstract class ZPlugin extends JavaPlugin {
 	 */
 	public List<ListenerAdapter> getListenerAdapters() {
 		return listenerAdapters;
+	}
+
+	/**
+	 * @return the commandManager
+	 */
+	public CommandManager getCommandManager() {
+		return commandManager;
+	}
+
+	/**
+	 * @return the inventoryManager
+	 */
+	public InventoryManager getInventoryManager() {
+		return inventoryManager;
+	}
+
+	/**
+	 * @return the scoreboardManager
+	 */
+	public ScoreBoardManager getScoreboardManager() {
+		return scoreboardManager;
+	}
+
+	/**
+	 * 
+	 * @param pluginName
+	 * @return
+	 */
+	protected boolean isEnable(String pluginName) {
+		Plugin plugin = getPlugin(pluginName);
+		return plugin == null ? false : plugin.isEnabled();
+	}
+
+	/**
+	 * 
+	 * @param pluginName
+	 * @return
+	 */
+	protected Plugin getPlugin(String pluginName) {
+		return Bukkit.getPluginManager().getPlugin(pluginName);
+	}
+
+	/**
+	 * Register command
+	 * 
+	 * @param command
+	 * @param vCommand
+	 * @param aliases
+	 */
+	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
+		commandManager.registerCommand(command, vCommand, aliases);
+	}
+
+	/**
+	 * Register Inventory
+	 * 
+	 * @param inventory
+	 * @param vInventory
+	 */
+	protected void registerInventory(Inventory inventory, VInventory vInventory) {
+		inventoryManager.addInventory(inventory, vInventory);
 	}
 
 }

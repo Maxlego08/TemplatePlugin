@@ -1,4 +1,4 @@
-package fr.maxlego08.template.zcore.utils;
+package fr.maxlego08.template.zcore.utils.players;
 
 import java.util.Timer;
 import java.util.TimerTask;

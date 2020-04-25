@@ -17,31 +17,25 @@ import fr.maxlego08.template.zcore.utils.builder.CooldownBuilder;
  */
 public class Template extends ZPlugin {
 
-	private CommandManager commandManager;
-	private InventoryManager inventoryManager;
-	private ScoreBoardManager scoreboardManager;
-
 	@Override
 	public void onEnable() {
 
 		preEnable();
 
 		commandManager = new CommandManager(this);
-		commandManager.registerCommands();
 
 		if (!isEnabled())
 			return;
 		inventoryManager = InventoryManager.getInstance();
 
 		scoreboardManager = new ScoreBoardManager(1000);
-
+		
 		/* Add Listener */
 
 		addListener(new AdapterListener(this));
 		addListener(inventoryManager);
 
 		/* Add Saver */
-
 		addSave(Config.getInstance());
 		addSave(new CooldownBuilder());
 
@@ -60,27 +54,6 @@ public class Template extends ZPlugin {
 
 		postDisable();
 
-	}
-
-	/**
-	 * @return the commandManager
-	 */
-	public CommandManager getCommandManager() {
-		return commandManager;
-	}
-
-	/**
-	 * @return the inventoryManager
-	 */
-	public InventoryManager getInventoryManager() {
-		return inventoryManager;
-	}
-
-	/**
-	 * @return the scoreboardManager
-	 */
-	public ScoreBoardManager getScoreboardManager() {
-		return scoreboardManager;
 	}
 
 }

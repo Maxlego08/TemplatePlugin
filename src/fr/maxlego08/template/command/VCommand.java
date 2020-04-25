@@ -11,7 +11,6 @@ import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.enums.Permission;
 import fr.maxlego08.template.zcore.utils.commands.Arguments;
 import fr.maxlego08.template.zcore.utils.commands.CommandType;
-import fr.maxlego08.template.zcore.utils.inventory.IIventory;
 
 public abstract class VCommand extends Arguments {
 
@@ -55,11 +54,6 @@ public abstract class VCommand extends Arguments {
 	 */
 	public CommandSender sender;
 	public Player player;
-
-	/**
-	 * Allows you to directly open an inventory when running the command
-	 */
-	private IIventory inventory;
 
 	private String syntaxe;
 
@@ -142,10 +136,6 @@ public abstract class VCommand extends Arguments {
 		return syntaxe;
 	}
 
-	public IIventory getInventory() {
-		return inventory;
-	}
-
 	public boolean isIgnoreArgs() {
 		return ignoreArgs;
 	}
@@ -172,20 +162,6 @@ public abstract class VCommand extends Arguments {
 	 */
 	protected VCommand setSyntaxe(String syntaxe) {
 		this.syntaxe = syntaxe;
-		return this;
-	}
-
-	/**
-	 * Permet de créer un inventaire, doit être mis dans le constructeur de la
-	 * commande
-	 * 
-	 * @param id
-	 * @param page
-	 * @param objects
-	 * @return
-	 */
-	public VCommand createInventory(int id, int page, Object... objects) {
-		inventory = new IIventory(id, page, objects);
 		return this;
 	}
 

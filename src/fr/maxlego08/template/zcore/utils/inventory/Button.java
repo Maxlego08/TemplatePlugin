@@ -1,118 +1,96 @@
 package fr.maxlego08.template.zcore.utils.inventory;
 
+import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.Material;
+import org.bukkit.material.MaterialData;
 
 import fr.maxlego08.template.zcore.utils.ZUtils;
 
+@SuppressWarnings("deprecation")
 public class Button extends ZUtils {
 
+	private final int slot;
 	private final String name;
-	private final int item;
-	private final int data;
+	private final MaterialData item;
 	private final List<String> lore;
-	private int category;
 
-
-	public Button(String name, int item, int data, List<String> lore) {
+	/**
+	 * 
+	 * @param slot
+	 * @param name
+	 * @param material
+	 * @param data
+	 * @param lore
+	 */
+	public Button(int slot, String name, Material material, int data, List<String> lore) {
+		super();
+		this.slot = slot;
 		this.name = name;
+		this.item = new MaterialData(material, (byte) data);
 		this.lore = lore;
-		this.item = item;
-		this.data = data;
 	}
 
-	public Button(String name, int item, int data) {
-		this.name = name;
-		this.item = item;
-		this.data = data;
-		this.lore = null;
+	/**
+	 * 
+	 * @param slot
+	 * @param name
+	 * @param item
+	 */
+	public Button(int slot, String name, Material item) {
+		this(slot, name, item, 0);
 	}
 
-	public Button(String name, int item, int data, int category) {
-		this.name = name;
-		this.item = item;
-		this.category = category;
-		this.data = data;
-		this.lore = null;
+	/**
+	 * 
+	 * @param slot
+	 * @param name
+	 * @param item
+	 * @param lore
+	 */
+	public Button(int slot, String name, Material item, String... lore) {
+		this(slot, name, item, 0, Arrays.asList(lore));
 	}
 
+	/**
+	 * 
+	 * @param slot
+	 * @param name
+	 * @param item
+	 * @param data
+	 * @param lore
+	 */
+	public Button(int slot, String name, Material item, int data, String... lore) {
+		this(slot, name, item, data, Arrays.asList(lore));
+	}
+
+	/**
+	 * @return the slot
+	 */
+	public int getSlot() {
+		return slot;
+	}
+
+	/**
+	 * @return the name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * @return the item
+	 */
+	public MaterialData getItem() {
+		return item;
+	}
+
+	/**
+	 * @return the lore
+	 */
 	public List<String> getLore() {
 		return lore;
-	}
-
-	public int getData() {
-		return data;
-	}
-
-	public int getItemInInteger() {
-		return item;
-	}
-
-	/**
-	 * @return the category
-	 */
-	public int getCategory() {
-		return category;
-	}
-
-	/**
-	 * @param category
-	 *            the category to set
-	 */
-	public void setCategory(int category) {
-		this.category = category;
-	}
-
-	@SuppressWarnings("deprecation")
-	public ItemStack getItem() {
-		return new ItemStack(getMaterial(item), 1, (byte) data);
-	}
-
-	public boolean hasLore() {
-		return lore != null;
-	}
-
-	public boolean hasName() {
-		return name != null;
-	}
-
-	public ItemStack getInitButton() {
-		ItemStack item = getItem();
-		ItemMeta itemM = item.getItemMeta();
-		if (hasName())
-			itemM.setDisplayName(getName());
-		if (hasLore())
-			itemM.setLore(getLore());
-		item.setItemMeta(itemM);
-		return item;
-	}
-
-	public ItemStack getInitButton(String type, String replace) {
-		ItemStack item = getItem();
-		ItemMeta itemM = item.getItemMeta();
-		if (hasName())
-			itemM.setDisplayName(getName().replace(type, replace));
-		if (hasLore())
-			itemM.setLore(getLore());
-		item.setItemMeta(itemM);
-		return item;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Button [name=" + name + ", item=" + item + ", data=" + data + ", lore=" + lore + ", category="
-				+ category + "]";
 	}
 
 }

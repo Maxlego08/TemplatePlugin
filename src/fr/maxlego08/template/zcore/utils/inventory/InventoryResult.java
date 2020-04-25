@@ -1,4 +1,4 @@
-package fr.maxlego08.template.inventory;
+package fr.maxlego08.template.zcore.utils.inventory;
 
 public enum InventoryResult {
 
