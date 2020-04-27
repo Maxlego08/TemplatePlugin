@@ -180,10 +180,8 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param classz
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	protected <T> T getProvider(Class<T> classz) {
-		RegisteredServiceProvider<? extends Object> provider = getServer().getServicesManager()
-				.getRegistration(classz.getClass());
+		RegisteredServiceProvider<T> provider = getServer().getServicesManager().getRegistration(classz);
 		if (provider == null) {
 			log.log("Unable to retrieve the provider " + classz.toString(), LogType.WARNING);
 			return null;
