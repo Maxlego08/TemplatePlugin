@@ -16,6 +16,11 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.maxlego08.template.zcore.utils.ZUtils;
 
+/**
+ * 
+ * @author Maxlego08
+ *
+ */
 public class ItemBuilder extends ZUtils implements Cloneable {
 
 	private ItemStack item;
@@ -29,6 +34,16 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 	private int durability;
 	private Map<Enchantment, Integer> enchantments;
 
+	/**
+	 * 
+	 * @param material
+	 * @param data
+	 * @param amount
+	 * @param name
+	 * @param lore
+	 * @param flags
+	 * @param enchantments
+	 */
 	public ItemBuilder(Material material, int data, int amount, String name, List<String> lore, List<ItemFlag> flags,
 			Map<Enchantment, Integer> enchantments) {
 		super();
@@ -41,38 +56,88 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 		this.enchantments = enchantments;
 	}
 
+	/**
+	 * 
+	 * @param material
+	 */
 	public ItemBuilder(Material material) {
 		this(material, 1);
 	}
 
+	/**
+	 * 
+	 * @param material
+	 * @param amount
+	 */
 	public ItemBuilder(Material material, int amount) {
 		this(material, 0, amount);
 	}
 
+	/**
+	 * 
+	 * @param material
+	 * @param amount
+	 * @param data
+	 */
 	public ItemBuilder(Material material, int amount, int data) {
 		this(material, data, amount, null);
 	}
 
+	/**
+	 * 
+	 * @param material
+	 * @param amount
+	 * @param data
+	 * @param name
+	 */
 	public ItemBuilder(Material material, int amount, int data, String name) {
 		this(material, data, amount, name, null, null, null);
 	}
 
+	/**
+	 * 
+	 * @param material
+	 * @param amount
+	 * @param name
+	 */
 	public ItemBuilder(Material material, int amount, String name) {
 		this(material, 0, amount, name, null, null, null);
 	}
 
+	/**
+	 * 
+	 * @param material
+	 * @param name
+	 */
 	public ItemBuilder(Material material, String name) {
 		this(material, 0, 1, name, null, null, null);
 	}
 
+	/**
+	 * 
+	 * @param material
+	 * @param flags
+	 */
 	public ItemBuilder(Material material, ItemFlag... flags) {
 		this(material, 0, 1, null, null, Arrays.asList(flags), null);
 	}
 
+	/**
+	 * 
+	 * @param material
+	 * @param lore
+	 */
 	public ItemBuilder(Material material, String... lore) {
 		this(material, 0, 1, null, Arrays.asList(lore), null, null);
 	}
 
+	/**
+	 * add enchant
+	 * 
+	 * @param enchantment
+	 * @param value
+	 * @return
+	 */
 	public ItemBuilder addEnchant(Enchantment enchantment, int value) {
 		if (enchantments == null)
 			enchantments = new HashMap<Enchantment, Integer>();
@@ -80,14 +145,25 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * add flags
+	 * 
+	 * @param flags
+	 * @return
+	 */
 	public ItemBuilder setFlag(ItemFlag... flags) {
 		this.flags = Arrays.asList(flags);
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param flag
+	 * @return
+	 */
 	public ItemBuilder setFlag(ItemFlag flag) {
 		if (flags == null)
-			flags = new ArrayList<>();
+			flags = new ArrayList<ItemFlag>();
 		this.flags.add(flag);
 		return this;
 	}
@@ -100,32 +176,69 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 	 */
 	public ItemBuilder addLine(String format, Object... args) {
 		if (lore == null)
-			lore = new ArrayList<>();
+			lore = new ArrayList<String>();
 		lore.add(String.format(format, args));
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param format
+	 * @param args
+	 * @return
+	 */
+	public ItemBuilder addLine(String format) {
+		if (lore == null)
+			lore = new ArrayList<String>();
+		lore.add(format);
+		return this;
+	}
+
+	/**
+	 * 
+	 * @param lores
+	 * @return
+	 */
 	public ItemBuilder setLore(String... lores) {
 		this.lore = Arrays.asList(lores);
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public ItemBuilder setName(String name) {
 		this.name = name;
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param durability
+	 * @return
+	 */
 	public ItemBuilder durability(int durability) {
 		this.durability = durability;
 		return this;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public ItemBuilder glow() {
 		addEnchant(material != Material.BOW ? Enchantment.ARROW_INFINITE : Enchantment.LUCK, 10);
 		setFlag(ItemFlag.HIDE_ENCHANTS);
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public ItemBuilder owner(Player name) {
 		return owner(name.getName());
 	}
@@ -161,10 +274,16 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 		if (enchantments != null)
 			enchantments.forEach((e, l) -> meta.addEnchant(e, l, true));
 
+		if (durability != 0)
+			item.setDurability((short) durability);
+
 		item.setItemMeta(meta);
 		return item;
 	}
 
+	/**
+	 * Clone
+	 */
 	public ItemBuilder clone() {
 		try {
 			return (ItemBuilder) super.clone();

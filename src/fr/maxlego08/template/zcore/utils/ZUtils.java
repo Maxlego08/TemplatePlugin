@@ -1,10 +1,13 @@
 package fr.maxlego08.template.zcore.utils;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -83,9 +87,12 @@ public abstract class ZUtils {
 		float x = Float.parseFloat(a[1]);
 		float y = Float.parseFloat(a[2]);
 		float z = Float.parseFloat(a[3]);
-		float yaw = Float.parseFloat(a[4]);
-		float pitch = Float.parseFloat(a[5]);
-		return new Location(w, x, y, z, yaw, pitch);
+		if (a.length == 6) {
+			float yaw = Float.parseFloat(a[4]);
+			float pitch = Float.parseFloat(a[5]);
+			return new Location(w, x, y, z, yaw, pitch);
+		}
+		return new Location(w, x, y, z);
 	}
 
 	/**
@@ -764,7 +771,7 @@ public abstract class ZUtils {
 	protected void createInventory(Player player, Inventory inventory, int page, Object... objects) {
 		plugin.getInventoryManager().createInventory(inventory, player, page, objects);
 	}
-	
+
 	/**
 	 * 
 	 * @param player
@@ -1024,7 +1031,6 @@ public abstract class ZUtils {
 		else
 			return "to much";
 	}
-	
 
 	/**
 	 * Permet de conter le nombre d'item
@@ -1040,7 +1046,6 @@ public abstract class ZUtils {
 				count += itemStack.getAmount();
 		return count;
 	}
-	
 
 	protected Enchantment enchantFromString(String str) {
 		for (Enchantment enchantment : Enchantment.values())
@@ -1084,7 +1089,6 @@ public abstract class ZUtils {
 			return BlockFace.WEST;
 		}
 	}
-	
 
 	/**
 	 * 
@@ -1157,7 +1161,6 @@ public abstract class ZUtils {
 			CooldownBuilder.addCooldown(cooldown, player, timer);
 		return false;
 	}
-	
 
 	/**
 	 * @param list
@@ -1196,7 +1199,7 @@ public abstract class ZUtils {
 		}
 		return str;
 	}
-	
+
 	/**
 	 * 
 	 * @param player
@@ -1225,4 +1228,39 @@ public abstract class ZUtils {
 			craftPlayer.getHandle().playerConnection.sendPacket(packetSubtitle);
 		}
 	}
+
+	/**
+	 * 
+	 * @param message
+	 * @return
+	 */
+	public String removeColor(String message) {
+		for (ChatColor color : ChatColor.values())
+			message = message.replace("§" + color.getChar(), "").replace("&" + color.getChar(), "");
+		return message;
+	}
+
+	/**
+	 * 
+	 * @param l
+	 * @return
+	 */
+	public String format(long l) {
+		return format(l, ' ');
+	}
+
+	/**
+	 * 
+	 * @param l
+	 * @param c
+	 * @return
+	 */
+	public String format(long l, char c) {
+		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+		DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+		symbols.setGroupingSeparator(c);
+		formatter.setDecimalFormatSymbols(symbols);
+		return formatter.format(l);
+	}
+
 }

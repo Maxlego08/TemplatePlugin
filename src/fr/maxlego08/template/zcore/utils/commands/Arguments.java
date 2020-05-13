@@ -140,7 +140,7 @@ public abstract class Arguments extends ZUtils {
 	 * @return
 	 */
 	protected Location argAsLocation(int index) {
-		return changeStringLocationToLocation(argAsString(index));
+		return changeStringLocationToLocationEye(argAsString(index));
 	}
 
 	/**
@@ -151,7 +151,7 @@ public abstract class Arguments extends ZUtils {
 	 */
 	protected Location argAsLocation(int index, Location defaultValue) {
 		try {
-			return changeStringLocationToLocation(argAsString(index));
+			return changeStringLocationToLocationEye(argAsString(index));
 		} catch (Exception e) {
 			return defaultValue;
 		}
