@@ -6,6 +6,7 @@ Works from version 1.7.10 to version 1.15.2
 ## Features
 
 * Commands
+* TabCompleter
 * Inventories
 * Json file
 * Useful function (in the class ZUtils)
@@ -15,6 +16,7 @@ Works from version 1.7.10 to version 1.15.2
 * Pagination
 * Inventory button
 * Custom Event
+* YML Loader (itemstack and button)
 * Scoreboard (https://github.com/MrMicky-FR/FastBoard)
 
 ## Commande example:
@@ -25,6 +27,11 @@ To add a command with an argument you must pass in setting the parent class
 addCommand("test", new CommandTest());
 register("test", new CommandTest());
 ```
+You can directly add commands from the main class:
+```java
+this.registerCommand("command", new CommandTest(), "myaliaisase");
+```
+
 * CommandTest
 ```java
 public class CommandTest extends VCommand {
@@ -63,92 +70,195 @@ public class CommanndTestSub extends VCommand {
 }
 ```
 
-* ZCommand
-```java
-addCommand("test", new ZCommand()
-	.createInventory(1, 0)
-	.setDescription("open inventory")
-	.setSyntaxe("/test")
-	.setConsoleCanUse(false)
-);
-```
-
 ## Inventories
 You can create inventories with the same principle as for commands.<br>
 So, you will create your class that will be extended from VInventory and then add it to the InventoryManager class with a unique ID
 
 ```java
-addInventory(1, new InventoryExample());
+addInventory(Inventory.INVENTORY_TEST, new InventoryExample());
 ```
 * InventoryExample <br>
 So you have the three most common vents for menu use that will be called by the class
 
 ```java
 public class InventoryExample extends VInventory {
-	
-	@Override
-	public boolean openInventory(Template main, Player player, int page, Object... args) throws Exception {
 
-		createInventory("§aVote", 27);
+	@Override
+	public InventoryResult openInventory(Template main, Player player, int page, Object... args)
+			throws InventoryOpenException {
 		
-		return true;
+		createInventory("myInventory", 54);
+		
+		ItemBuilder builder = new ItemBuilder(Material.DIAMOND);
+		addItem(35, builder).setLeftClick(event -> {
+			//When a player clicks left
+		}).setRightClick(event -> {
+			//When a player right clicks
+		}).setMiddleClick(event -> {
+			//When a player middle clicks
+		}).setClick(event -> {
+			//When the player clicks, whether it's left, right or middle
+		});
+		
+		return InventoryResult.SUCCESS;
 	}
 
 	@Override
-	protected void onClose(InventoryCloseEvent event, Template plugin, Player player) { }
+	protected void onClose(InventoryCloseEvent event, Template plugin, Player player) {
+
+	}
 
 	@Override
-	protected void onDrag(InventoryDragEvent event, Template plugin, Player player) { }
+	protected void onDrag(InventoryDragEvent event, Template plugin, Player player) {
 
+	}
 
 }
 ```
 * InventoryPagination <br>
-You have a paging system, you can use it just like this:
-
+With this you will be able to create several pages based on a list, everything is managed automatically by the plugin.
+In this example, there will be several pages depending on an itemstack
 ```java
-public class InventoryExample extends VInventory {
+public class InventoryExample extends PaginateInventory<ItemStack> {
 
-	@Override
-	public boolean openInventory(SphaleriaFaction main, Player player, int page, Object... args) throws Exception {
-
-		createInventory("§bInventoryName §7" + page + "§8/§7" + getMaxPage(your list));
-
-		AtomicInteger slot = new AtomicInteger();
-
-		Pagination<?> pagination = new Pagination<>();
-		pagination.paginate(your list, 45, page).forEach(war -> {
-			//ToDo
-		});
-
-		if (getPage() != 1)
-			addItem(48, new ItemButton(ItemBuilder.getCreatedItem(Material.ARROW, 1, "§f» §7Previous"))
-					.setClick(event -> createInventory(1, player, getPage() - 1, args)));
-		if (getPage() != getMaxPage(your list))
-			addItem(50, new ItemButton(ItemBuilder.getCreatedItem(Material.ARROW, 1, "§f» §7Next"))
-					.setClick(event -> createInventory(1, player, getPage() + 1, args)));
-
-		return true;
-	}
-
-	protected int getMaxPage(Collection<?> items) {
-		return (items.size() / 45) + 1;
+	public InventoryExample() {
+		super("My cystom name %p%/%mp%", InventorySize.FULL_INVENTORY);
 	}
 
 	@Override
-	protected void onClose(InventoryCloseEvent event, SphaleriaFaction plugin, Player player) { }
+	public ItemStack buildItem(ItemStack object) {
+		return object;
+	}
 
 	@Override
-	protected void onDrag(InventoryDragEvent event, SphaleriaFaction plugin, Player player) { }
+	public void onClick(ItemStack object, ItemButton button) {
+		message(player, "§eYou click on " + getItemName(object));
+	}
+
+	@Override
+	public List<ItemStack> preOpenInventory() {
+		//You must put your list here
+		return Arrays.asList(new ItemStack(Material.DIAMOND), new ItemStack(Material.EMERALD));
+	}
+
+	@Override
+	public void postOpenInventory() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onClose(InventoryCloseEvent event, Template plugin, Player player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onDrag(InventoryDragEvent event, Template plugin, Player player) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	//To avoid problems directly make your own clone of the class
+	@Override
+	protected InventoryExample clone() {
+		return new InventoryExample();
+	}
 
 }
 ```
 
-* Button <br>
-You can simply create buttons for you inventory
+Here is an example of use in the <a href="https://www.spigotmc.org/resources/69465/">zSpawner</a> plugin.
+The inventory will create several pages based on a spawner list. 
 ```java
-Button example = new Button("§eExample", 360);
-Button example2 = new Button("§eExample 2", 360, Arrays.asList("line 1", "line 2", "line 3"));
+public class InventorySpawnerPaginate extends PaginateInventory<Spawner> {
+
+	private PlayerSpawner playerSpawner;
+
+	public InventorySpawnerPaginate() {
+		super(Config.inventoryName, Config.inventorySize);
+	}
+
+	@Override
+	public ItemStack buildItem(Spawner object) {
+		return object.getItemStack();
+	}
+
+	@Override
+	public void onClick(Spawner object, ItemButton button) {
+
+		if (object.isPlace()) {
+
+			object.delete(manager.getBoard());
+			message(player, Message.REMOVE_SPAWNER);
+			createInventory(player, Inventory.INVENTORY_SPAWNER_PAGINATE, getPage(), playerSpawner);
+
+			return;
+		}
+
+		SpawnerPrePlaceEvent event = new SpawnerPrePlaceEvent(player, object, playerSpawner);
+		event.callEvent();
+
+		if (event.isCancelled())
+			return;
+
+		playerSpawner.setCurrentPlacingSpawner(object);
+		player.closeInventory();
+		message(player, Message.PLACE_SPAWNER_START);
+
+	}
+
+	@Override
+	public List<Spawner> preOpenInventory() {
+		//The list is retrieved according to an argument sent during the opening of the inventory
+		playerSpawner = (PlayerSpawner) args[0];
+		return playerSpawner.getShortSpawners();
+	}
+
+	@Override
+	public void postOpenInventory() {
+
+		if (Config.displayInformation) {
+			Button button = Config.buttonInformation;
+			int slot1 = button.getSlot() > inventorySize ? infoSlot : button.getSlot();
+			addItem(slot1, button.toItemStack(playerSpawner)).setClick(event -> {
+				playerSpawner.toggleShort();
+				createInventory(player, Inventory.INVENTORY_SPAWNER_PAGINATE, getPage(), playerSpawner);
+			});
+		}
+		
+		if (Config.displayRemoveAllButton) {
+			Button button = Config.buttonRemoveAll;
+			int slot1 = button.getSlot() > inventorySize ? removeAllSlot : button.getSlot();
+			addItem(slot1, button.toItemStack(playerSpawner)).setClick(event -> {
+				playerSpawner.deleteAllSpawners(manager.getBoard());
+				createInventory(player, Inventory.INVENTORY_SPAWNER_PAGINATE, getPage(), playerSpawner);
+			});
+		}
+
+	}
+
+	@Override
+	protected void onClose(InventoryCloseEvent event, ZSpawnerPlugin plugin, Player player) {
+
+	}
+
+	@Override
+	protected void onDrag(InventoryDragEvent event, ZSpawnerPlugin plugin, Player player) {
+
+	}
+
+	@Override
+	protected InventorySpawnerPaginate clone() {
+		return new InventorySpawnerPaginate();
+	}
+
+}
+```
+
+You can directly add inventory from the main class:
+```java
+this.registerInventory(Inventory.INVENTORY_TEST, new InventoryExample());
 ```
 
 ## Json Saver
@@ -194,6 +304,16 @@ List<T> list = pagination.paginate(Map<?, T> map, int size, int page)
 ```java
 List<T> list = pagination.paginateReverse(List<T> list, int size, int page)
 List<T> list = pagination.paginateReverse(Map<?, T> map, int size, int page)
+```
+
+## YML Loader
+
+* ItemStack
+You will be able to recover and save an itemstack according to a YamlConfiguration and a path
+```java
+Loader<ItemStack> loader = new ItemStackYAMLoader();
+ItemStack item = loader.load(configuration, path);
+loader.save(item, configuration, path);
 ```
 
 ## Scoreboard (https://github.com/MrMicky-FR/FastBoard)
