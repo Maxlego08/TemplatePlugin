@@ -12,6 +12,7 @@ import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.enums.Permission;
 import fr.maxlego08.template.zcore.utils.commands.Arguments;
 import fr.maxlego08.template.zcore.utils.commands.CommandType;
+import fr.maxlego08.template.zcore.utils.commands.Tab;
 
 public abstract class VCommand extends Arguments {
 
@@ -247,6 +248,14 @@ public abstract class VCommand extends Arguments {
 		return this;
 	}
 
+	/**
+	 * 
+	 * @return first command
+	 */
+	public String getFirst() {
+		return subCommands.get(0);
+	}
+
 	//
 	// OTHER
 	//
@@ -392,6 +401,68 @@ public abstract class VCommand extends Arguments {
 	public String toString() {
 		return "VCommand [permission=" + permission + ", subCommands=" + subCommands + ", consoleCanUse="
 				+ consoleCanUse + ", description=" + description + "]";
+	}
+
+	/**
+	 * 
+	 * @param plugin
+	 * @param sender2
+	 * @param args
+	 * @return
+	 */
+	public List<String> toTab(Template plugin, CommandSender sender2, String[] args) {
+		return null;
+	}
+
+	/**
+	 * Generate list for tab completer
+	 * 
+	 * @param startWith
+	 * @param strings
+	 * @return
+	 */
+	protected List<String> generateList(String startWith, String... strings) {
+		return generateList(Arrays.asList(strings), startWith);
+	}
+
+	/**
+	 * Generate list for tab completer
+	 * 
+	 * @param startWith
+	 * @param strings
+	 * @return
+	 */
+	protected List<String> generateList(Tab tab, String startWith, String... strings) {
+		return generateList(Arrays.asList(strings), startWith, tab);
+	}
+
+	/**
+	 * Generate list for tab completer
+	 * 
+	 * @param defaultList
+	 * @param startWith
+	 * @return
+	 */
+	protected List<String> generateList(List<String> defaultList, String startWith) {
+		return generateList(defaultList, startWith, Tab.START);
+	}
+
+	/**
+	 * Generate list for tab completer
+	 * 
+	 * @param defaultList
+	 * @param startWith
+	 * @param tab
+	 * @return
+	 */
+	protected List<String> generateList(List<String> defaultList, String startWith, Tab tab) {
+		List<String> newList = new ArrayList<>();
+		for (String str : defaultList)
+			if (startWith.length() == 0
+					|| (tab.equals(Tab.START) ? str.toLowerCase().startsWith(startWith.toLowerCase())
+							: str.toLowerCase().contains(startWith.toLowerCase())))
+				newList.add(str);
+		return newList.size() == 0 ? null : newList;
 	}
 
 }

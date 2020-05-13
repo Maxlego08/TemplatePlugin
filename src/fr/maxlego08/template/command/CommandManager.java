@@ -16,7 +16,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import fr.maxlego08.shop.command.VCommand;
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.ZPlugin;
 import fr.maxlego08.template.zcore.enums.Message;
