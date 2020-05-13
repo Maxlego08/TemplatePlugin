@@ -57,6 +57,9 @@ public abstract class PaginateInventory<T> extends VInventory {
 
 		collections = preOpenInventory();
 
+		if (collections == null)
+			throw new InventoryOpenException("Collection is null");
+
 		super.createInventory(inventoryName.replace("%mp%", String.valueOf(getMaxPage(collections))).replace("%p%",
 				String.valueOf(page)), inventorySize);
 
