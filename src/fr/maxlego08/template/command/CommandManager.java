@@ -12,9 +12,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import fr.maxlego08.shop.command.VCommand;
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.ZPlugin;
 import fr.maxlego08.template.zcore.enums.Message;
@@ -23,7 +25,7 @@ import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.ZUtils;
 import fr.maxlego08.template.zcore.utils.commands.CommandType;
 
-public class CommandManager extends ZUtils implements CommandExecutor {
+public class CommandManager extends ZUtils implements CommandExecutor, TabCompleter {
 
 	private final Template main;
 	private final List<VCommand> commands = new ArrayList<VCommand>();
@@ -51,10 +53,12 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 	public VCommand addCommand(String string, VCommand command) {
 		commands.add(command.addSubCommand(string));
 		ZPlugin.z().getCommand(string).setExecutor(this);
+		ZPlugin.z().getCommand(string).setTabCompleter(this);
 		return command;
 	}
 
 	/**
+	 * Register command whitout plugin.yml
 	 * @param string
 	 * @param vCommand
 	 * @param aliases
@@ -75,6 +79,7 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 
 			PluginCommand command = constructor.newInstance(string, ZPlugin.z());
 			command.setExecutor(this);
+			command.setTabCompleter(this);
 			command.setAliases(lists);
 
 			commands.add(vCommand.addSubCommand(string));
@@ -219,6 +224,60 @@ public class CommandManager extends ZUtils implements CommandExecutor {
 				ZPlugin.z().getPluginLoader().disablePlugin(ZPlugin.z());
 			}
 		});
+	}
+	
+
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String str, String[] args) {
+
+		for (VCommand command : commands) {
+
+			if (command.getSubCommands().contains(cmd.getName().toLowerCase())) {
+				if (args.length == 1 && command.getParent() == null) {
+					return proccessTab(sender, command, args);
+				}
+			} else {
+				String[] newArgs = Arrays.copyOf(args, args.length - 1);
+				if (newArgs.length >= 1 && command.getParent() != null
+						&& canExecute(newArgs, cmd.getName().toLowerCase(), command)) {
+					return proccessTab(sender, command, args);
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param sender
+	 * @param command
+	 * @param args
+	 * @return
+	 */
+	private List<String> proccessTab(CommandSender sender, VCommand command, String[] args) {
+
+		CommandType type = command.getTabCompleter();
+		if (type.equals(CommandType.DEFAULT)) {
+
+			String startWith = args[args.length - 1];
+
+			List<String> tabCompleter = new ArrayList<>();
+			for (VCommand vCommand : commands) {
+				if ((vCommand.getParent() != null && vCommand.getParent() == command)) {
+					String cmd = vCommand.getSubCommands().get(0);
+					if (vCommand.getPermission() == null
+							|| sender.hasPermission(vCommand.getPermission().getPermission()))
+						if (startWith.length() == 0 || cmd.startsWith(startWith))
+							tabCompleter.add(cmd);
+				}
+			}
+			return tabCompleter.size() == 0 ? null : tabCompleter;
+
+		} else if (type.equals(CommandType.SUCCESS))
+			return command.toTab(plugin, sender, args);
+
+		return null;
 	}
 
 }
