@@ -28,7 +28,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
-import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_15_R1.util.CraftChatMessage;
 import org.bukkit.enchantments.Enchantment;
@@ -55,7 +54,7 @@ import net.minecraft.server.v1_15_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_15_R1.PacketPlayOutTitle.EnumTitleAction;
 
 @SuppressWarnings("deprecation")
-public abstract class ZUtils {
+public abstract class ZUtils extends MessageUtils{
 
 	private static transient List<String> teleportPlayers = new ArrayList<String>();
 	protected transient Template plugin = (Template) ZPlugin.z();
@@ -682,63 +681,6 @@ public abstract class ZUtils {
 
 			}
 		}, 0, delay);
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param message
-	 */
-	protected void message(CommandSender player, Message message) {
-		player.sendMessage(Message.PREFIX.msg() + " " + message.msg());
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param message
-	 */
-	protected void message(CommandSender player, String message) {
-		player.sendMessage(Message.PREFIX.msg() + " " + message);
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param message
-	 */
-	protected void messageWO(CommandSender player, Message message) {
-		player.sendMessage(message.msg());
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param message
-	 * @param args
-	 */
-	protected void messageWO(CommandSender player, Message message, Object... args) {
-		player.sendMessage(String.format(message.msg(), args));
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param message
-	 * @param args
-	 */
-	protected void message(CommandSender player, Message message, Object... args) {
-		player.sendMessage(Message.PREFIX.msg() + " " + String.format(message.msg(), args));
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param message
-	 * @param args
-	 */
-	protected void actionMessage(Player player, Message message, Object... args) {
-		ActionBar.sendActionBar(player, String.format(message.msg(), args));
 	}
 
 	/**
