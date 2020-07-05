@@ -69,6 +69,46 @@ public class CommanndTestSub extends VCommand {
 
 }
 ```
+* Add custom tab
+```java
+public class CommandTest extends VCommand {
+
+	public CommandTest() {
+		this.addSubCommand(new CommanndTestSub());
+		this.setTabCompletor();
+	}
+	
+	@Override
+	public CommandType perform(Template main) {
+		
+		ModuleTest.getInstance().test(sender);
+		
+		return CommandType.SUCCESS;
+	}
+	
+	@Override
+	public List<String> toTab(Template plugin, CommandSender sender, String[] args) {
+
+		if (args.length == 3) {
+
+			String startWith = args[2];
+
+			List<String> entities = new ArrayList<String>();
+			for (EntityType type : EntityType.values()) {
+				if (type.isAlive() && !type.equals(EntityType.PLAYER)) {
+					if (startWith.length() == 0 || type.name().toLowerCase().startsWith(startWith))
+						entities.add(name(type.name()));
+				}
+			}
+
+			return entities;
+
+		}
+
+		return null;
+	}
+}
+```
 
 ## Inventories
 You can create inventories with the same principle as for commands.<br>
