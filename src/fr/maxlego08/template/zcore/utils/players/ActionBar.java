@@ -97,7 +97,7 @@ public class ActionBar {
 				sendActionBar(player, message);
 				currentSec--;
 			}
-		}, 1000, 1000);
+		}, 0, 1000);
 	}
 
 	public static void broadcastActionMessage(String paramString) {
