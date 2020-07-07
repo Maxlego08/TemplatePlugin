@@ -19,7 +19,7 @@ Works from version 1.7.10 to version 1.15.2
 * YML Loader (itemstack and button)
 * Scoreboard (https://github.com/MrMicky-FR/FastBoard)
 
-## Commande example:
+## Command example:
 Add a command<br>
 You will create a command with the addCommand (command, class extant VCommand), this will save your command and add its executor in the class CommandManager <br>
 To add a command with an argument you must pass in setting the parent class
@@ -27,7 +27,7 @@ To add a command with an argument you must pass in setting the parent class
 addCommand("test", new CommandTest());
 register("test", new CommandTest());
 ```
-You can directly add commands from the main class:
+You can directly add command from the main class:
 ```java
 this.registerCommand("command", new CommandTest(), "myaliaisase");
 ```
@@ -49,7 +49,7 @@ public class CommandTest extends VCommand {
 	}
 }
 ```
-* CommanndTestSub
+* CommandTestSub
 ```java
 public class CommanndTestSub extends VCommand {
 
