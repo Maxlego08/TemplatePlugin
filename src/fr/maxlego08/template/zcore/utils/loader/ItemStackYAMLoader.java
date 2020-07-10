@@ -16,6 +16,7 @@ import fr.maxlego08.template.exceptions.ItemEnchantException;
 import fr.maxlego08.template.exceptions.ItemFlagException;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
+import fr.maxlego08.template.zcore.utils.ItemDecoder;
 import fr.maxlego08.template.zcore.utils.ZUtils;
 
 public class ItemStackYAMLoader extends ZUtils implements Loader<ItemStack> {
@@ -95,7 +96,7 @@ public class ItemStackYAMLoader extends ZUtils implements Loader<ItemStack> {
 		List<String> flags = configuration.getStringList(path + "flags");
 
 		// Permet de charger les différents flags
-		if (flags.size() != 0) {
+		if (flags.size() != 0 && ItemDecoder.getNMSVersion() != 1.7) {
 
 			for (String flagString : flags) {
 
@@ -138,7 +139,7 @@ public class ItemStackYAMLoader extends ZUtils implements Loader<ItemStack> {
 			configuration.set(path + "name", meta.getDisplayName().replace("&", "§"));
 		if (meta.hasLore())
 			configuration.set(path + "lore", colorReverse(meta.getLore()));
-		if (meta.getItemFlags().size() != 0)
+		if (ItemDecoder.getNMSVersion() != 1.7 && meta.getItemFlags().size() != 0)
 			configuration.set(path + "flags",
 					meta.getItemFlags().stream().map(flag -> flag.name()).collect(Collectors.toList()));
 		if (meta.hasEnchants()) {
