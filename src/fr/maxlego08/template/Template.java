@@ -42,7 +42,6 @@ public class Template extends ZPlugin {
 		getSavers().forEach(saver -> saver.load(getPersist()));
 
 		postEnable();
-
 	}
 
 	@Override
