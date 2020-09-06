@@ -1,5 +1,7 @@
 package fr.maxlego08.template.zcore.utils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -11,6 +13,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,18 +26,22 @@ import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_15_R1.util.CraftChatMessage;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.potion.PotionEffectType;
+
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.ZPlugin;
@@ -50,127 +57,12 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
-import net.minecraft.server.v1_15_R1.PacketPlayOutTitle;
-import net.minecraft.server.v1_15_R1.PacketPlayOutTitle.EnumTitleAction;
 
 @SuppressWarnings("deprecation")
-public abstract class ZUtils extends MessageUtils{
+public abstract class ZUtils extends MessageUtils {
 
 	private static transient List<String> teleportPlayers = new ArrayList<String>();
 	protected transient Template plugin = (Template) ZPlugin.z();
-
-	/**
-	 * @param location
-	 *            as String
-	 * @return string as location
-	 */
-	protected Location changeStringLocationToLocation(String s) {
-		String[] a = s.split(",");
-		if (a.length == 6)
-			return changeStringLocationToLocationEye(s);
-		World w = Bukkit.getServer().getWorld(a[0]);
-		float x = Float.parseFloat(a[1]);
-		float y = Float.parseFloat(a[2]);
-		float z = Float.parseFloat(a[3]);
-		return new Location(w, x, y, z);
-	}
-
-	/**
-	 * @param location
-	 *            as string
-	 * @return string as locaiton
-	 */
-	protected Location changeStringLocationToLocationEye(String s) {
-		String[] a = s.split(",");
-		World w = Bukkit.getServer().getWorld(a[0]);
-		float x = Float.parseFloat(a[1]);
-		float y = Float.parseFloat(a[2]);
-		float z = Float.parseFloat(a[3]);
-		if (a.length == 6) {
-			float yaw = Float.parseFloat(a[4]);
-			float pitch = Float.parseFloat(a[5]);
-			return new Location(w, x, y, z, yaw, pitch);
-		}
-		return new Location(w, x, y, z);
-	}
-
-	/**
-	 * @param location
-	 * @return location as string
-	 */
-	protected String changeLocationToString(Location location) {
-		String ret = location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + ","
-				+ location.getBlockZ();
-		return ret;
-	}
-
-	/**
-	 * @param location
-	 * @return location as String
-	 */
-	protected String changeLocationToStringEye(Location location) {
-		String ret = location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + ","
-				+ location.getBlockZ() + "," + location.getYaw() + "," + location.getPitch();
-		return ret;
-	}
-
-	/**
-	 * @param chunk
-	 * @return string as Chunk
-	 */
-	protected Chunk changeStringChuncToChunk(String chunk) {
-		String[] a = chunk.split(",");
-		World w = Bukkit.getServer().getWorld(a[0]);
-		return w.getChunkAt(Integer.valueOf(a[1]), Integer.valueOf(a[2]));
-	}
-
-	/**
-	 * @param chunk
-	 * @return chunk as string
-	 */
-	protected String changeChunkToString(Chunk chunk) {
-		String c = chunk.getWorld().getName() + "," + chunk.getX() + "," + chunk.getZ();
-		return c;
-	}
-
-	/**
-	 * @param {@link
-	 * 			Cuboid}
-	 * @return cuboid as string
-	 */
-	protected String changeCuboidToString(Cuboid cuboid) {
-		return cuboid.getWorld().getName() + "," + cuboid.getLowerX() + "," + cuboid.getLowerY() + ","
-				+ cuboid.getLowerZ() + "," + ";" + cuboid.getWorld().getName() + "," + cuboid.getUpperX() + ","
-				+ cuboid.getUpperY() + "," + cuboid.getUpperZ();
-	}
-
-	/**
-	 * @param str
-	 * @return {@link Cuboid}
-	 */
-	protected Cuboid changeStringToCuboid(String str) {
-
-		String parsedCuboid[] = str.split(";");
-		String parsedFirstLoc[] = parsedCuboid[0].split(",");
-		String parsedSecondLoc[] = parsedCuboid[1].split(",");
-
-		String firstWorldName = parsedFirstLoc[0];
-		double firstX = Double.valueOf(parsedFirstLoc[1]);
-		double firstY = Double.valueOf(parsedFirstLoc[2]);
-		double firstZ = Double.valueOf(parsedFirstLoc[3]);
-
-		String secondWorldName = parsedSecondLoc[0];
-		double secondX = Double.valueOf(parsedSecondLoc[1]);
-		double secondY = Double.valueOf(parsedSecondLoc[2]);
-		double secondZ = Double.valueOf(parsedSecondLoc[3]);
-
-		Location l1 = new Location(Bukkit.getWorld(firstWorldName), firstX, firstY, firstZ);
-
-		Location l2 = new Location(Bukkit.getWorld(secondWorldName), secondX, secondY, secondZ);
-
-		return new Cuboid(l1, l2);
-
-	}
 
 	/**
 	 * @param item
@@ -189,14 +81,6 @@ public abstract class ZUtils extends MessageUtils{
 	}
 
 	/**
-	 * @param material
-	 * @return he name of the material with a better format
-	 */
-	protected String betterMaterial(Material material) {
-		return TextUtil.getMaterialLowerAndMajAndSpace(material);
-	}
-
-	/**
 	 * @param a
 	 * @param b
 	 * @return number between a and b
@@ -211,13 +95,13 @@ public abstract class ZUtils extends MessageUtils{
 	 */
 	protected boolean hasInventoryFull(Player player) {
 		int slot = 0;
-		ItemStack[] arrayOfItemStack;
-		int x = (arrayOfItemStack = player.getInventory().getContents()).length;
-		for (int i = 0; i < x; i++) {
-			ItemStack contents = arrayOfItemStack[i];
-			if ((contents == null))
+		for (int a = 0; a != player.getInventory().getContents().length; a++) {
+			ItemStack current = player.getInventory().getContents()[a];
+			if (current == null)
 				slot++;
 		}
+		if (!ItemDecoder.isOneHand())
+			slot -= 5;
 		return slot == 0;
 	}
 
@@ -245,13 +129,15 @@ public abstract class ZUtils extends MessageUtils{
 	private static transient Material[] byId;
 
 	static {
-		byId = new Material[0];
-		for (Material material : Material.values()) {
-			if (byId.length > material.getId()) {
-				byId[material.getId()] = material;
-			} else {
-				byId = Arrays.copyOfRange(byId, 0, material.getId() + 2);
-				byId[material.getId()] = material;
+		if (!ItemDecoder.isNewVersion()) {
+			byId = new Material[0];
+			for (Material material : Material.values()) {
+				if (byId.length > material.getId()) {
+					byId[material.getId()] = material;
+				} else {
+					byId = Arrays.copyOfRange(byId, 0, material.getId() + 2);
+					byId[material.getId()] = material;
+				}
 			}
 		}
 	}
@@ -577,15 +463,20 @@ public abstract class ZUtils extends MessageUtils{
 	 * @param itemStack
 	 */
 	protected void removeItems(Player player, int item, ItemStack itemStack) {
+		int slot = 0;
 		for (ItemStack is : player.getInventory().getContents()) {
-			if (is != null && is.isSimilar(itemStack)) {
+			if (is != null && is.isSimilar(itemStack) && item > 0) {
 				int currentAmount = is.getAmount() - item;
 				item -= is.getAmount();
-				if (currentAmount <= 0)
-					player.getInventory().removeItem(is);
-				else
+				if (currentAmount <= 0) {
+					if (slot == 40)
+						player.getInventory().setItemInOffHand(null);
+					else
+						player.getInventory().removeItem(is);
+				} else
 					is.setAmount(currentAmount);
 			}
+			slot++;
 		}
 		player.updateInventory();
 	}
@@ -611,7 +502,27 @@ public abstract class ZUtils extends MessageUtils{
 	 * @return
 	 */
 	protected String name(String string) {
-		return TextUtil.name(string);
+		String name = string.replace("_", " ").toLowerCase();
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+
+	/**
+	 * 
+	 * @param string
+	 * @return
+	 */
+	protected String name(Material string) {
+		String name = string.name().replace("_", " ").toLowerCase();
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+
+	/**
+	 * 
+	 * @param string
+	 * @return
+	 */
+	protected String name(ItemStack itemStack) {
+		return this.getItemName(itemStack);
 	}
 
 	/**
@@ -793,7 +704,7 @@ public abstract class ZUtils extends MessageUtils{
 	 * @param message
 	 * @return
 	 */
-	public String colorReverse(String message) {
+	protected String colorReverse(String message) {
 		return message.replace("§", "&");
 	}
 
@@ -811,7 +722,7 @@ public abstract class ZUtils extends MessageUtils{
 	 * @param messages
 	 * @return
 	 */
-	public List<String> colorReverse(List<String> messages) {
+	protected List<String> colorReverse(List<String> messages) {
 		return messages.stream().map(message -> colorReverse(message)).collect(Collectors.toList());
 	}
 
@@ -915,27 +826,6 @@ public abstract class ZUtils extends MessageUtils{
 			String command) {
 		component.setClickEvent(new ClickEvent(action, command));
 		return component;
-	}
-
-	/**
-	 * Permet de retirer les items d'un inventaire en fonction d'un item stack
-	 * et d'un nombre
-	 * 
-	 * @param inventory
-	 * @param removeItemStack
-	 * @param amount
-	 */
-	protected void removeItems(org.bukkit.inventory.Inventory inventory, ItemStack removeItemStack, int amount) {
-		for (ItemStack itemStack : inventory.getContents()) {
-			if (itemStack != null && itemStack.isSimilar(itemStack) && amount > 0) {
-				int currentAmount = itemStack.getAmount() - amount;
-				amount -= itemStack.getAmount();
-				if (currentAmount <= 0)
-					inventory.removeItem(itemStack);
-				else
-					itemStack.setAmount(currentAmount);
-			}
-		}
 	}
 
 	/**
@@ -1144,39 +1034,10 @@ public abstract class ZUtils extends MessageUtils{
 
 	/**
 	 * 
-	 * @param player
-	 * @param title
-	 * @param subtitle
-	 * @param start
-	 * @param time
-	 * @param end
-	 */
-	public void sendTitle(Player player, String title, String subtitle, int start, int time, int end) {
-
-		CraftPlayer craftPlayer = (CraftPlayer) player;
-
-		PacketPlayOutTitle packetTimes = new PacketPlayOutTitle(start, time, end);
-		craftPlayer.getHandle().playerConnection.sendPacket(packetTimes);
-
-		if (title != null) {
-			PacketPlayOutTitle packetTitle = new PacketPlayOutTitle(EnumTitleAction.TITLE,
-					CraftChatMessage.fromString(title)[0], start, time, end);
-			craftPlayer.getHandle().playerConnection.sendPacket(packetTitle);
-		}
-
-		if (subtitle != null) {
-			PacketPlayOutTitle packetSubtitle = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE,
-					CraftChatMessage.fromString(subtitle)[0], start, time, end);
-			craftPlayer.getHandle().playerConnection.sendPacket(packetSubtitle);
-		}
-	}
-
-	/**
-	 * 
 	 * @param message
 	 * @return
 	 */
-	public String removeColor(String message) {
+	protected String removeColor(String message) {
 		for (ChatColor color : ChatColor.values())
 			message = message.replace("§" + color.getChar(), "").replace("&" + color.getChar(), "");
 		return message;
@@ -1187,7 +1048,7 @@ public abstract class ZUtils extends MessageUtils{
 	 * @param l
 	 * @return
 	 */
-	public String format(long l) {
+	protected String format(long l) {
 		return format(l, ' ');
 	}
 
@@ -1197,12 +1058,189 @@ public abstract class ZUtils extends MessageUtils{
 	 * @param c
 	 * @return
 	 */
-	public String format(long l, char c) {
+	protected String format(long l, char c) {
 		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
 		DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
 		symbols.setGroupingSeparator(c);
 		formatter.setDecimalFormatSymbols(symbols);
 		return formatter.format(l);
+	}
+
+	/**
+	 * 
+	 * @param itemStack
+	 * @param player
+	 * @return itemstack
+	 */
+	public ItemStack playerHead(ItemStack itemStack, OfflinePlayer player) {
+		String name = itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()
+				? itemStack.getItemMeta().getDisplayName() : null;
+		if (ItemDecoder.isNewVersion()) {
+			if (itemStack.getType().equals(Material.PLAYER_HEAD) && name != null && name.startsWith("HEAD")) {
+				SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
+				name = name.replace("HEAD", "");
+				if (name.length() == 0)
+					meta.setDisplayName(null);
+				else
+					meta.setDisplayName(name);
+				meta.setOwningPlayer(player);
+				itemStack.setItemMeta(meta);
+			}
+		} else {
+			if (itemStack.getType().equals(getMaterial(397)) && itemStack.getData().getData() == 3 && name != null
+					&& name.startsWith("HEAD")) {
+				SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
+				name = name.replace("HEAD", "");
+				if (name.length() == 0)
+					meta.setDisplayName(null);
+				else
+					meta.setDisplayName(name);
+				meta.setOwner(player.getName());
+				itemStack.setItemMeta(meta);
+			}
+		}
+		return itemStack;
+	}
+	
+	/**
+	 * 
+	 * @param itemStack
+	 * @param player
+	 * @return itemstack
+	 */
+	protected ItemStack playerHead() {
+		return ItemDecoder.isNewVersion() ? new ItemStack(Material.PLAYER_HEAD)
+				: new ItemStack(getMaterial(397), 1, (byte) 3);
+	}
+
+	/**
+	 * 
+	 * @param plugin
+	 * @param classz
+	 * @return T
+	 */
+	protected <T> T getProvider(Plugin plugin, Class<T> classz) {
+		RegisteredServiceProvider<T> provider = plugin.getServer().getServicesManager().getRegistration(classz);
+		if (provider == null)
+			return null;
+		return provider.getProvider() != null ? (T) provider.getProvider() : null;
+	}
+
+	/**
+	 * 
+	 * @param configuration
+	 * @return
+	 */
+	protected PotionEffectType getPotion(String configuration) {
+		for (PotionEffectType effectType : PotionEffectType.values())
+			if (effectType.getName().equalsIgnoreCase(configuration))
+				return effectType;
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param runnable
+	 */
+	protected void runAsync(Runnable runnable) {
+		Bukkit.getScheduler().runTaskAsynchronously(this.plugin, runnable);
+	}
+
+	protected ItemStack createSkull(String url) {
+
+		ItemStack head = playerHead();
+		if (url.isEmpty())
+			return head;
+
+		SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+
+		profile.getProperties().put("textures", new Property("textures", url));
+
+		try {
+			Field profileField = headMeta.getClass().getDeclaredField("profile");
+			profileField.setAccessible(true);
+			profileField.set(headMeta, profile);
+
+		} catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
+			error.printStackTrace();
+		}
+		head.setItemMeta(headMeta);
+		return head;
+	}
+
+	/**
+	 * 
+	 * @param itemStack
+	 * @return boolean
+	 */
+	protected boolean isPlayerHead(ItemStack itemStack) {
+		Material material = itemStack.getType();
+		if (ItemDecoder.isNewVersion())
+			return material.equals(Material.PLAYER_HEAD);
+		return (material.equals(getMaterial(397))) && (itemStack.getDurability() == 3);
+	}
+	
+	/**
+	 * 
+	 * NMS
+	 * 
+	 */
+
+	protected final void sendPacket(Player player, Object packet) {
+		try {
+			Object handle = player.getClass().getMethod("getHandle").invoke(player);
+			Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
+			playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected final Class<?> getNMSClass(String name) {
+		try {
+			return Class.forName("net.minecraft.server."
+					+ Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Send title to player
+	 * @param player
+	 * @param title
+	 * @param subtitle
+	 * @param fadeInTime
+	 * @param showTime
+	 * @param fadeOutTime
+	 */
+	protected void title(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
+		try {
+			Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
+					.invoke(null, "{\"text\": \"" + title + "\"}");
+			Constructor<?> titleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
+					getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
+					int.class, int.class, int.class);
+			Object packet = titleConstructor.newInstance(
+					getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null), chatTitle,
+					fadeInTime, showTime, fadeOutTime);
+
+			Object chatsTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
+					.invoke(null, "{\"text\": \"" + subtitle + "\"}");
+			Constructor<?> timingTitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
+					getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
+					int.class, int.class, int.class);
+			Object timingPacket = timingTitleConstructor.newInstance(
+					getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null),
+					chatsTitle, fadeInTime, showTime, fadeOutTime);
+
+			sendPacket(player, packet);
+			sendPacket(player, timingPacket);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
