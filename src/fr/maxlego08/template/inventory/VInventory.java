@@ -29,6 +29,7 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	protected Inventory inventory;
 	protected String guiName;
 	protected boolean disableClick = true;
+	protected boolean openAsync = false;
 
 	/**
 	 * Id de l'inventaire
@@ -106,7 +107,12 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 
 		ItemButton button = new ItemButton(item);
 		this.items.put(slot, button);
-		this.inventory.setItem(slot, item);
+
+		if (openAsync)
+			runAsync(() -> this.inventory.setItem(slot, item));
+		else
+			this.inventory.setItem(slot, item);
+
 		return button;
 	}
 

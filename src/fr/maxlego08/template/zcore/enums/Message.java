@@ -1,5 +1,10 @@
 package fr.maxlego08.template.zcore.enums;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public enum Message {
 
 	PREFIX("§7(§bTemplate§7)"),
@@ -30,10 +35,47 @@ public enum Message {
 	
 	;
 
+	private List<String> messages;
 	private String message;
+	private Map<String, Object> titles = new HashMap<>();
+	private boolean use = true;
 
+	/**
+	 * 
+	 * @param message
+	 */
 	private Message(String message) {
 		this.message = message;
+		this.use = true;
+	}
+
+	private Message(String title, String subTitle, int a, int b, int c) {
+		this.use = true;
+		this.titles.put("title", title);
+		this.titles.put("subtitle", subTitle);
+		this.titles.put("start", a);
+		this.titles.put("time", b);
+		this.titles.put("end", c);
+		this.titles.put("isUse", true);
+	}
+
+	/**
+	 * 
+	 * @param message
+	 */
+	private Message(String... message) {
+		this.messages = Arrays.asList(message);
+		this.use = true;
+	}
+
+	/**
+	 * 
+	 * @param message
+	 * @param use
+	 */
+	private Message(String message, boolean use) {
+		this.message = message;
+		this.use = use;
 	}
 
 	public String getMessage() {
@@ -46,6 +88,66 @@ public enum Message {
 
 	public String msg() {
 		return message;
+	}
+
+	public boolean isUse() {
+		return use;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public List<String> getMessages() {
+		return messages == null ? Arrays.asList(message) : messages;
+	}
+
+	public void setMessages(List<String> messages) {
+		this.messages = messages;
+	}
+
+	public boolean isMessage() {
+		return messages != null && messages.size() > 1;
+	}
+
+	public String getTitle() {
+		return (String) titles.get("title");
+	}
+
+	public Map<String, Object> getTitles() {
+		return titles;
+	}
+
+	public void setTitles(Map<String, Object> titles) {
+		this.titles = titles;
+	}
+
+	public String getSubTitle() {
+		return (String) titles.get("subtitle");
+	}
+
+	public boolean isTitle() {
+		return titles.containsKey("title");
+	}
+
+	public int getStart() {
+		return ((Number) titles.get("start")).intValue();
+	}
+
+	public int getEnd() {
+		return ((Number) titles.get("end")).intValue();
+	}
+
+	public int getTime() {
+		return ((Number) titles.get("time")).intValue();
+	}
+
+	public boolean isUseTitle() {
+		return (boolean) titles.getOrDefault("isUse", "true");
+	}
+
+	public String replace(String a, String b) {
+		return message.replace(a, b);
 	}
 
 }
