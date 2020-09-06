@@ -8,6 +8,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -30,6 +31,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.BlockFace;
+import org.bukkit.command.Command;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -45,7 +49,7 @@ import com.mojang.authlib.properties.Property;
 
 import fr.maxlego08.template.Template;
 import fr.maxlego08.template.zcore.ZPlugin;
-import fr.maxlego08.template.zcore.enums.Inventory;
+import fr.maxlego08.template.zcore.enums.EnumInventory;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.enums.Permission;
 import fr.maxlego08.template.zcore.utils.builder.CooldownBuilder;
@@ -147,7 +151,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return the material according to his id
 	 */
 	protected Material getMaterial(int id) {
-		return byId.length > id && id >= 0 ? byId[id] : null;
+		return byId.length > id && id >= 0 ? byId[id] : Material.AIR;
 	}
 
 	/**
@@ -599,7 +603,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @param player
 	 * @param inventoryId
 	 */
-	protected void createInventory(Player player, Inventory inventory) {
+	protected void createInventory(Player player, EnumInventory inventory) {
 		createInventory(player, inventory, 1);
 	}
 
@@ -609,7 +613,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @param inventoryId
 	 * @param page
 	 */
-	protected void createInventory(Player player, Inventory inventory, int page) {
+	protected void createInventory(Player player, EnumInventory inventory, int page) {
 		createInventory(player, inventory, page, new Object() {
 		});
 	}
@@ -621,7 +625,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @param page
 	 * @param objects
 	 */
-	protected void createInventory(Player player, Inventory inventory, int page, Object... objects) {
+	protected void createInventory(Player player, EnumInventory inventory, int page, Object... objects) {
 		plugin.getInventoryManager().createInventory(inventory, player, page, objects);
 	}
 
@@ -644,6 +648,16 @@ public abstract class ZUtils extends MessageUtils {
 	 */
 	protected boolean hasPermission(Permissible permissible, Permission permission) {
 		return permissible.hasPermission(permission.getPermission());
+	}
+	
+	/**
+	 * 
+	 * @param permissible
+	 * @param permission
+	 * @return
+	 */
+	protected boolean hasPermission(Permissible permissible, String permission) {
+		return permissible.hasPermission(permission);
 	}
 
 	/**
@@ -1101,7 +1115,7 @@ public abstract class ZUtils extends MessageUtils {
 		}
 		return itemStack;
 	}
-	
+
 	/**
 	 * 
 	 * @param itemStack
@@ -1137,7 +1151,7 @@ public abstract class ZUtils extends MessageUtils {
 				return effectType;
 		return null;
 	}
-	
+
 	/**
 	 * 
 	 * @param runnable
@@ -1146,6 +1160,20 @@ public abstract class ZUtils extends MessageUtils {
 		Bukkit.getScheduler().runTaskAsynchronously(this.plugin, runnable);
 	}
 
+	/**
+	 * 
+	 * @param second
+	 * @return
+	 */
+	protected String getStringTime(long second) {
+		return TimerBuilder.getStringTime(second);
+	}
+
+	/**
+	 * 
+	 * @param url
+	 * @return
+	 */
 	protected ItemStack createSkull(String url) {
 
 		ItemStack head = playerHead();
@@ -1180,7 +1208,7 @@ public abstract class ZUtils extends MessageUtils {
 			return material.equals(Material.PLAYER_HEAD);
 		return (material.equals(getMaterial(397))) && (itemStack.getDurability() == 3);
 	}
-	
+
 	/**
 	 * 
 	 * NMS
@@ -1209,6 +1237,7 @@ public abstract class ZUtils extends MessageUtils {
 
 	/**
 	 * Send title to player
+	 * 
 	 * @param player
 	 * @param title
 	 * @param subtitle
@@ -1238,6 +1267,37 @@ public abstract class ZUtils extends MessageUtils {
 
 			sendPacket(player, packet);
 			sendPacket(player, timingPacket);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected Object getPrivateField(Object object, String field)
+			throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+		Class<?> clazz = object.getClass();
+		Field objectField = field.equals("commandMap") ? clazz.getDeclaredField(field)
+				: field.equals("knownCommands") ? ItemDecoder.isNewVersion()
+						? clazz.getSuperclass().getDeclaredField(field) : clazz.getDeclaredField(field) : null;
+		objectField.setAccessible(true);
+		Object result = objectField.get(object);
+		objectField.setAccessible(false);
+		return result;
+	}
+
+	protected void unRegisterBukkitCommand(PluginCommand cmd) {
+		try {
+			Object result = getPrivateField(plugin.getServer().getPluginManager(), "commandMap");
+			SimpleCommandMap commandMap = (SimpleCommandMap) result;
+
+			Object map = getPrivateField(commandMap, "knownCommands");
+			@SuppressWarnings("unchecked")
+			HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
+			knownCommands.remove(cmd.getName());
+			for (String alias : cmd.getAliases())
+				knownCommands.remove(alias);
+			knownCommands.remove("zshop:" + cmd.getName());
+			for (String alias : cmd.getAliases())
+				knownCommands.remove("zshop:" + alias);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

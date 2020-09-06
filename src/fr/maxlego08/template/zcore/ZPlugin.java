@@ -7,7 +7,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,10 +21,9 @@ import fr.maxlego08.template.inventory.InventoryManager;
 import fr.maxlego08.template.inventory.VInventory;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.scoreboard.ScoreBoardManager;
-import fr.maxlego08.template.zcore.enums.Inventory;
+import fr.maxlego08.template.zcore.enums.EnumInventory;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
-import fr.maxlego08.template.zcore.utils.gson.ItemStackAdapter;
 import fr.maxlego08.template.zcore.utils.gson.LocationAdapter;
 import fr.maxlego08.template.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.template.zcore.utils.plugins.Plugins;
@@ -104,7 +102,6 @@ public abstract class ZPlugin extends JavaPlugin {
 	public GsonBuilder getGsonBuilder() {
 		return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls()
 				.excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.VOLATILE)
-				.registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter())
 				.registerTypeAdapter(PotionEffect.class, new PotionEffectAdapter())
 				.registerTypeAdapter(Location.class, new LocationAdapter());
 	}
@@ -258,7 +255,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param inventory
 	 * @param vInventory
 	 */
-	protected void registerInventory(Inventory inventory, VInventory vInventory) {
+	protected void registerInventory(EnumInventory inventory, VInventory vInventory) {
 		inventoryManager.addInventory(inventory, vInventory);
 	}
 

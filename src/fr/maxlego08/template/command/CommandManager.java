@@ -58,6 +58,7 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 
 	/**
 	 * Register command whitout plugin.yml
+	 * 
 	 * @param string
 	 * @param vCommand
 	 * @param aliases
@@ -164,7 +165,7 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 		if (command.getPermission() == null || hasPermission(sender, command.getPermission())) {
 
 			if (command.runAsync) {
-				Bukkit.getScheduler().runTask(main, () -> {
+				super.runAsync(() -> {
 					CommandType returnType = command.prePerform(main, sender, strings);
 					if (returnType == CommandType.SYNTAX_ERROR)
 						message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntaxe());
@@ -224,7 +225,6 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 			}
 		});
 	}
-	
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String str, String[] args) {
@@ -265,8 +265,7 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 			for (VCommand vCommand : commands) {
 				if ((vCommand.getParent() != null && vCommand.getParent() == command)) {
 					String cmd = vCommand.getSubCommands().get(0);
-					if (vCommand.getPermission() == null
-							|| sender.hasPermission(vCommand.getPermission().getPermission()))
+					if (vCommand.getPermission() == null || sender.hasPermission(vCommand.getPermission()))
 						if (startWith.length() == 0 || cmd.startsWith(startWith))
 							tabCompleter.add(cmd);
 				}

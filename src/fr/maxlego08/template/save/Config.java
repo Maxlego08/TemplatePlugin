@@ -5,9 +5,6 @@ import fr.maxlego08.template.zcore.utils.storage.Saveable;
 
 public class Config implements Saveable {
 
-	public static String version = "0.0.0.1";
-	public static boolean useItemFallEvent = false;
-	
 	/**
 	 * static Singleton instance.
 	 */

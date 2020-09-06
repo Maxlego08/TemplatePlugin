@@ -1,8 +1,5 @@
 package fr.maxlego08.template.listener;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -19,16 +16,13 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.maxlego08.template.Template;
-import fr.maxlego08.template.save.Config;
 import fr.maxlego08.template.zcore.utils.ZUtils;
 
 @SuppressWarnings("deprecation")
@@ -50,7 +44,7 @@ public class AdapterListener extends ZUtils implements Listener {
 		template.getListenerAdapters().forEach(adapter -> adapter.onQuit(event, event.getPlayer()));
 	}
 
-	@EventHandler
+	/*@EventHandler
 	public void onMove(PlayerMoveEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onMove(event, event.getPlayer()));
 		if (event.getFrom().getBlockX() >> 1 == event.getTo().getBlockX() >> 1
@@ -58,7 +52,7 @@ public class AdapterListener extends ZUtils implements Listener {
 				&& event.getFrom().getWorld() == event.getTo().getWorld())
 			return;
 		template.getListenerAdapters().forEach(adapter -> adapter.onPlayerWalk(event, event.getPlayer(), 1));
-	}
+	}*/
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
@@ -118,7 +112,7 @@ public class AdapterListener extends ZUtils implements Listener {
 		template.getListenerAdapters().forEach(adapter -> adapter.onGamemodeChange(event, event.getPlayer()));
 	}
 
-	@EventHandler
+	/*@EventHandler
 	public void onDrop(PlayerDropItemEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onDrop(event, event.getPlayer()));
 		if (!Config.useItemFallEvent)
@@ -137,7 +131,7 @@ public class AdapterListener extends ZUtils implements Listener {
 						adapter -> adapter.onItemisOnGround(event, event.getPlayer(), item, item.getLocation()));
 			}
 		});
-	}
+	}*/
 
 	@EventHandler
 	public void onPick(PlayerPickupItemEvent event) {

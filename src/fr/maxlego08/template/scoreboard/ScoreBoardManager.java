@@ -6,14 +6,14 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.zcore.utils.ZUtils;
-import fr.maxlego08.template.zcore.utils.interfaces.ListConsumer;
+import fr.maxlego08.template.zcore.utils.interfaces.CollectionConsumer;
 
 public class ScoreBoardManager extends ZUtils {
 
 	private final Map<Player, FastBoard> boards = new HashMap<Player, FastBoard>();
 	private final long schedulerMillisecond;
 	private boolean isRunning = false;
-	private ListConsumer<Player> lines;
+	private CollectionConsumer<Player> lines;
 
 	public ScoreBoardManager(long schedulerMillisecond) {
 		super();
@@ -162,7 +162,7 @@ public class ScoreBoardManager extends ZUtils {
 	/**
 	 * @return the lines
 	 */
-	public ListConsumer<Player> getLines() {
+	public CollectionConsumer<Player> getLines() {
 		return lines;
 	}
 
@@ -178,7 +178,7 @@ public class ScoreBoardManager extends ZUtils {
 	 * @param lines
 	 *            the lines to set
 	 */
-	public void setLines(ListConsumer<Player> lines) {
+	public void setLines(CollectionConsumer<Player> lines) {
 		this.lines = lines;
 	}
 	
@@ -186,7 +186,7 @@ public class ScoreBoardManager extends ZUtils {
 	 * @param lines
 	 *            the lines to set
 	 */
-	public void setLinesAndSchedule(ListConsumer<Player> lines) {
+	public void setLinesAndSchedule(CollectionConsumer<Player> lines) {
 		this.lines = lines;
 		this.schedule();
 	}

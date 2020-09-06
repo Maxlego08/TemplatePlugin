@@ -3,6 +3,7 @@ package fr.maxlego08.template.inventory;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -15,7 +16,7 @@ import fr.maxlego08.template.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.template.exceptions.InventoryOpenException;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.zcore.ZPlugin;
-import fr.maxlego08.template.zcore.enums.Inventory;
+import fr.maxlego08.template.zcore.enums.EnumInventory;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
@@ -25,23 +26,37 @@ import fr.maxlego08.template.zcore.utils.inventory.ItemButton;
 public class InventoryManager extends ListenerAdapter {
 
 	private Map<Integer, VInventory> inventories = new HashMap<>();
-	private Map<Player, VInventory> playerInventories = new HashMap<>();
+	private Map<UUID, VInventory> playerInventories = new HashMap<>();
 
 	public void sendLog(){
 		plugin.getLog().log("Loading " + inventories.size() + " inventories", LogType.SUCCESS);
 	}
 
-	public void addInventory(Inventory inv, VInventory inventory) {
+	public void addInventory(EnumInventory inv, VInventory inventory) {
 		if (!inventories.containsKey(inv.getId()))
 			inventories.put(inv.getId(), inventory);
 		else
 			throw new InventoryAlreadyExistException("Inventory with id " + inv.getId() + " already exist !");
 	}
 
-	public void createInventory(Inventory inv, Player player, int page, Object... objects) {
-		createInventory(inv.getId(), player, page, objects);
+	/**
+	 * 
+	 * @param inv
+	 * @param player
+	 * @param page
+	 * @param objects
+	 */
+	public void createInventory(EnumInventory inv, Player player, int page, Object... objects) {
+		this.createInventory(inv.getId(), player, page, objects);
 	}
 
+	/**
+	 * 
+	 * @param id
+	 * @param player
+	 * @param page
+	 * @param objects
+	 */
 	public void createInventory(int id, Player player, int page, Object... objects) {
 		VInventory inventory = getInventory(id);
 		if (inventory == null) {
@@ -60,7 +75,7 @@ public class InventoryManager extends ListenerAdapter {
 			InventoryResult result = clonedInventory.preOpenInventory(plugin, player, page, objects);
 			if (result.equals(InventoryResult.SUCCESS)) {
 				player.openInventory(clonedInventory.getInventory());
-				playerInventories.put(player, clonedInventory);
+				playerInventories.put(player.getUniqueId(), clonedInventory);
 			} else if (result.equals(InventoryResult.ERROR))
 				message(player, Message.INVENTORY_OPEN_ERROR, id);
 		} catch (InventoryOpenException e) {
@@ -80,7 +95,7 @@ public class InventoryManager extends ListenerAdapter {
 		if (event.getWhoClicked() instanceof Player) {
 			if (!exist(player))
 				return;
-			VInventory gui = playerInventories.get(player);
+			VInventory gui = playerInventories.get(player.getUniqueId());
 			if (gui.getGuiName() == null || gui.getGuiName().length() == 0) {
 				Logger.info("An error has occurred with the menu ! " + gui.getClass().getName());
 				return;
@@ -99,7 +114,7 @@ public class InventoryManager extends ListenerAdapter {
 	protected void onInventoryClose(InventoryCloseEvent event, Player player) {
 		if (!exist(player))
 			return;
-		VInventory inventory = playerInventories.get(player);
+		VInventory inventory = playerInventories.get(player.getUniqueId());
 		remove(player);
 		inventory.onClose(event, plugin, player);
 	}
@@ -109,7 +124,7 @@ public class InventoryManager extends ListenerAdapter {
 		if (event.getWhoClicked() instanceof Player) {
 			if (!exist(player))
 				return;
-			playerInventories.get(player).onDrag(event, plugin, player);
+			playerInventories.get(player.getUniqueId()).onDrag(event, plugin, player);
 		}
 	}
 

@@ -2,10 +2,10 @@ package fr.maxlego08.template.zcore.utils.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.material.MaterialData;
 
 import fr.maxlego08.template.zcore.utils.ZUtils;
 
@@ -139,6 +139,29 @@ public abstract class Arguments extends ZUtils {
 	 * @param index
 	 * @return
 	 */
+	protected OfflinePlayer argAsOfflinePlayer(int index) {
+		return Bukkit.getOfflinePlayer(argAsString(index));
+	}
+
+	/**
+	 * 
+	 * @param index
+	 * @param defaultValue
+	 * @return
+	 */
+	protected OfflinePlayer argAsOfflinePlayer(int index, OfflinePlayer defaultValue) {
+		try {
+			return Bukkit.getOfflinePlayer(argAsString(index));
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
+
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 */
 	protected Location argAsLocation(int index) {
 		return changeStringLocationToLocationEye(argAsString(index));
 	}
@@ -185,46 +208,24 @@ public abstract class Arguments extends ZUtils {
 	 * @param index
 	 * @return
 	 */
-	protected World argAsWorld(int index){
-		try{
-			return Bukkit.getWorld(argAsString(index));
-		}catch (Exception e) {
-			return null;
-		}
-	}
-	
-	/**
-	 * 
-	 * @param index
-	 * @return
-	 */
-	protected World argAsWorld(int index, World world){
-		try{
-			return Bukkit.getWorld(argAsString(index));
-		}catch (Exception e) {
-			return world;
-		}
-	}
-	
-	/**
-	 * 
-	 * @param index
-	 * @return
-	 */
-	protected MaterialData argAsMaterialData(int index) {
-		String str = argAsString(index);
-		if (str == null)
-			return null;
-		MaterialData data;
+	protected World argAsWorld(int index) {
 		try {
-			if (str.contains(":")) {
-				String[] split = str.split(":");
-				data = new MaterialData(getMaterial(Integer.valueOf(split[0])), Byte.valueOf(split[1]));
-			} else
-				data = new MaterialData(getMaterial(Integer.valueOf(str)));
-			return data;
+			return Bukkit.getWorld(argAsString(index));
 		} catch (Exception e) {
 			return null;
+		}
+	}
+
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 */
+	protected World argAsWorld(int index, World world) {
+		try {
+			return Bukkit.getWorld(argAsString(index));
+		} catch (Exception e) {
+			return world;
 		}
 	}
 

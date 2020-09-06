@@ -207,9 +207,23 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	public abstract InventoryResult openInventory(Template main, Player player, int page, Object... args)
 			throws InventoryOpenException;
 
-	protected abstract void onClose(InventoryCloseEvent event, Template plugin, Player player);
+	/**
+	 * 
+	 * @param event
+	 * @param plugin
+	 * @param player
+	 */
+	protected void onClose(InventoryCloseEvent event, Template plugin, Player player) {
+	}
 
-	protected abstract void onDrag(InventoryDragEvent event, Template plugin, Player player);
+	/**
+	 * 
+	 * @param event
+	 * @param plugin
+	 * @param player
+	 */
+	protected void onDrag(InventoryDragEvent event, Template plugin, Player player) {
+	}
 
 	@Override
 	protected VInventory clone() {

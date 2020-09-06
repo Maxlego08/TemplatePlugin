@@ -20,7 +20,7 @@ public abstract class VCommand extends Arguments {
 	 * Permission used for the command, if it is a null then everyone can
 	 * execute the command
 	 */
-	private Permission permission;
+	private String permission;
 
 	/**
 	 * Mother command of this command
@@ -50,18 +50,16 @@ public abstract class VCommand extends Arguments {
 	private boolean ignoreArgs = false;
 	protected boolean DEBUG = false;
 	protected boolean runAsync = false;
-	protected CommandType tabCompleter = CommandType.DEFAULT;
+	private CommandType tabCompleter = CommandType.DEFAULT;
 
 	/**
 	 * This is the person who executes the command
 	 */
-	public CommandSender sender;
-	public Player player;
+	protected CommandSender sender;
+	protected Player player;
 
 	private String syntaxe;
-
 	private String description;
-
 	private int argsMinLength;
 	private int argsMaxLength;
 
@@ -72,7 +70,7 @@ public abstract class VCommand extends Arguments {
 	/**
 	 * @return the permission
 	 */
-	public Permission getPermission() {
+	public String getPermission() {
 		return permission;
 	}
 
@@ -183,8 +181,17 @@ public abstract class VCommand extends Arguments {
 	 * @param permission
 	 *            the permission to set
 	 */
-	protected VCommand setPermission(Permission permission) {
+	protected VCommand setPermission(String permission) {
 		this.permission = permission;
+		return this;
+	}
+	
+	/**
+	 * @param permission
+	 *            the permission to set
+	 */
+	protected VCommand setPermission(Permission permission) {
+		this.permission = permission.getPermission();
 		return this;
 	}
 

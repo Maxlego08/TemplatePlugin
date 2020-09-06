@@ -1,6 +1,6 @@
 package fr.maxlego08.template.zcore.enums;
 
-public enum Inventory {
+public enum EnumInventory {
 
 	INVENTORY_TEST(1),
 	
@@ -8,7 +8,7 @@ public enum Inventory {
 	
 	private final int id;
 
-	private Inventory(int id) {
+	private EnumInventory(int id) {
 		this.id = id;
 	}
 
