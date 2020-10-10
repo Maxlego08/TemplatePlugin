@@ -129,12 +129,12 @@ public class InventoryManager extends ListenerAdapter {
 	}
 
 	public boolean exist(Player player) {
-		return playerInventories.containsKey(player);
+		return playerInventories.containsKey(player.getUniqueId());
 	}
 
 	public void remove(Player player) {
-		if (playerInventories.containsKey(player))
-			playerInventories.remove(player);
+		if (playerInventories.containsKey(player.getUniqueId()))
+			playerInventories.remove(player.getUniqueId());
 	}
 
 	private VInventory getInventory(int id) {
