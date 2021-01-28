@@ -70,7 +70,8 @@ public class ItemDecoder {
 				localObject2 = localConstructor.newInstance(new Object[] { localObject1 });
 			}
 
-			else if (getNMSVersion() == 1.13D || getNMSVersion() == 1.14D || getNMSVersion() == 1.15D) {
+			else if (getNMSVersion() == 1.13D || getNMSVersion() == 1.14D || getNMSVersion() == 1.15D
+					|| getNMSVersion() == 1.16D) {
 				localObject2 = localClass2.getMethod("a", new Class[] { localClass1 }).invoke(null,
 						new Object[] { localObject1 });
 			} else {

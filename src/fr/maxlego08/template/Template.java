@@ -4,7 +4,6 @@ import fr.maxlego08.template.command.CommandManager;
 import fr.maxlego08.template.inventory.InventoryManager;
 import fr.maxlego08.template.listener.AdapterListener;
 import fr.maxlego08.template.save.Config;
-import fr.maxlego08.template.scoreboard.ScoreBoardManager;
 import fr.maxlego08.template.zcore.ZPlugin;
 import fr.maxlego08.template.zcore.utils.builder.CooldownBuilder;
 
@@ -28,8 +27,6 @@ public class Template extends ZPlugin {
 			return;
 		inventoryManager = InventoryManager.getInstance();
 
-		scoreboardManager = new ScoreBoardManager(1000);
-		
 		/* Add Listener */
 
 		addListener(new AdapterListener(this));

@@ -20,7 +20,6 @@ import fr.maxlego08.template.command.VCommand;
 import fr.maxlego08.template.inventory.InventoryManager;
 import fr.maxlego08.template.inventory.VInventory;
 import fr.maxlego08.template.listener.ListenerAdapter;
-import fr.maxlego08.template.scoreboard.ScoreBoardManager;
 import fr.maxlego08.template.zcore.enums.EnumInventory;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
@@ -44,7 +43,6 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	protected CommandManager commandManager;
 	protected InventoryManager inventoryManager;
-	protected ScoreBoardManager scoreboardManager;
 
 	public ZPlugin() {
 		plugin = this;
@@ -210,13 +208,6 @@ public abstract class ZPlugin extends JavaPlugin {
 	 */
 	public InventoryManager getInventoryManager() {
 		return inventoryManager;
-	}
-
-	/**
-	 * @return the scoreboardManager
-	 */
-	public ScoreBoardManager getScoreboardManager() {
-		return scoreboardManager;
 	}
 
 	/**
