@@ -198,7 +198,7 @@ public abstract class ZUtils extends MessageUtils {
 	 */
 	protected void removeItemInHand(Player player, int how) {
 		if (player.getItemInHand().getAmount() > how)
-			player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
+			player.getItemInHand().setAmount(player.getItemInHand().getAmount() - how);
 		else
 			player.setItemInHand(new ItemStack(Material.AIR));
 		player.updateInventory();
