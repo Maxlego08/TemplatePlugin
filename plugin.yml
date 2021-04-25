@@ -1,6 +1,6 @@
 name: TemplatePlugin
 author: Maxlego08
 main: fr.maxlego08.template.Template
-version: 0.0.3.1
+version: 0.0.3.2
 api-version: 1.13
 commands:
