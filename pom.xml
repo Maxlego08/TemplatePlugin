@@ -16,11 +16,4 @@
       </plugin>
     </plugins>
   </build>
-  <dependencies>
-	<dependency>
-    	<groupId>com.sun.org.apache</groupId>
-    	<artifactId>jaxp-ri</artifactId>
-    	<version>1.4</version>
-	</dependency>
-</dependencies>   
 </project>

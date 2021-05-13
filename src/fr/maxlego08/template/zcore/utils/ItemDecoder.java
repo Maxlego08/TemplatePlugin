@@ -11,8 +11,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-
 public class ItemDecoder {
 
 	private static volatile Map<ItemStack, String> itemstackSerialized = new HashMap<ItemStack, String>();
