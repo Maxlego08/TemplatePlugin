@@ -1,9 +1,13 @@
 package fr.maxlego08.template.zcore.utils.plugins;
 
 public enum Plugins {
-
+	
 	VAULT("Vault"),
 	ESSENTIALS("Essentials"),
+	HEADDATABASE("HeadDatabase"), 
+	PLACEHOLDER("PlaceholderAPI"),
+	CITIZENS("Citizens"),
+	TRANSLATIONAPI("TranslationAPI"),
 	
 	;
 

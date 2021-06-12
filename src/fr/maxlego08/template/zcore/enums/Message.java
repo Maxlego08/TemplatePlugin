@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.inventory.ItemStack;
+
+import fr.maxlego08.template.zcore.utils.ItemDecoder;
+
 public enum Message {
 
 	PREFIX("§7(§bTemplate§7)"),
@@ -39,7 +43,10 @@ public enum Message {
 	private String message;
 	private Map<String, Object> titles = new HashMap<>();
 	private boolean use = true;
+	private MessageType type = MessageType.TCHAT;
 
+	private ItemStack itemStack;
+	
 	/**
 	 * 
 	 * @param message
@@ -49,6 +56,14 @@ public enum Message {
 		this.use = true;
 	}
 
+	/**
+	 * 
+	 * @param title
+	 * @param subTitle
+	 * @param a
+	 * @param b
+	 * @param c
+	 */
 	private Message(String title, String subTitle, int a, int b, int c) {
 		this.use = true;
 		this.titles.put("title", title);
@@ -57,6 +72,7 @@ public enum Message {
 		this.titles.put("time", b);
 		this.titles.put("end", c);
 		this.titles.put("isUse", true);
+		this.type = MessageType.TITLE;
 	}
 
 	/**
@@ -66,6 +82,26 @@ public enum Message {
 	private Message(String... message) {
 		this.messages = Arrays.asList(message);
 		this.use = true;
+	}
+	
+	/**
+	 * 
+	 * @param message
+	 */
+	private Message(MessageType type, String... message) {
+		this.messages = Arrays.asList(message);
+		this.use = true;
+		this.type = type;
+	}
+	
+	/**
+	 * 
+	 * @param message
+	 */
+	private Message(MessageType type, String message) {
+		this.message = message;
+		this.use = true;
+		this.type = type;
 	}
 
 	/**
@@ -148,6 +184,22 @@ public enum Message {
 
 	public String replace(String a, String b) {
 		return message.replace(a, b);
+	}
+
+	public MessageType getType() {
+		return type.equals(MessageType.ACTION) && !ItemDecoder.haveActionBar() ? MessageType.TCHAT : type;
+	}
+	
+	public ItemStack getItemStack() {
+		return itemStack;
+	}
+
+	public void setType(MessageType type) {
+		this.type = type;
+	}
+	
+	public void setItemStack(ItemStack itemStack) {
+		this.itemStack = itemStack;
 	}
 
 }
