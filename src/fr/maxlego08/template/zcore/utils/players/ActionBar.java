@@ -8,14 +8,14 @@ import java.util.TimerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import fr.maxlego08.template.zcore.utils.ItemDecoder;
+import fr.maxlego08.template.zcore.utils.nms.NMSUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class ActionBar {
 	private static String nmsver;
 	private static boolean useOldMethods = false;
-	private static double nmsVersion = ItemDecoder.getNMSVersion();
+	private static double nmsVersion = NMSUtils.version	;
 
 	public static void sendActionBar(Player player, String message) {
 

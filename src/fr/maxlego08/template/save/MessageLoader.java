@@ -1,6 +1,5 @@
 package fr.maxlego08.template.save;
 
-import java.awt.TrayIcon.MessageType;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.maxlego08.template.zcore.enums.Message;
+import fr.maxlego08.template.zcore.enums.MessageType;
 import fr.maxlego08.template.zcore.utils.storage.Persist;
 import fr.maxlego08.template.zcore.utils.storage.Saveable;
 import fr.maxlego08.template.zcore.utils.yaml.YamlUtils;

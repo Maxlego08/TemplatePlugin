@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
 
-import fr.maxlego08.template.zcore.utils.ItemDecoder;
+import fr.maxlego08.template.zcore.utils.nms.NMSUtils;
 
 public enum Message {
 
@@ -187,7 +187,7 @@ public enum Message {
 	}
 
 	public MessageType getType() {
-		return type.equals(MessageType.ACTION) && !ItemDecoder.haveActionBar() ? MessageType.TCHAT : type;
+		return type.equals(MessageType.ACTION) && NMSUtils.isVeryOldVersion() ? MessageType.TCHAT : type;
 	}
 	
 	public ItemStack getItemStack() {
