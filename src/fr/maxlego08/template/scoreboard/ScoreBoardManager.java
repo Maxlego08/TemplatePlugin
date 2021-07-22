@@ -4,20 +4,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.template.zcore.utils.ZUtils;
 import fr.maxlego08.template.zcore.utils.interfaces.CollectionConsumer;
 
 public class ScoreBoardManager extends ZUtils {
 
+	private final Plugin plugin;
 	private final Map<Player, FastBoard> boards = new HashMap<Player, FastBoard>();
 	private final long schedulerMillisecond;
 	private boolean isRunning = false;
 	private CollectionConsumer<Player> lines;
 
-	public ScoreBoardManager(long schedulerMillisecond) {
+	
+	
+	public ScoreBoardManager(Plugin plugin, long schedulerMillisecond) {
 		super();
 		this.schedulerMillisecond = schedulerMillisecond;
+		this.plugin = plugin;
 	}
 
 	/**
@@ -30,7 +35,7 @@ public class ScoreBoardManager extends ZUtils {
 
 		isRunning = true;
 
-		scheduleFix(schedulerMillisecond, (task, canRun) -> {
+		scheduleFix(plugin, schedulerMillisecond, (task, canRun) -> {
 
 			// If the task cannot continue then we do not update the scoreboard
 			if (!canRun)

@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.Template;
+import fr.maxlego08.template.save.Config;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.enums.Permission;
 import fr.maxlego08.template.zcore.utils.commands.Arguments;
@@ -15,6 +16,8 @@ import fr.maxlego08.template.zcore.utils.commands.CommandType;
 import fr.maxlego08.template.zcore.utils.commands.Tab;
 
 public abstract class VCommand extends Arguments {
+
+	protected final Template plugin;
 
 	/**
 	 * Permission used for the command, if it is a null then everyone can
@@ -48,7 +51,6 @@ public abstract class VCommand extends Arguments {
 	 */
 	private boolean ignoreParent = false;
 	private boolean ignoreArgs = false;
-	protected boolean DEBUG = false;
 	protected boolean runAsync = false;
 	private CommandType tabCompleter = CommandType.DEFAULT;
 
@@ -62,6 +64,16 @@ public abstract class VCommand extends Arguments {
 	private String description;
 	private int argsMinLength;
 	private int argsMaxLength;
+
+	
+	
+	/**
+	 * @param plugin
+	 */
+	public VCommand(Template plugin) {
+		super();
+		this.plugin = plugin;
+	}
 
 	//
 	// GETTER
@@ -185,7 +197,7 @@ public abstract class VCommand extends Arguments {
 		this.permission = permission;
 		return this;
 	}
-	
+
 	/**
 	 * @param permission
 	 *            the permission to set
@@ -286,7 +298,7 @@ public abstract class VCommand extends Arguments {
 	 */
 	public VCommand addSubCommand(VCommand command) {
 		command.setParent(this);
-		plugin.getCommandManager().addCommand(command);
+		this.plugin.getCommandManager().registerCommand(command);
 		this.subVCommands.add(command);
 		return this;
 	}
@@ -344,21 +356,21 @@ public abstract class VCommand extends Arguments {
 		return parent == null ? defaultParent : parent.parentCount(defaultParent + 1);
 	}
 
-	public CommandType prePerform(Template main, CommandSender commandSender, String[] args) {
+	public CommandType prePerform(Template plugin, CommandSender commandSender, String[] args) {
 
 		// On met à jour le nombre d'argument en fonction du nombre de parent
-
-		parentCount = parentCount(0);
-		argsMaxLength = requireArgs.size() + optionalArgs.size() + parentCount;
-		argsMinLength = requireArgs.size() + parentCount;
+		
+		this.parentCount = parentCount(0);
+		this.argsMaxLength = this.requireArgs.size() + this.optionalArgs.size() + this.parentCount;
+		this.argsMinLength = this.requireArgs.size() + this.parentCount;
 
 		// On génère le syntaxe de base s'il y est impossible de la trouver
-		if (syntaxe == null)
-			syntaxe = generateDefaultSyntaxe("");
+		if (this.syntaxe == null)
+			this.syntaxe = generateDefaultSyntaxe("");
 
 		this.args = args;
 
-		String defaultString = argAsString(0);
+		String defaultString = super.argAsString(0);
 
 		if (defaultString != null) {
 			for (VCommand subCommand : subVCommands) {
@@ -377,9 +389,9 @@ public abstract class VCommand extends Arguments {
 			player = (Player) commandSender;
 
 		try {
-			return perform(main);
+			return perform(plugin);
 		} catch (Exception e) {
-			if (DEBUG)
+			if (Config.enableDebug)
 				e.printStackTrace();
 			return CommandType.SYNTAX_ERROR;
 		}
@@ -388,7 +400,7 @@ public abstract class VCommand extends Arguments {
 	/**
 	 * method that allows you to execute the command
 	 */
-	protected abstract CommandType perform(Template main);
+	protected abstract CommandType perform(Template plugin);
 
 	public boolean sameSubCommands() {
 		if (parent == null)

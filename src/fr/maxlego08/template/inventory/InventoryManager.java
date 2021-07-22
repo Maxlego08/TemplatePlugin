@@ -12,10 +12,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 
+import fr.maxlego08.template.Template;
 import fr.maxlego08.template.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.template.exceptions.InventoryOpenException;
 import fr.maxlego08.template.listener.ListenerAdapter;
-import fr.maxlego08.template.zcore.ZPlugin;
 import fr.maxlego08.template.zcore.enums.EnumInventory;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.logger.Logger;
@@ -25,14 +25,29 @@ import fr.maxlego08.template.zcore.utils.inventory.ItemButton;
 
 public class InventoryManager extends ListenerAdapter {
 
-	private Map<Integer, VInventory> inventories = new HashMap<>();
-	private Map<UUID, VInventory> playerInventories = new HashMap<>();
+	private final Map<Integer, VInventory> inventories = new HashMap<>();
+	private final Map<UUID, VInventory> playerInventories = new HashMap<>();
+	private final Template plugin;
 
-	public void sendLog(){
+	/**
+	 * @param plugin
+	 */
+	public InventoryManager(Template plugin) {
+		super();
+		this.plugin = plugin;
+	}
+
+	public void sendLog() {
 		plugin.getLog().log("Loading " + inventories.size() + " inventories", LogType.SUCCESS);
 	}
 
-	public void addInventory(EnumInventory inv, VInventory inventory) {
+	/**
+	 * Register new inventory
+	 * 
+	 * @param inv
+	 * @param inventory
+	 */
+	public void registerInventory(EnumInventory inv, VInventory inventory) {
 		if (!inventories.containsKey(inv.getId()))
 			inventories.put(inv.getId(), inventory);
 		else
@@ -165,7 +180,7 @@ public class InventoryManager extends ListenerAdapter {
 				.collect(Collectors.toList()).iterator();
 		while (iterator.hasNext()) {
 			VInventory inventory = iterator.next();
-			Bukkit.getScheduler().runTask(ZPlugin.z(), () -> createInventory(inventory, inventory.getPlayer()));
+			Bukkit.getScheduler().runTask(this.plugin, () -> createInventory(inventory, inventory.getPlayer()));
 		}
 	}
 
@@ -179,26 +194,6 @@ public class InventoryManager extends ListenerAdapter {
 			VInventory inventory = iterator.next();
 			inventory.getPlayer().closeInventory();
 		}
-	}
-
-	/**
-	 * static Singleton instance.
-	 */
-	private static volatile InventoryManager instance;
-
-	/**
-	 * Return a singleton instance of InventoryManager.
-	 */
-	public static InventoryManager getInstance() {
-		// Double lock for thread safety.
-		if (instance == null) {
-			synchronized (InventoryManager.class) {
-				if (instance == null) {
-					instance = new InventoryManager();
-				}
-			}
-		}
-		return instance;
 	}
 
 }

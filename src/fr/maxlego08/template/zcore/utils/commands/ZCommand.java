@@ -7,6 +7,10 @@ import fr.maxlego08.template.command.VCommand;
 
 public class ZCommand extends VCommand {
 
+	public ZCommand(Template plugin) {
+		super(plugin);
+	}
+
 	private BiConsumer<VCommand, Template> command;
 
 	@Override

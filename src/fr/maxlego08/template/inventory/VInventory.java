@@ -64,14 +64,17 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	 * @return this
 	 */
 	protected VInventory createInventory(String name, int size) {
-		guiName = name;
+		this.guiName = name;
 		this.inventory = Bukkit.createInventory(null, size, name);
 		return this;
 	}
 
+	/**
+	 * Create default inventory with default size and name
+	 */
 	private void createDefaultInventory() {
-		if (inventory == null)
-			inventory = Bukkit.createInventory(null, 54, "§cDefault Inventory");
+		if (this.inventory == null)
+			this.inventory = Bukkit.createInventory(null, 54, "§cDefault Inventory");
 	}
 
 	/**
@@ -108,8 +111,8 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 		ItemButton button = new ItemButton(item);
 		this.items.put(slot, button);
 
-		if (openAsync)
-			runAsync(() -> this.inventory.setItem(slot, item));
+		if (this.openAsync)
+			runAsync(this.plugin, () -> this.inventory.setItem(slot, item));
 		else
 			this.inventory.setItem(slot, item);
 

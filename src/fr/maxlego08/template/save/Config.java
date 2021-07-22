@@ -5,6 +5,8 @@ import fr.maxlego08.template.zcore.utils.storage.Saveable;
 
 public class Config implements Saveable {
 
+	public static boolean enableDebug = true;
+	
 	/**
 	 * static Singleton instance.
 	 */
