@@ -60,7 +60,7 @@ public abstract class VCommand extends Arguments {
 	protected CommandSender sender;
 	protected Player player;
 
-	private String syntaxe;
+	private String syntax;
 	private String description;
 	private int argsMinLength;
 	private int argsMaxLength;
@@ -140,13 +140,13 @@ public abstract class VCommand extends Arguments {
 	}
 
 	/**
-	 * @return the syntaxe
+	 * @return the syntax
 	 */
-	public String getSyntaxe() {
-		if (syntaxe == null) {
-			syntaxe = generateDefaultSyntaxe("");
+	public String getSyntax() {
+		if (syntax == null) {
+			syntax = generateDefaultSyntax("");
 		}
-		return syntaxe;
+		return syntax;
 	}
 
 	public boolean isIgnoreArgs() {
@@ -181,11 +181,10 @@ public abstract class VCommand extends Arguments {
 	}
 
 	/**
-	 * @param syntaxe
-	 *            the syntaxe to set
+	 * @param syntax the syntax to set
 	 */
-	protected VCommand setSyntaxe(String syntaxe) {
-		this.syntaxe = syntaxe;
+	protected VCommand setSyntax(String syntax) {
+		this.syntax = syntax;
 		return this;
 	}
 
@@ -315,39 +314,39 @@ public abstract class VCommand extends Arguments {
 	}
 
 	/**
-	 * Permet de générer la syntaxe de la commande manuellement Mais vous pouvez
-	 * la mettre vous même avec le setSyntaxe()
+	 * Permet de gÃ©nÃ©rer la syntax de la commande manuellement Mais vous pouvez
+	 * la mettre vous mÃªme avec le setSyntax()
 	 * 
-	 * @param syntaxe
-	 * @return generate syntaxe
+	 * @param syntax
+	 * @return generate syntax
 	 */
-	private String generateDefaultSyntaxe(String syntaxe) {
+	private String generateDefaultSyntax(String syntax) {
 
 		String tmpString = subCommands.get(0);
 
-		boolean update = syntaxe.equals("");
+		boolean update = syntax.equals("");
 
 		if (requireArgs.size() != 0 && update)
 			for (String requireArg : requireArgs) {
 				requireArg = "<" + requireArg + ">";
-				syntaxe += " " + requireArg;
+				syntax += " " + requireArg;
 			}
 		if (optionalArgs.size() != 0 && update)
 			for (String optionalArg : optionalArgs) {
 				optionalArg = "[<" + optionalArg + ">]";
-				syntaxe += " " + optionalArg;
+				syntax += " " + optionalArg;
 			}
 
-		tmpString += syntaxe;
+		tmpString += syntax;
 
 		if (parent == null)
 			return "/" + tmpString;
 
-		return parent.generateDefaultSyntaxe(" " + tmpString);
+		return parent.generateDefaultSyntax(" " + tmpString);
 	}
 
 	/**
-	 * Permet de savoir le nombre de parent de façon récursive
+	 * Permet de savoir le nombre de parent de faÃ§on rÃ©cursive
 	 * 
 	 * @param defaultParent
 	 * @return
@@ -358,15 +357,15 @@ public abstract class VCommand extends Arguments {
 
 	public CommandType prePerform(Template plugin, CommandSender commandSender, String[] args) {
 
-		// On met à jour le nombre d'argument en fonction du nombre de parent
+		// On met Ã  jour le nombre d'argument en fonction du nombre de parent
 		
 		this.parentCount = parentCount(0);
 		this.argsMaxLength = this.requireArgs.size() + this.optionalArgs.size() + this.parentCount;
 		this.argsMinLength = this.requireArgs.size() + this.parentCount;
 
-		// On génère le syntaxe de base s'il y est impossible de la trouver
-		if (this.syntaxe == null)
-			this.syntaxe = generateDefaultSyntaxe("");
+		// On gÃ©nÃ¨re le syntax de base s'il y est impossible de la trouver
+		if (this.syntax == null)
+			this.syntax = generateDefaultSyntax("");
 
 		this.args = args;
 
