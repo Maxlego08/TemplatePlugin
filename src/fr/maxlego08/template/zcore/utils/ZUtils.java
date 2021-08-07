@@ -1,6 +1,5 @@
 package fr.maxlego08.template.zcore.utils;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -1061,67 +1060,14 @@ public abstract class ZUtils extends MessageUtils {
 
 	/**
 	 * 
-	 * NMS
-	 * 
+	 * @param object
+	 * @param field
+	 * @return
+	 * @throws SecurityException
+	 * @throws NoSuchFieldException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
 	 */
-
-	protected final void sendPacket(Player player, Object packet) {
-		try {
-			Object handle = player.getClass().getMethod("getHandle").invoke(player);
-			Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-			playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	protected final Class<?> getNMSClass(String name) {
-		try {
-			return Class.forName("net.minecraft.server."
-					+ Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
-	 * Send title to player
-	 * 
-	 * @param player
-	 * @param title
-	 * @param subtitle
-	 * @param fadeInTime
-	 * @param showTime
-	 * @param fadeOutTime
-	 */
-	protected void title(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
-		try {
-			Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
-					.invoke(null, "{\"text\": \"" + title + "\"}");
-			Constructor<?> titleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
-					getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
-					int.class, int.class, int.class);
-			Object packet = titleConstructor.newInstance(
-					getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null), chatTitle,
-					fadeInTime, showTime, fadeOutTime);
-
-			Object chatsTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
-					.invoke(null, "{\"text\": \"" + subtitle + "\"}");
-			Constructor<?> timingTitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
-					getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
-					int.class, int.class, int.class);
-			Object timingPacket = timingTitleConstructor.newInstance(
-					getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null),
-					chatsTitle, fadeInTime, showTime, fadeOutTime);
-
-			sendPacket(player, packet);
-			sendPacket(player, timingPacket);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	protected Object getPrivateField(Object object, String field)
 			throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		Class<?> clazz = object.getClass();

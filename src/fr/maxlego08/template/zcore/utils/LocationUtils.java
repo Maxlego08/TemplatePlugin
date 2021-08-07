@@ -5,7 +5,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public abstract class LocationUtils {
+public abstract class LocationUtils extends PapiUtils{
 
 	/**
 	 * @param location
