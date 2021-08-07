@@ -143,14 +143,14 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 				super.runAsync(this.plugin, () -> {
 					CommandType returnType = command.prePerform(this.plugin, sender, strings);
 					if (returnType == CommandType.SYNTAX_ERROR)
-						message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntaxe());
+						message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntax());
 				});
 				return CommandType.DEFAULT;
 			}
 
 			CommandType returnType = command.prePerform(this.plugin, sender, strings);
 			if (returnType == CommandType.SYNTAX_ERROR)
-				message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntaxe());
+				message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntax());
 			return returnType;
 		}
 		message(sender, Message.COMMAND_NO_PERMISSION);
@@ -173,7 +173,7 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 		this.commands.forEach(command -> {
 			if (isValid(command, commandString)
 					&& (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
-				message(sender, Message.COMMAND_SYNTAXE_HELP, command.getSyntaxe(), command.getDescription());
+				message(sender, Message.COMMAND_SYNTAXE_HELP, command.getSyntax(), command.getDescription());
 			}
 		});
 	}
