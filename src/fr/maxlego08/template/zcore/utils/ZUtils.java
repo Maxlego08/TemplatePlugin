@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -556,7 +558,18 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return
 	 */
 	protected String color(String message) {
-		return message == null ? null : message.replace("&", "§");
+		if (message == null)
+			return null;
+		if (NMSUtils.isHexColor()) {
+			Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+			Matcher matcher = pattern.matcher(message);
+			while (matcher.find()) {
+				String color = message.substring(matcher.start(), matcher.end());
+				message = message.replace(color, net.md_5.bungee.api.ChatColor.of(color) + "");
+				matcher = pattern.matcher(message);
+			}
+		}
+		return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', message);
 	}
 
 	/**

@@ -102,4 +102,23 @@ public class NMSUtils {
 		}
 	}
 
+	/**
+	 * Allows to check if the version has the colors in hex
+	 * 
+	 * @return boolean
+	 */
+	public static boolean isHexColor() {
+		switch (String.valueOf(version)) {
+		case "1.21":
+		case "1.20":
+		case "1.19":
+		case "1.18":
+		case "1.17":
+		case "1.16":
+			return true;
+		default:
+			return false;
+		}
+	}
+	
 }
