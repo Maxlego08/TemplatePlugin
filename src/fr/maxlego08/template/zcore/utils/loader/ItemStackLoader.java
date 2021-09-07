@@ -32,7 +32,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 		int data = configuration.getInt(path + "data", 0);
 		int amount = configuration.getInt(path + "amount", 1);
 		short durability = (short) configuration.getInt(path + "durability", 0);
-
+		int modelID = configuration.getInt(path + "modelID", 0);
 		Material material = null;
 
 		int value = configuration.getInt(path + "material", 0);
@@ -46,6 +46,9 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 			material = Material.getMaterial(str.toUpperCase());
 		}
 
+		if (modelID < 0)
+			modelID = 0;
+		
 		ItemStack item = null;
 
 		if (material == null || material.equals(Material.AIR))
@@ -68,7 +71,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
 		}
 
-		// Si après tout l'item est null alors fuck off
+		// Si aprÃ¨s tout l'item est null alors fuck off
 		if (item == null)
 			return null;
 
@@ -98,7 +101,10 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
 		}
-
+		
+		if (modelID > 0)
+			meta.setCustomModelData(modelID);
+		
 		// Permet de charger l'enchantement de l'item
 		if (enchants.size() != 0) {
 
@@ -142,7 +148,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
 		List<String> flags = configuration.getStringList(path + "flags");
 
-		// Permet de charger les différents flags
+		// Permet de charger les diffÃ©rents flags
 		if (flags.size() != 0 && NMSUtils.getNMSVersion() != 1.7) {
 
 			for (String flagString : flags) {
@@ -184,7 +190,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 		configuration.set(path + "durability", item.getDurability());
 		ItemMeta meta = item.getItemMeta();
 		if (meta.hasDisplayName())
-			configuration.set(path + "name", meta.getDisplayName().replace("&", "§"));
+			configuration.set(path + "name", meta.getDisplayName().replace("&", "Â§"));
 		if (meta.hasLore())
 			configuration.set(path + "lore", colorReverse(meta.getLore()));
 		if (NMSUtils.getNMSVersion() != 1.7 && meta.getItemFlags().size() != 0)
@@ -203,6 +209,9 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
 			configuration.set(path + "enchants", enchantList);
 		}
+		if (meta.hasCustomModelData()){
+      			configuration.set(path + "modelID", meta.getCustomModelData());
+    		}
 
 	}
 
