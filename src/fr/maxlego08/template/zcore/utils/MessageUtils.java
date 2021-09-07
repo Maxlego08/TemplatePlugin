@@ -48,7 +48,11 @@ public abstract class MessageUtils extends LocationUtils {
 				this.actionMessage(player, message, args);
 				break;
 			case TCHAT:
-				sender.sendMessage(Message.PREFIX.msg() + getMessage(message, args));
+				if (message.getMessages().size() > 0) {
+					message.getMessages()
+							.forEach(msg -> sender.sendMessage(Message.PREFIX.msg() + getMessage(msg, args)));
+				} else
+					sender.sendMessage(Message.PREFIX.msg() + getMessage(message, args));
 				break;
 			case TITLE:
 				// gestion du title message

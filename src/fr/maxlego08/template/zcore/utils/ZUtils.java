@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -1116,6 +1117,27 @@ public abstract class ZUtils extends MessageUtils {
 		if (NMSUtils.getNMSVersion() != 1.7)
 			itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		itemStack.setItemMeta(itemMeta);
+	}
+	
+	/**
+	 * Permet de clear l'inventaire d'un joueur
+	 * 
+	 * @param player
+	 */
+	protected void clearPlayer(Player player) {
+		player.getInventory().clear();
+		player.getInventory().setBoots(null);
+		player.getInventory().setChestplate(null);
+		player.getInventory().setLeggings(null);
+		player.getInventory().setHelmet(null);
+		player.getPlayer().setItemOnCursor(null);
+		player.getPlayer().setFireTicks(0);
+		player.getPlayer().getOpenInventory().getTopInventory().clear();
+		player.getPlayer().getActivePotionEffects().clear();
+		player.setGameMode(GameMode.SURVIVAL);
+		player.getPlayer().getActivePotionEffects().forEach(e -> {
+			player.getPlayer().removePotionEffect(e.getType());
+		});
 	}
 
 }

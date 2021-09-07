@@ -42,6 +42,30 @@ public abstract class Arguments extends ZUtils {
 		}
 	}
 
+
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 */
+	protected boolean argAsBoolean(int index) {
+		return Boolean.valueOf(argAsString(index));
+	}
+
+	/**
+	 * 
+	 * @param index
+	 * @param defaultValue
+	 * @return
+	 */
+	protected boolean argAsBoolean(int index, boolean defaultValue) {
+		try {
+			return Boolean.valueOf(argAsString(index));
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
+	
 	/**
 	 * 
 	 * @param index

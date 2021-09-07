@@ -48,7 +48,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
 		if (modelID < 0)
 			modelID = 0;
-		
+
 		ItemStack item = null;
 
 		if (material == null || material.equals(Material.AIR))
@@ -101,10 +101,10 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
 		}
-		
+
 		if (modelID > 0)
 			meta.setCustomModelData(modelID);
-		
+
 		// Permet de charger l'enchantement de l'item
 		if (enchants.size() != 0) {
 
@@ -190,7 +190,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 		configuration.set(path + "durability", item.getDurability());
 		ItemMeta meta = item.getItemMeta();
 		if (meta.hasDisplayName())
-			configuration.set(path + "name", meta.getDisplayName().replace("&", "ยง"));
+			configuration.set(path + "name", meta.getDisplayName().replace("ง", "&"));
 		if (meta.hasLore())
 			configuration.set(path + "lore", colorReverse(meta.getLore()));
 		if (NMSUtils.getNMSVersion() != 1.7 && meta.getItemFlags().size() != 0)
@@ -209,9 +209,9 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
 			configuration.set(path + "enchants", enchantList);
 		}
-		if (meta.hasCustomModelData()){
-      			configuration.set(path + "modelID", meta.getCustomModelData());
-    		}
+		if (NMSUtils.getNMSVersion() >= 1.14 &&  meta.hasCustomModelData()) {
+			configuration.set(path + "modelID", meta.getCustomModelData());
+		}
 
 	}
 

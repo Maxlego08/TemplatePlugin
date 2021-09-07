@@ -143,14 +143,14 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 				super.runAsync(this.plugin, () -> {
 					CommandType returnType = command.prePerform(this.plugin, sender, strings);
 					if (returnType == CommandType.SYNTAX_ERROR)
-						message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntax());
+						message(sender, Message.COMMAND_SYNTAXE_ERROR, "%syntax%", command.getSyntax());
 				});
 				return CommandType.DEFAULT;
 			}
 
 			CommandType returnType = command.prePerform(this.plugin, sender, strings);
 			if (returnType == CommandType.SYNTAX_ERROR)
-				message(sender, Message.COMMAND_SYNTAXE_ERROR, command.getSyntax());
+				message(sender, Message.COMMAND_SYNTAXE_ERROR, "%syntax%", command.getSyntax());
 			return returnType;
 		}
 		message(sender, Message.COMMAND_NO_PERMISSION);
@@ -173,7 +173,7 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 		this.commands.forEach(command -> {
 			if (isValid(command, commandString)
 					&& (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
-				message(sender, Message.COMMAND_SYNTAXE_HELP, command.getSyntax(), command.getDescription());
+				message(sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%", command.getDescription());
 			}
 		});
 	}
@@ -260,7 +260,7 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	 * @param vCommand
 	 * @param aliases
 	 */
-	public void registerCommand(String string, VCommand vCommand, String... aliases) {
+	public void registerCommand(String string, VCommand vCommand, List<String> aliases) {
 		try {
 			Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
 			bukkitCommandMap.setAccessible(true);
@@ -272,12 +272,10 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 					Plugin.class);
 			constructor.setAccessible(true);
 
-			List<String> lists = Arrays.asList(aliases);
-
 			PluginCommand command = constructor.newInstance(string, this.plugin);
 			command.setExecutor(this);
 			command.setTabCompleter(this);
-			command.setAliases(lists);
+			command.setAliases(aliases);
 
 			commands.add(vCommand.addSubCommand(string));
 			vCommand.addSubCommand(aliases);

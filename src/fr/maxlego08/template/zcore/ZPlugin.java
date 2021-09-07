@@ -2,6 +2,7 @@ package fr.maxlego08.template.zcore;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -221,7 +222,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param aliases
 	 */
 	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
-		commandManager.registerCommand(command, vCommand, aliases);
+		commandManager.registerCommand(command, vCommand, Arrays.asList(aliases));
 	}
 
 	/**

@@ -6,11 +6,13 @@ import fr.maxlego08.template.zcore.utils.storage.Saveable;
 public class Config implements Saveable {
 
 	public static boolean enableDebug = true;
+	public static boolean enableDebugTime = false;
 	
 	/**
 	 * static Singleton instance.
 	 */
 	private static volatile Config instance;
+
 
 	/**
 	 * Private constructor for singleton.

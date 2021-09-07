@@ -483,4 +483,8 @@ public abstract class VCommand extends Arguments {
 		return newList.size() == 0 ? null : newList;
 	}
 
+	public void addSubCommand(List<String> aliases) {
+		this.subCommands.addAll(aliases);
+	}
+
 }

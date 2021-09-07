@@ -45,7 +45,7 @@ public abstract class PaginateInventory<T> extends VInventory {
 	}
 
 	@Override
-	public InventoryResult openInventory(Template main, Player player, int page, Object... args)
+	public InventoryResult openInventory(Template plugin, Player player, int page, Object... args)
 			throws InventoryOpenException {
 
 		if (defaultSlot > inventorySize || nextSlot > inventorySize || previousSlot > inventorySize
@@ -67,10 +67,8 @@ public abstract class PaginateInventory<T> extends VInventory {
 				: pagination.paginate(collections, paginationSize, page);
 
 		tmpList.forEach(tmpItem -> {
-			ItemButton button = addItem(slotChange(slot.getAndIncrement()), buildItem(tmpItem));
-			ItemButton itemButton = createButton(button);
-			if (!disableClick)
-				itemButton.setClick((event) -> onClick(tmpItem, itemButton));
+			ItemButton button = addItem(slot.getAndIncrement(), buildItem(tmpItem));
+			button.setClick((event) -> onClick(tmpItem, button));
 		});
 
 		if (getPage() != 1)
