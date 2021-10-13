@@ -32,7 +32,7 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	protected boolean openAsync = false;
 
 	/**
-	 * Id de l'inventaire
+	 * Inventory Id
 	 * 
 	 * @param id
 	 * @return
@@ -47,80 +47,84 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	}
 
 	/**
-	 * Permet de créer l'inventaire
+	 * Allows you to create the spigot inventory object
 	 * 
 	 * @param name
 	 * @return this
 	 */
-	protected VInventory createInventory(String name) {
-		return createInventory(name, 54);
+	protected void createInventory(String name) {
+		createInventory(name, 54);
 	}
 
 	/**
-	 * Permet de créer l'inventaire
+	 * Allows you to create the spigot inventory object
 	 * 
-	 * @param name
-	 * @param size
+	 * @param name - Inventory name
+	 * @param size - Inventory Size
 	 * @return this
 	 */
-	protected VInventory createInventory(String name, int size) {
+	protected void createInventory(String name, int size) {
 		this.guiName = name;
 		this.inventory = Bukkit.createInventory(null, size, name);
-		return this;
 	}
 
 	/**
 	 * Create default inventory with default size and name
 	 */
 	private void createDefaultInventory() {
-		if (this.inventory == null)
-			this.inventory = Bukkit.createInventory(null, 54, "§cDefault Inventory");
+		if (this.inventory == null) {
+			this.inventory = Bukkit.createInventory(null, 54, "Â§cDefault Inventory");
+		}
 	}
 
 	/**
-	 * Ajout d'un item
+	 * Adding an item to the inventory
 	 * 
-	 * @param slot
-	 * @param item
-	 * @return
+	 * @param slot - Inventory slot
+	 * @param material - ItemStack material
+	 * @param name - ItemStack name
+	 * @return ItemButton
 	 */
 	public ItemButton addItem(int slot, Material material, String name) {
 		return addItem(slot, new ItemBuilder(material, name).build());
 	}
 
 	/**
+	 * Adding an item to the inventory
 	 * 
-	 * @param slot
-	 * @param item
-	 * @return
+	 * @param slot - Inventory slot
+	 * @param item - ItemBuild
+	 * @return ItemButton
 	 */
 	public ItemButton addItem(int slot, ItemBuilder item) {
 		return addItem(slot, item.build());
 	}
 
 	/**
+	 * Adding an item to the inventory
+	 * Creates the default inventory if it does not exist
 	 * 
-	 * @param slot
-	 * @param item
-	 * @return
+	 * @param slot - Inventory slot
+	 * @param item - ItemStack
+	 * @return ItemButton
 	 */
 	public ItemButton addItem(int slot, ItemStack item) {
-		// Pour éviter les erreurs, on crée un inventaire
+		
 		createDefaultInventory();
 
 		ItemButton button = new ItemButton(item);
 		this.items.put(slot, button);
 
-		if (this.openAsync)
+		if (this.openAsync) {
 			runAsync(this.plugin, () -> this.inventory.setItem(slot, item));
-		else
+		} else {
 			this.inventory.setItem(slot, item);
-
+		}
 		return button;
 	}
 
 	/**
-	 * Permet de retirer un item de la liste des items
+	 * Allows you to remove an item from the list of items
 	 * 
 	 * @param slot
 	 */
@@ -129,14 +133,14 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	}
 
 	/**
-	 * Permet de supprimer tous les items
+	 * Allows you to delete all items
 	 */
 	public void clearItem() {
 		this.items.clear();
 	}
 
 	/**
-	 * Permet de récupérer tous les items
+	 * Allows you to retrieve all items
 	 * 
 	 * @return
 	 */
@@ -145,8 +149,8 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	}
 
 	/**
-	 * Si le click dans l'inventaire est désactivé (se qui est par default)
-	 * alors il va retourner vrai
+	 * If the click in the inventory is disabled (which is the default)
+	 * then it will return true
 	 * 
 	 * @return vrai ou faux
 	 */
@@ -155,7 +159,7 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	}
 
 	/**
-	 * Changer le fait de pouvoir cliquer dans l'inventaire
+	 * Change the ability to click in the inventory
 	 * 
 	 * @param disableClick
 	 */
@@ -164,7 +168,7 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	}
 
 	/**
-	 * Permet de récupérer le joueur
+	 * Allows to recover the player
 	 * 
 	 * @return player
 	 */
@@ -173,7 +177,7 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	}
 
 	/**
-	 * Permet de récupérer la page
+	 * Allows you to retrieve the page
 	 * 
 	 * @return the page
 	 */
