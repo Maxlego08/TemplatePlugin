@@ -72,7 +72,9 @@ public abstract class ZUtils extends MessageUtils {
 	private static transient List<String> teleportPlayers = new ArrayList<String>();
 
 	/**
-	 * @param item
+	 * Allows to encode an itemstack in base64
+	 *
+	 * @param item - ItemStack
 	 * @return the encoded item
 	 */
 	protected String encode(ItemStack item) {
@@ -80,7 +82,9 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * @param item
+	 * Allows to decode a string in ItemStack
+	 *
+	 * @param item - the encoded itemstack
 	 * @return the decoded item
 	 */
 	protected ItemStack decode(String item) {
@@ -88,6 +92,8 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
+	 * Allows to obtain a random number between a and b
+	 * 
 	 * @param a
 	 * @param b
 	 * @return number between a and b
@@ -97,6 +103,8 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
+	 * Allows you to check if the inventory is full
+	 * 
 	 * @param player
 	 * @return true if the player's inventory is full
 	 */
@@ -109,13 +117,6 @@ public abstract class ZUtils extends MessageUtils {
 				slot++;
 		}
 		return slot == 0;
-	}
-
-	protected boolean give(ItemStack item, Player player) {
-		if (hasInventoryFull(player))
-			return false;
-		player.getInventory().addItem(item);
-		return true;
 	}
 
 	/**
@@ -132,6 +133,7 @@ public abstract class ZUtils extends MessageUtils {
 			player.getInventory().addItem(item);
 	}
 
+	// For plugin support from 1.8 to 1.12
 	private static transient Material[] byId;
 
 	static {
@@ -149,6 +151,9 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
+	 * Allows to return a material according to its ID
+	 * Works only for plugins from 1.8 to 1.12
+	 * 
 	 * @param id
 	 * @return the material according to his id
 	 */
@@ -157,15 +162,23 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
+	 * Allows to check if an itemstack has a display name
+	 *
+	 * @return boolean
+	 */
+	protected boolean hasDisplayName(ItemStack itemStack){
+		return itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()
+	}
+	
+	/**
 	 * Check if the item name is the same as the given string
 	 * 
 	 * @param stack
 	 * @param name
 	 * @return true if the item name is the same as string
 	 */
-	protected boolean same(ItemStack stack, String name) {
-		return stack.hasItemMeta() && stack.getItemMeta().hasDisplayName()
-				&& stack.getItemMeta().getDisplayName().equals(name);
+	protected boolean same(ItemStack itemStack, String name) {
+		return this.hasDisplayName(itemStack) && itemStack.getItemMeta().getDisplayName().equals(name);
 	}
 
 	/**
@@ -175,17 +188,15 @@ public abstract class ZUtils extends MessageUtils {
 	 * @param name
 	 * @return true if the item name contains the string
 	 */
-	protected boolean contains(ItemStack stack, String name) {
-		return stack.hasItemMeta() && stack.getItemMeta().hasDisplayName()
-				&& stack.getItemMeta().getDisplayName().contains(name);
+	protected boolean contains(ItemStack itemStack, String name) {
+		return this.hasDisplayName(itemStack) && itemStack.getItemMeta().getDisplayName().contains(name);
 	}
 
 	/**
 	 * Remove the item from the player's hand
 	 * 
 	 * @param player
-	 * @param number
-	 *            of items to withdraw
+	 * @param number of items to withdraw
 	 */
 	protected void removeItemInHand(Player player) {
 		removeItemInHand(player, 64);
@@ -195,8 +206,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * Remove the item from the player's hand
 	 * 
 	 * @param player
-	 * @param number
-	 *            of items to withdraw
+	 * @param number of items to withdraw
 	 */
 	protected void removeItemInHand(Player player, int how) {
 		if (player.getItemInHand().getAmount() > how)
@@ -209,10 +219,8 @@ public abstract class ZUtils extends MessageUtils {
 	/**
 	 * Check if two locations are identical
 	 * 
-	 * @param first
-	 *            location
-	 * @param second
-	 *            location
+	 * @param first location
+	 * @param second location
 	 * @return true if both rentals are the same
 	 */
 	protected boolean same(Location l, Location l2) {
@@ -223,8 +231,7 @@ public abstract class ZUtils extends MessageUtils {
 	/**
 	 * Teleport a player to a given location with a given delay
 	 * 
-	 * @param player
-	 *            who will be teleported
+	 * @param player who will be teleported
 	 * @param delay
 	 *            before the teleportation of the player
 	 * @param location
@@ -307,24 +314,27 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
+	 * Remove a certain number of items from a player's inventory
 	 * 
-	 * @param player
-	 * @param item
-	 * @param itemStack
+	 * @param player - Player who will have items removed
+	 * @param amount - Number of items to remove
+	 * @param itemStack - ItemStack to be removed
 	 */
-	protected void removeItems(Player player, int item, ItemStack itemStack) {
+	protected void removeItems(Player player, int amount, ItemStack itemStack) {
 		int slot = 0;
 		for (ItemStack is : player.getInventory().getContents()) {
-			if (is != null && is.isSimilar(itemStack) && item > 0) {
-				int currentAmount = is.getAmount() - item;
-				item -= is.getAmount();
+			if (is != null && is.isSimilar(itemStack) && amount > 0) {
+				int currentAmount = is.getAmount() - amount;
+				amount -= is.getAmount();
 				if (currentAmount <= 0) {
-					if (slot == 40)
+					if (slot == 40) {
 						player.getInventory().setItemInOffHand(null);
-					else
+					} else {
 						player.getInventory().removeItem(is);
-				} else
+					}
+				} else {
 					is.setAmount(currentAmount);
+				}
 			}
 			slot++;
 		}
@@ -578,7 +588,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return
 	 */
 	protected String colorReverse(String message) {
-		return message == null ? null : message.replace("§", "&");
+		return message == null ? null : message.replace("Â§", "&");
 	}
 
 	/**
@@ -634,7 +644,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Permet de générer un string
+	 * Permet de gÃ©nÃ©rer un string
 	 * 
 	 * @param length
 	 * @return
@@ -849,7 +859,7 @@ public abstract class ZUtils extends MessageUtils {
 	protected boolean isCooldown(Player player, String cooldown, int timer) {
 		if (CooldownBuilder.isCooldown(cooldown, player)) {
 			ActionBar.sendActionBar(player,
-					String.format("§cVous devez attendre encore §6%s §cavant de pouvoir faire cette action.",
+					String.format("Â§cVous devez attendre encore Â§6%s Â§cavant de pouvoir faire cette action.",
 							timerFormat(player, cooldown)));
 			return true;
 		}
@@ -863,7 +873,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return
 	 */
 	protected String toList(Stream<String> list) {
-		return toList(list.collect(Collectors.toList()), "§e", "§6");
+		return toList(list.collect(Collectors.toList()), "Â§e", "Â§6");
 	}
 
 	/**
@@ -871,7 +881,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return
 	 */
 	protected String toList(List<String> list) {
-		return toList(list, "§e", "§6§n");
+		return toList(list, "Â§e", "Â§6Â§n");
 	}
 
 	/**
@@ -903,7 +913,7 @@ public abstract class ZUtils extends MessageUtils {
 	 */
 	protected String removeColor(String message) {
 		for (ChatColor color : ChatColor.values())
-			message = message.replace("§" + color.getChar(), "").replace("&" + color.getChar(), "");
+			message = message.replace("Â§" + color.getChar(), "").replace("&" + color.getChar(), "");
 		return message;
 	}
 
