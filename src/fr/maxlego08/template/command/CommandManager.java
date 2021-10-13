@@ -126,10 +126,14 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	}
 
 	/**
-	 * @param command
-	 * @param sender
-	 * @param strings
-	 * @return
+	 * Allows you to process an order.
+	 * First we check if the sender has the permission or if the command has a permission.
+	 * If yes then we execute the command otherwise we send the message for the permission
+	 *
+	 * @param command - Object that contains the command
+	 * @param sender - Person who executes the command 
+	 * @param strings - Argument of the command
+	 * @return CommandType - Return of the command
 	 */
 	private CommandType processRequirements(VCommand command, CommandSender sender, String[] strings) {
 
@@ -189,7 +193,8 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	}
 
 	/**
-	 * Check if your order is ready for use
+	 * Permet de vérifier si toutes les commandes sont correct
+	 * Si une commande n'a pas 
 	 */
 	private void commandChecking() {
 		this.commands.forEach(command -> {
@@ -223,6 +228,7 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	}
 
 	/**
+	 * Allows to execute the tab completion
 	 * 
 	 * @param sender
 	 * @param command
@@ -254,11 +260,13 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	}
 
 	/**
-	 * Register command whitout plugin.yml
+	 * Enregistrer la commande whitout plugin.yml
+	 * This method will allow to register a command in the spigot without using the plugin.yml
+	 * This saves time and understanding, the plugin.yml file is clearer
 	 * 
-	 * @param string
-	 * @param vCommand
-	 * @param aliases
+	 * @param string - Main command 
+	 * @param vCommand - Command object	 
+	 * @param aliases - Command aliases
 	 */
 	public void registerCommand(String string, VCommand vCommand, List<String> aliases) {
 		try {
