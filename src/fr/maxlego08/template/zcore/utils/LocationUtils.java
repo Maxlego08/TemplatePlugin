@@ -8,35 +8,30 @@ import org.bukkit.World;
 public abstract class LocationUtils extends PapiUtils{
 
 	/**
-	 * @param location
-	 *            as String
+	 * Change a string location to Location object
+	 * 
+	 * @param location as String
 	 * @return string as location
 	 */
-	protected Location changeStringLocationToLocation(String s) {
-		String[] a = s.split(",");
-		if (a.length == 6)
-			return changeStringLocationToLocationEye(s);
-		World w = Bukkit.getServer().getWorld(a[0]);
-		float x = Float.parseFloat(a[1]);
-		float y = Float.parseFloat(a[2]);
-		float z = Float.parseFloat(a[3]);
-		return new Location(w, x, y, z);
+	protected Location changeStringLocationToLocation(String string) {
+		return changeStringLocationToLocationEye(string);
 	}
 
 	/**
-	 * @param location
-	 *            as string
+	 * Change a string location to Location object
+	 *
+	 * @param location as string
 	 * @return string as locaiton
 	 */
-	protected Location changeStringLocationToLocationEye(String s) {
-		String[] a = s.split(",");
-		World w = Bukkit.getServer().getWorld(a[0]);
-		float x = Float.parseFloat(a[1]);
-		float y = Float.parseFloat(a[2]);
-		float z = Float.parseFloat(a[3]);
+	protected Location changeStringLocationToLocationEye(String string) {
+		String[] locationArray = string.split(",");
+		World w = Bukkit.getServer().getWorld(locationArray[0]);
+		float x = Float.parseFloat(locationArray[1]);
+		float y = Float.parseFloat(locationArray[2]);
+		float z = Float.parseFloat(locationArray[3]);
 		if (a.length == 6) {
-			float yaw = Float.parseFloat(a[4]);
-			float pitch = Float.parseFloat(a[5]);
+			float yaw = Float.parseFloat(locationArray[4]);
+			float pitch = Float.parseFloat(locationArray[5]);
 			return new Location(w, x, y, z, yaw, pitch);
 		}
 		return new Location(w, x, y, z);
@@ -77,8 +72,7 @@ public abstract class LocationUtils extends PapiUtils{
 	 * @return chunk as string
 	 */
 	protected String changeChunkToString(Chunk chunk) {
-		String c = chunk.getWorld().getName() + "," + chunk.getX() + "," + chunk.getZ();
-		return c;
+		return chunk.getWorld().getName() + "," + chunk.getX() + "," + chunk.getZ();
 	}
 
 	/**
