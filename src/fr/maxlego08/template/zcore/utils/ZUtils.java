@@ -522,20 +522,29 @@ public abstract class ZUtils extends MessageUtils {
 	 * @param delay
 	 * @param runnable
 	 */
-	protected void scheduleFix(Plugin plugin, long delay, BiConsumer<TimerTask, Boolean> runnable) {
+	protected void scheduleFix(Plugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
+		this.scheduleFix(plugin, delay, delay, consumer);
+	}
+
+	/**
+	 * @param plugin
+	 * @param startAt
+	 * @param delay
+	 * @param runnable
+	 */
+	protected void scheduleFix(Plugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
 				if (!plugin.isEnabled()) {
 					cancel();
-					runnable.accept(this, false);
+					consumer.accept(this, false);
 					return;
 				}
-				Bukkit.getScheduler().runTask(plugin, () -> runnable.accept(this, true));
+				Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(this, true));
 			}
-		}, delay, delay);
+		}, startAt, delay);
 	}
-
 	/**
 	 * 
 	 * @param element
@@ -644,7 +653,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Permet de générer un string
+	 * Allows to generate a string
 	 * 
 	 * @param length
 	 * @return
@@ -739,7 +748,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Permet de conter le nombre d'item
+	 * Allows you to count the number of items in inventory
 	 * 
 	 * @param inventory
 	 * @param material
@@ -941,6 +950,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
+	 * Permet d'obtenir la tête d'un joueur en utilisation le système de configuration des inventaires
 	 * 
 	 * @param itemStack
 	 * @param player
@@ -977,9 +987,8 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * 
-	 * @param itemStack
-	 * @param player
+	 * Allows you to get an itemstack to create a player's head 
+	 *
 	 * @return itemstack
 	 */
 	protected ItemStack playerHead() {
@@ -988,6 +997,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
+	 * Allows to obtain a class according to the provider
 	 * 
 	 * @param plugin
 	 * @param classz
@@ -1006,14 +1016,17 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return
 	 */
 	protected PotionEffectType getPotion(String configuration) {
-		for (PotionEffectType effectType : PotionEffectType.values())
-			if (effectType.getName().equalsIgnoreCase(configuration))
+		for (PotionEffectType effectType : PotionEffectType.values()) {
+			if (effectType.getName().equalsIgnoreCase(configuration)) {
 				return effectType;
+			}
+		}
 		return null;
 	}
 
 	/**
-	 * 
+	 * Allows to execute a runnable in an asynmetrical way 
+	 *
 	 * @param runnable
 	 */
 	protected void runAsync(Plugin plugin, Runnable runnable) {
@@ -1021,18 +1034,20 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * 
+	 * Turns back time for a human 
+	 *
 	 * @param second
-	 * @return
+	 * @return string
 	 */
 	protected String getStringTime(long second) {
 		return TimerBuilder.getStringTime(second);
 	}
 
 	/**
-	 * 
+	 * Allows you to create a head from a URL 
+	 *
 	 * @param url
-	 * @return
+	 * @return itemstack
 	 */
 	protected ItemStack createSkull(String url) {
 
@@ -1058,7 +1073,8 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * 
+	 * Allows to check if an itemstack and a head 
+	 *
 	 * @param itemStack
 	 * @return boolean
 	 */
@@ -1095,9 +1111,9 @@ public abstract class ZUtils extends MessageUtils {
 	 * Unregister a bukkit command
 	 * 
 	 * @param plugin
-	 * @param cmd
+	 * @param command
 	 */
-	protected void unRegisterBukkitCommand(Plugin plugin, PluginCommand cmd) {
+	protected void unRegisterBukkitCommand(Plugin plugin, PluginCommand command) {
 		try {
 			Object result = getPrivateField(plugin.getServer().getPluginManager(), "commandMap");
 			SimpleCommandMap commandMap = (SimpleCommandMap) result;
@@ -1105,19 +1121,21 @@ public abstract class ZUtils extends MessageUtils {
 			Object map = getPrivateField(commandMap, "knownCommands");
 			@SuppressWarnings("unchecked")
 			HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
-			knownCommands.remove(cmd.getName());
-			for (String alias : cmd.getAliases())
+			knownCommands.remove(command.getName());
+			for (String alias : command.getAliases()) {
 				knownCommands.remove(alias);
-			knownCommands.remove("zshop:" + cmd.getName());
-			for (String alias : cmd.getAliases())
-				knownCommands.remove("zshop:" + alias);
+			}
+			knownCommands.remove(plugin.getName() + ":" + cmd.getName());
+			for (String alias : cmd.getAliases()) {
+				knownCommands.remove(plugin.getName() + ":" + alias);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Glow itemstack
+	 * Allows to make an itemstack shine
 	 * 
 	 * @param itemStack
 	 */
@@ -1130,7 +1148,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 	
 	/**
-	 * Permet de clear l'inventaire d'un joueur
+	 * Allows you to clear a player's inventory, remove potion effects and put him on life support
 	 * 
 	 * @param player
 	 */
@@ -1143,7 +1161,6 @@ public abstract class ZUtils extends MessageUtils {
 		player.getPlayer().setItemOnCursor(null);
 		player.getPlayer().setFireTicks(0);
 		player.getPlayer().getOpenInventory().getTopInventory().clear();
-		player.getPlayer().getActivePotionEffects().clear();
 		player.setGameMode(GameMode.SURVIVAL);
 		player.getPlayer().getActivePotionEffects().forEach(e -> {
 			player.getPlayer().removePotionEffect(e.getType());
