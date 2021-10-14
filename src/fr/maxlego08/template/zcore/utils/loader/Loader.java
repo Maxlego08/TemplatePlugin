@@ -6,14 +6,16 @@ public interface Loader<T> {
 
 	/**
 	 * Load object from yml
+	 *
 	 * @param configuration
 	 * @param path
-	 * @return
+	 * @return element
 	 */
 	T load(YamlConfiguration configuration, String path);
 	
 	/**
 	 * Save object to yml
+	 *
 	 * @param object
 	 * @param configuration
 	 * @param path
