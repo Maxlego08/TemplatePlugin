@@ -52,6 +52,16 @@ public class ScoreBoardManager extends ZUtils {
 				return;
 			}
 
+			Iterator<FastBoard> iterator = boards.values().iterator();
+			while (iterator.hasNext()) {
+				FastBoard b = iterator.next();
+				if (b.isDeleted()) {
+					boards.remove(b.getPlayer());
+				}
+			}
+
+
+			
 			boards.forEach((player, board) -> board.updateLines(lines.accept(player)));
 
 		});
