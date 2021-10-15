@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package fr.mrmicky.fastboard;
+package fr.maxlego08.template.scoreboard;
 
 import org.bukkit.Bukkit;
 
