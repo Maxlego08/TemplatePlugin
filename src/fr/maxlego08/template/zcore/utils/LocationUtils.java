@@ -29,7 +29,7 @@ public abstract class LocationUtils extends PapiUtils{
 		float x = Float.parseFloat(locationArray[1]);
 		float y = Float.parseFloat(locationArray[2]);
 		float z = Float.parseFloat(locationArray[3]);
-		if (a.length == 6) {
+		if (locationArray.length == 6) {
 			float yaw = Float.parseFloat(locationArray[4]);
 			float pitch = Float.parseFloat(locationArray[5]);
 			return new Location(w, x, y, z, yaw, pitch);
