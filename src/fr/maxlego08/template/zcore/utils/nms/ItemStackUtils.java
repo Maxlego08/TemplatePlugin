@@ -41,14 +41,21 @@ public class ItemStackUtils {
 			Object localObject2 = EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
 					.getMethod("asNMSCopy", new Class[] { ItemStack.class })
 					.invoke(null, new Object[] { paramItemStack });
-			EnumReflectionItemStack.ITEMSTACK.getClassz().getMethod("save", new Class[] { localClass })
-					.invoke(localObject2, new Object[] { localObject1 });
+
+			if (NMS_VERSION == 1.18) {
+				EnumReflectionItemStack.ITEMSTACK.getClassz().getMethod("b", new Class[] { localClass })
+						.invoke(localObject2, new Object[] { localObject1 });
+			} else {
+				EnumReflectionItemStack.ITEMSTACK.getClassz().getMethod("save", new Class[] { localClass })
+						.invoke(localObject2, new Object[] { localObject1 });
+			}
+
 			localByteArrayOutputStream = new ByteArrayOutputStream();
 			EnumReflectionItemStack.NBTCOMPRESSEDSTREAMTOOLS.getClassz()
 					.getMethod("a", new Class[] { localClass, OutputStream.class })
 					.invoke(null, new Object[] { localObject1, localByteArrayOutputStream });
 		} catch (Exception localException) {
-			localException.printStackTrace();
+			// localException.printStackTrace();
 		}
 		String string = Base64.encode(localByteArrayOutputStream.toByteArray());
 		itemstackSerialized.put(paramItemStack, string);
@@ -66,7 +73,7 @@ public class ItemStackUtils {
 
 		if (paramString.equals("null"))
 			return null;
-
+		
 		ByteArrayInputStream localByteArrayInputStream = null;
 		try {
 			localByteArrayInputStream = new ByteArrayInputStream(Base64.decode(paramString));
@@ -92,17 +99,34 @@ public class ItemStackUtils {
 				localObject2 = localClass2.getMethod("createStack", new Class[] { localClass1 }).invoke(null,
 						new Object[] { localObject1 });
 			}
-			
+
 			localItemStack = (ItemStack) EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
 					.getMethod("asBukkitCopy", new Class[] { localClass2 }).invoke(null, new Object[] { localObject2 });
 		} catch (Exception localException) {
-			localException.printStackTrace();
+			// localException.printStackTrace();
 		}
 		if (localItemStack != null && !itemstackSerialized.containsKey(localItemStack))
 			itemstackSerialized.put(localItemStack, paramString);
 		return localItemStack;
 
 	}
+
+	/*
+	 * public static boolean isUnbreakable(ItemStack itemStack) { try {
+	 * 
+	 * Class<?> localClass = EnumReflectionItemStack.NBTTAGCOMPOUND.getClassz();
+	 * Object localObject2 = EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
+	 * .getMethod("asNMSCopy", new Class[] { ItemStack.class }).invoke(null, new
+	 * Object[] { itemStack });
+	 * 
+	 * Object nbttag = EnumReflectionItemStack.ITEMSTACK.getClassz()
+	 * .getMethod("getTag", new Class[] { localClass }) .invoke(localObject2,
+	 * new Object[] { localObject2 });
+	 * 
+	 * } catch (IllegalAccessException | IllegalArgumentException |
+	 * InvocationTargetException | NoSuchMethodException | SecurityException e)
+	 * { e.printStackTrace(); return false; } }
+	 */
 
 	public enum EnumReflectionItemStack {
 
