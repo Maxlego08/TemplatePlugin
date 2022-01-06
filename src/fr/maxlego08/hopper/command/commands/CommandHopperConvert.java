@@ -1,0 +1,30 @@
+package fr.maxlego08.hopper.command.commands;
+
+import fr.maxlego08.hopper.HopperPlugin;
+import fr.maxlego08.hopper.command.VCommand;
+import fr.maxlego08.hopper.convert.ConvertManager;
+import fr.maxlego08.hopper.zcore.enums.Message;
+import fr.maxlego08.hopper.zcore.enums.Permission;
+import fr.maxlego08.hopper.zcore.utils.commands.CommandType;
+
+public class CommandHopperConvert extends VCommand {
+
+	private final ConvertManager convertManager;	
+	
+	public CommandHopperConvert(HopperPlugin plugin) {
+		super(plugin);
+		this.setPermission(Permission.HOPPER_ADMIN);
+		this.setDescription(Message.DESCRIPTION_GIVE);
+		this.addSubCommand("convert");
+		this.convertManager = new ConvertManager(plugin);
+	}
+
+	@Override
+	protected CommandType perform(HopperPlugin plugin) {
+
+		this.convertManager.convert(this.sender);
+
+		return CommandType.SUCCESS;
+	}
+
+}
