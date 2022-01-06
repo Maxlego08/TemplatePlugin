@@ -1,6 +1,7 @@
 package fr.maxlego08.template.scoreboard;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.entity.Player;

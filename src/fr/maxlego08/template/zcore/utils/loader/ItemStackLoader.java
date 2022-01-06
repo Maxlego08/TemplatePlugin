@@ -209,7 +209,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
 			configuration.set(path + "enchants", enchantList);
 		}
-		if (NMSUtils.hasBarrel() &&  meta.hasCustomModelData()) {
+		if (NMSUtils.hasBarrel() && meta.hasCustomModelData()) {
 			configuration.set(path + "modelID", meta.getCustomModelData());
 		}
 

@@ -52,9 +52,9 @@ public class InventoryManager extends ListenerAdapter {
 	 */
 	public void registerInventory(EnumInventory enumInventory, VInventory inventory) {
 		if (!inventories.containsKey(enumInventory.getId())) {
-			inventories.put(inv.getId(), inventory);
+			inventories.put(inventory.getId(), inventory);
 		} else { 
-			throw new InventoryAlreadyExistException("Inventory with id " + inv.getId() + " already exist !");
+			throw new InventoryAlreadyExistException("Inventory with id " + inventory.getId() + " already exist !");
 		}
 	}
 

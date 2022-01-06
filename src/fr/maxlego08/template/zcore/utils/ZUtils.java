@@ -167,7 +167,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return boolean
 	 */
 	protected boolean hasDisplayName(ItemStack itemStack){
-		return itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()
+		return itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName();
 	}
 	
 	/**
@@ -1125,8 +1125,8 @@ public abstract class ZUtils extends MessageUtils {
 			for (String alias : command.getAliases()) {
 				knownCommands.remove(alias);
 			}
-			knownCommands.remove(plugin.getName() + ":" + cmd.getName());
-			for (String alias : cmd.getAliases()) {
+			knownCommands.remove(plugin.getName() + ":" + command.getName());
+			for (String alias : command.getAliases()) {
 				knownCommands.remove(plugin.getName() + ":" + alias);
 			}
 		} catch (Exception e) {
