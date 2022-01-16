@@ -8,6 +8,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.zcore.enums.Message;
+import fr.maxlego08.template.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.template.zcore.utils.players.ActionBar;
 
 public abstract class MessageUtils extends LocationUtils {
@@ -130,7 +131,12 @@ public abstract class MessageUtils extends LocationUtils {
 	 * @param fadeOutTime
 	 */
 	protected void title(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
-		System.out.println(fadeInTime + " - " + showTime + " - " + fadeOutTime);
+		
+		if (NMSUtils.isNewVersion()){
+			player.sendTitle(title, subtitle, fadeInTime, showTime, fadeOutTime);
+			return;
+		}
+		
 		try {
 			Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
 					.invoke(null, "{\"text\": \"" + title + "\"}");

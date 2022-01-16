@@ -11,18 +11,18 @@ import fr.maxlego08.template.zcore.utils.nms.NMSUtils;
 
 public enum Message {
 
-	PREFIX("Â§8(Â§6TemplateÂ§8) "),
+	PREFIX("§8(§6Template§8) "),
 	
-	TELEPORT_MOVE("Â§cYou must not move!"),
-	TELEPORT_MESSAGE("Â§7Teleportation in Â§3%second% Â§7seconds!"),
-	TELEPORT_ERROR("Â§cYou already have a teleportation in progress!"),
-	TELEPORT_SUCCESS("Â§7Teleportation done!"),
+	TELEPORT_MOVE("§cYou must not move!"),
+	TELEPORT_MESSAGE("§7Teleportation in §3%second% §7seconds!"),
+	TELEPORT_ERROR("§cYou already have a teleportation in progress!"),
+	TELEPORT_SUCCESS("§7Teleportation done!"),
 	
-	INVENTORY_NULL("Â§cImpossible to find the inventory with the id Â§6%id%Â§c."),
-	INVENTORY_CLONE_NULL("Â§cThe inventory clone is null!"),
-	INVENTORY_OPEN_ERROR("Â§cAn error occurred with the opening of the inventory Â§6%id%Â§c."),
-	INVENTORY_BUTTON_PREVIOUS("Â§fÂ» Â§7Previous page"),
-	INVENTORY_BUTTON_NEXT("Â§fÂ» Â§7Next page"),
+	INVENTORY_NULL("§cImpossible to find the inventory with the id §6%id%§c."),
+	INVENTORY_CLONE_NULL("§cThe inventory clone is null!"),
+	INVENTORY_OPEN_ERROR("§cAn error occurred with the opening of the inventory §6%id%§c."),
+	INVENTORY_BUTTON_PREVIOUS("§f» §7Previous page"),
+	INVENTORY_BUTTON_NEXT("§f» §7Next page"),
 	
 	TIME_DAY("%02d jour(s) %02d heure(s) %02d minute(s) %02d seconde(s)"),
 	TIME_HOUR("%02d heure(s) %02d minute(s) %02d seconde(s)"),
@@ -30,11 +30,11 @@ public enum Message {
 	TIME_MINUTE("%02d minute(s) %02d seconde(s)"),
 	TIME_SECOND("%02d seconde(s)"),
 	
-	COMMAND_SYNTAXE_ERROR("Â§cYou must execute the command like thisÂ§7: Â§a%syntax%"),
-	COMMAND_NO_PERMISSION("Â§cYou do not have permission to run this command."),
-	COMMAND_NO_CONSOLE("Â§cOnly one player can execute this command."),
-	COMMAND_NO_ARG("Â§cImpossible to find the command with its arguments."),
-	COMMAND_SYNTAXE_HELP("Â§f%syntax% Â§7Â» Â§7%description%"),
+	COMMAND_SYNTAXE_ERROR("§cYou must execute the command like this§7: §a%syntax%"),
+	COMMAND_NO_PERMISSION("§cYou do not have permission to run this command."),
+	COMMAND_NO_CONSOLE("§cOnly one player can execute this command."),
+	COMMAND_NO_ARG("§cImpossible to find the command with its arguments."),
+	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
 	
 	
 	;
@@ -156,6 +156,7 @@ public enum Message {
 
 	public void setTitles(Map<String, Object> titles) {
 		this.titles = titles;
+		this.type = MessageType.TITLE;
 	}
 
 	public String getSubTitle() {
