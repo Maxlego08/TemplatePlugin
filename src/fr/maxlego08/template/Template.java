@@ -35,7 +35,7 @@ public class Template extends ZPlugin {
 		// addSave(new CooldownBuilder());
 
 		this.getSavers().forEach(saver -> saver.load(this.getPersist()));
-
+		
 		this.postEnable();
 	}
 

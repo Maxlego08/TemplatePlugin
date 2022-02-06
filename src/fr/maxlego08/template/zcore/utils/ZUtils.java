@@ -74,7 +74,8 @@ public abstract class ZUtils extends MessageUtils {
 	/**
 	 * Allows to encode an itemstack in base64
 	 *
-	 * @param item - ItemStack
+	 * @param item
+	 *            - ItemStack
 	 * @return the encoded item
 	 */
 	protected String encode(ItemStack item) {
@@ -84,7 +85,8 @@ public abstract class ZUtils extends MessageUtils {
 	/**
 	 * Allows to decode a string in ItemStack
 	 *
-	 * @param item - the encoded itemstack
+	 * @param item
+	 *            - the encoded itemstack
 	 * @return the decoded item
 	 */
 	protected ItemStack decode(String item) {
@@ -151,8 +153,8 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Allows to return a material according to its ID
-	 * Works only for plugins from 1.8 to 1.12
+	 * Allows to return a material according to its ID Works only for plugins
+	 * from 1.8 to 1.12
 	 * 
 	 * @param id
 	 * @return the material according to his id
@@ -166,10 +168,10 @@ public abstract class ZUtils extends MessageUtils {
 	 *
 	 * @return boolean
 	 */
-	protected boolean hasDisplayName(ItemStack itemStack){
+	protected boolean hasDisplayName(ItemStack itemStack) {
 		return itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName();
 	}
-	
+
 	/**
 	 * Check if the item name is the same as the given string
 	 * 
@@ -196,7 +198,8 @@ public abstract class ZUtils extends MessageUtils {
 	 * Remove the item from the player's hand
 	 * 
 	 * @param player
-	 * @param number of items to withdraw
+	 * @param number
+	 *            of items to withdraw
 	 */
 	protected void removeItemInHand(Player player) {
 		removeItemInHand(player, 64);
@@ -206,7 +209,8 @@ public abstract class ZUtils extends MessageUtils {
 	 * Remove the item from the player's hand
 	 * 
 	 * @param player
-	 * @param number of items to withdraw
+	 * @param number
+	 *            of items to withdraw
 	 */
 	protected void removeItemInHand(Player player, int how) {
 		if (player.getItemInHand().getAmount() > how)
@@ -219,8 +223,10 @@ public abstract class ZUtils extends MessageUtils {
 	/**
 	 * Check if two locations are identical
 	 * 
-	 * @param first location
-	 * @param second location
+	 * @param first
+	 *            location
+	 * @param second
+	 *            location
 	 * @return true if both rentals are the same
 	 */
 	protected boolean same(Location l, Location l2) {
@@ -231,7 +237,8 @@ public abstract class ZUtils extends MessageUtils {
 	/**
 	 * Teleport a player to a given location with a given delay
 	 * 
-	 * @param player who will be teleported
+	 * @param player
+	 *            who will be teleported
 	 * @param delay
 	 *            before the teleportation of the player
 	 * @param location
@@ -316,9 +323,12 @@ public abstract class ZUtils extends MessageUtils {
 	/**
 	 * Remove a certain number of items from a player's inventory
 	 * 
-	 * @param player - Player who will have items removed
-	 * @param amount - Number of items to remove
-	 * @param itemStack - ItemStack to be removed
+	 * @param player
+	 *            - Player who will have items removed
+	 * @param amount
+	 *            - Number of items to remove
+	 * @param itemStack
+	 *            - ItemStack to be removed
 	 */
 	protected void removeItems(Player player, int amount, ItemStack itemStack) {
 		int slot = 0;
@@ -522,8 +532,8 @@ public abstract class ZUtils extends MessageUtils {
 	 * @param delay
 	 * @param runnable
 	 */
-	protected void scheduleFix(Plugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
-		this.scheduleFix(plugin, delay, delay, consumer);
+	protected TimerTask scheduleFix(Plugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
+		return this.scheduleFix(plugin, delay, delay, consumer);
 	}
 
 	/**
@@ -532,8 +542,8 @@ public abstract class ZUtils extends MessageUtils {
 	 * @param delay
 	 * @param runnable
 	 */
-	protected void scheduleFix(Plugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
-		new Timer().scheduleAtFixedRate(new TimerTask() {
+	protected TimerTask scheduleFix(Plugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
+		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
 				if (!plugin.isEnabled()) {
@@ -543,8 +553,11 @@ public abstract class ZUtils extends MessageUtils {
 				}
 				Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(this, true));
 			}
-		}, startAt, delay);
+		};
+		new Timer().scheduleAtFixedRate(task, startAt, delay);
+		return task;
 	}
+
 	/**
 	 * 
 	 * @param element
@@ -950,7 +963,8 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Permet d'obtenir la tête d'un joueur en utilisation le système de configuration des inventaires
+	 * Permet d'obtenir la tête d'un joueur en utilisation le système de
+	 * configuration des inventaires
 	 * 
 	 * @param itemStack
 	 * @param player
@@ -987,7 +1001,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Allows you to get an itemstack to create a player's head 
+	 * Allows you to get an itemstack to create a player's head
 	 *
 	 * @return itemstack
 	 */
@@ -1025,7 +1039,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Allows to execute a runnable in an asynmetrical way 
+	 * Allows to execute a runnable in an asynmetrical way
 	 *
 	 * @param runnable
 	 */
@@ -1034,7 +1048,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Turns back time for a human 
+	 * Turns back time for a human
 	 *
 	 * @param second
 	 * @return string
@@ -1044,7 +1058,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Allows you to create a head from a URL 
+	 * Allows you to create a head from a URL
 	 *
 	 * @param url
 	 * @return itemstack
@@ -1073,7 +1087,7 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	/**
-	 * Allows to check if an itemstack and a head 
+	 * Allows to check if an itemstack and a head
 	 *
 	 * @param itemStack
 	 * @return boolean
@@ -1146,9 +1160,10 @@ public abstract class ZUtils extends MessageUtils {
 			itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		itemStack.setItemMeta(itemMeta);
 	}
-	
+
 	/**
-	 * Allows you to clear a player's inventory, remove potion effects and put him on life support
+	 * Allows you to clear a player's inventory, remove potion effects and put
+	 * him on life support
 	 * 
 	 * @param player
 	 */

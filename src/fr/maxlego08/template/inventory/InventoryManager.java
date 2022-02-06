@@ -40,57 +40,66 @@ public class InventoryManager extends ListenerAdapter {
 	}
 
 	public void sendLog() {
-		plugin.getLog().log("Loading " + inventories.size() + " inventories", LogType.SUCCESS);
+		plugin.getLog().log("Loading " + this.inventories.size() + " inventories", LogType.SUCCESS);
 	}
 
 	/**
-	 * Allows you to record an inventory
-	 * If the inventory ID already exists then an exception will be throw
+	 * Allows you to record an inventory If the inventory ID already exists then
+	 * an exception will be throw
 	 * 
 	 * @param enumInventory
 	 * @param inventory
 	 */
 	public void registerInventory(EnumInventory enumInventory, VInventory inventory) {
-		if (!inventories.containsKey(enumInventory.getId())) {
-			inventories.put(inventory.getId(), inventory);
-		} else { 
+		if (!this.inventories.containsKey(enumInventory.getId())) {
+			this.inventories.put(enumInventory.getId(), inventory);
+		} else {
 			throw new InventoryAlreadyExistException("Inventory with id " + inventory.getId() + " already exist !");
 		}
 	}
 
 	/**
-	 * Allows you to open an inventory	
+	 * Allows you to open an inventory
 	 * 
-	 * @param enumInventory - Inventory enum for get the ID
-	 * @param player - Player that will open the inventory
-	 * @param page - The inventory page
-	 * @param objects - The arguments used to make the inventory work
+	 * @param enumInventory
+	 *            - Inventory enum for get the ID
+	 * @param player
+	 *            - Player that will open the inventory
+	 * @param page
+	 *            - The inventory page
+	 * @param objects
+	 *            - The arguments used to make the inventory work
 	 */
 	public void createInventory(EnumInventory enumInventory, Player player, int page, Object... objects) {
 		this.createInventory(enumInventory.getId(), player, page, objects);
 	}
 
 	/**
-	 * Allows you to open an inventory
-	 * When opening the inventory will be cloned
+	 * Allows you to open an inventory When opening the inventory will be cloned
 	 * 
-	 * @param id - Inventory ID
-	 * @param player - Player that will open the inventory
-	 * @param page - The inventory page
-	 * @param objects - The arguments used to make the inventory work
+	 * @param id
+	 *            - Inventory ID
+	 * @param player
+	 *            - Player that will open the inventory
+	 * @param page
+	 *            - The inventory page
+	 * @param objects
+	 *            - The arguments used to make the inventory work
 	 */
 	public void createInventory(int id, Player player, int page, Object... objects) {
 		Optional<VInventory> optional = this.getInventory(id);
-		
+
 		if (!optional.isPresent()) {
 			message(player, Message.INVENTORY_CLONE_NULL, "%id%", id);
 			return;
 		}
-		
+
 		VInventory inventory = optional.get();
-		
+
 		// We need to clone the object to have one object per open inventory
-		// An inventory will remain open for several seconds, during this time the inventories of the invary must be correctly saved according to the player. 
+		// An inventory will remain open for several seconds, during this time
+		// the inventories of the invary must be correctly saved according to
+		// the player.
 		VInventory clonedInventory = inventory.clone();
 
 		if (clonedInventory == null) {
@@ -104,8 +113,8 @@ public class InventoryManager extends ListenerAdapter {
 			if (result.equals(InventoryResult.SUCCESS)) {
 				player.openInventory(clonedInventory.getInventory());
 				playerInventories.put(player.getUniqueId(), clonedInventory);
-			} else if (result.equals(InventoryResult.ERROR)){
-				message(player, Message.INVENTORY_OPEN_ERROR, "%id%",  id);
+			} else if (result.equals(InventoryResult.ERROR)) {
+				message(player, Message.INVENTORY_OPEN_ERROR, "%id%", id);
 			}
 		} catch (InventoryOpenException e) {
 			message(player, Message.INVENTORY_OPEN_ERROR, "%id%", id);
@@ -131,12 +140,13 @@ public class InventoryManager extends ListenerAdapter {
 			}
 			if (event.getView() != null && gui.getPlayer().equals(player)
 					&& event.getView().getTitle().equals(gui.getGuiName())) {
-			
+
 				event.setCancelled(gui.isDisableClick());
-				
-				if (event.getClickedInventory().getType().equals(InventoryType.PLAYER))
+
+				if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
 					return;
-				
+				}
+
 				ItemButton button = gui.getItems().getOrDefault(event.getSlot(), null);
 				if (button != null)
 					button.onClick(event);
@@ -167,10 +177,11 @@ public class InventoryManager extends ListenerAdapter {
 	}
 
 	/**
-	* Allows you to remove the player from the list of open inventories
-	* 
-	* @param player - Player who will close the inventory
-	*/
+	 * Allows you to remove the player from the list of open inventories
+	 * 
+	 * @param player
+	 *            - Player who will close the inventory
+	 */
 	public void remove(Player player) {
 		if (playerInventories.containsKey(player.getUniqueId())) {
 			playerInventories.remove(player.getUniqueId());
@@ -178,9 +189,10 @@ public class InventoryManager extends ListenerAdapter {
 	}
 
 	/**
-	* @param id - Inventory Id
-	* @return Optional - Allows to return the inventory in an optional
-	*/
+	 * @param id
+	 *            - Inventory Id
+	 * @return Optional - Allows to return the inventory in an optional
+	 */
 	private Optional<VInventory> getInventory(int id) {
 		return Optional.ofNullable(inventories.getOrDefault(id, null));
 	}
