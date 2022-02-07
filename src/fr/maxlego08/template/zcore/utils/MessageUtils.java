@@ -11,6 +11,12 @@ import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.template.zcore.utils.players.ActionBar;
 
+/**
+ * Allows you to manage messages sent to players and the console
+ * 
+ * @author Maxence
+ *
+ */
 public abstract class MessageUtils extends LocationUtils {
 
 	/**
@@ -23,25 +29,47 @@ public abstract class MessageUtils extends LocationUtils {
 		player.sendMessage(getMessage(message, args));
 	}
 
-	protected void messageWO(CommandSender player, String message, Object... args) {
-		player.sendMessage(getMessage(message, args));
-	}
-
-	protected void message(CommandSender sender, String message, Object... args) {
-		sender.sendMessage(Message.PREFIX.msg() + getMessage(message, args));
-	}
-
 	/**
 	 * 
 	 * @param player
 	 * @param message
 	 * @param args
 	 */
+	protected void messageWO(CommandSender player, String message, Object... args) {
+		player.sendMessage(getMessage(message, args));
+	}
+
+	/**
+	 * 
+	 * @param sender
+	 * @param message
+	 * @param args
+	 */
+	protected void message(CommandSender sender, String message, Object... args) {
+		sender.sendMessage(Message.PREFIX.msg() + getMessage(message, args));
+	}
+
+	/**
+	 * Allows you to send a message to a command sender
+	 * 
+	 * @param sender
+	 *            User who sent the command
+	 * @param message
+	 *            The message - Using the Message enum for simplified message
+	 *            management
+	 * @param args
+	 *            The arguments - The arguments work in pairs, you must put for
+	 *            example %test% and then the value
+	 */
 	protected void message(CommandSender sender, Message message, Object... args) {
 
-		if (sender instanceof ConsoleCommandSender)
-			sender.sendMessage(Message.PREFIX.msg() + getMessage(message, args));
-		else {
+		if (sender instanceof ConsoleCommandSender) {
+			if (message.getMessages().size() > 0) {
+				message.getMessages().forEach(msg -> sender.sendMessage(Message.PREFIX.msg() + getMessage(msg, args)));
+			} else {
+				sender.sendMessage(Message.PREFIX.msg() + getMessage(message, args));
+			}
+		} else {
 
 			Player player = (Player) sender;
 			switch (message.getType()) {
@@ -52,11 +80,12 @@ public abstract class MessageUtils extends LocationUtils {
 				if (message.getMessages().size() > 0) {
 					message.getMessages()
 							.forEach(msg -> sender.sendMessage(Message.PREFIX.msg() + getMessage(msg, args)));
-				} else
+				} else {
 					sender.sendMessage(Message.PREFIX.msg() + getMessage(message, args));
+				}
 				break;
 			case TITLE:
-				// gestion du title message
+				// title message management
 				String title = message.getTitle();
 				String subTitle = message.getSubTitle();
 				int fadeInTime = message.getStart();
@@ -79,8 +108,9 @@ public abstract class MessageUtils extends LocationUtils {
 	 * @param args
 	 */
 	protected void broadcast(Message message, Object... args) {
-		for (Player player : Bukkit.getOnlinePlayers())
+		for (Player player : Bukkit.getOnlinePlayers()) {
 			message(player, message, args);
+		}
 		message(Bukkit.getConsoleSender(), message, args);
 	}
 
@@ -100,7 +130,7 @@ public abstract class MessageUtils extends LocationUtils {
 
 	protected String getMessage(String message, Object... args) {
 		if (args.length % 2 != 0)
-			System.err.println("Impossible d'appliquer la méthode pour les messages.");
+			System.err.println("Impossible to apply the method for messages.");
 		else
 			for (int a = 0; a < args.length; a += 2) {
 				String replace = args[a].toString();
@@ -131,12 +161,12 @@ public abstract class MessageUtils extends LocationUtils {
 	 * @param fadeOutTime
 	 */
 	protected void title(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
-		
-		if (NMSUtils.isNewVersion()){
+
+		if (NMSUtils.isNewVersion()) {
 			player.sendTitle(title, subtitle, fadeInTime, showTime, fadeOutTime);
 			return;
 		}
-		
+
 		try {
 			Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
 					.invoke(null, "{\"text\": \"" + title + "\"}");
