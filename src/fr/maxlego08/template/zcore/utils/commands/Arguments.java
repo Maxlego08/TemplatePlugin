@@ -22,7 +22,7 @@ public abstract class Arguments extends ZUtils {
 	 */
 	protected String argAsString(int index) {
 		try {
-			return args[index + parentCount];
+			return this.args[index + this.parentCount];
 		} catch (Exception e) {
 			return null;
 		}
@@ -36,7 +36,7 @@ public abstract class Arguments extends ZUtils {
 	 */
 	protected String argAsString(int index, String defaultValue) {
 		try {
-			return args[index + parentCount];
+			return this.args[index + this.parentCount];
 		} catch (Exception e) {
 			return defaultValue;
 		}

@@ -126,13 +126,16 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	}
 
 	/**
-	 * Allows you to process an order.
-	 * First we check if the sender has the permission or if the command has a permission.
-	 * If yes then we execute the command otherwise we send the message for the permission
+	 * Allows you to process an order. First we check if the sender has the
+	 * permission or if the command has a permission. If yes then we execute the
+	 * command otherwise we send the message for the permission
 	 *
-	 * @param command - Object that contains the command
-	 * @param sender - Person who executes the command 
-	 * @param strings - Argument of the command
+	 * @param command
+	 *            - Object that contains the command
+	 * @param sender
+	 *            - Person who executes the command
+	 * @param strings
+	 *            - Argument of the command
 	 * @return CommandType - Return of the command
 	 */
 	private CommandType processRequirements(VCommand command, CommandSender sender, String[] strings) {
@@ -177,7 +180,8 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 		this.commands.forEach(command -> {
 			if (isValid(command, commandString)
 					&& (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
-				message(sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%", command.getDescription());
+				message(sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%",
+						command.getDescription());
 			}
 		});
 	}
@@ -193,8 +197,8 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	}
 
 	/**
-	 * Permet de vérifier si toutes les commandes sont correct
-	 * Si une commande n'a pas 
+	 * Allows you to check if all commands are correct If an command does not
+	 * have
 	 */
 	private void commandChecking() {
 		this.commands.forEach(command -> {
@@ -246,27 +250,33 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 			for (VCommand vCommand : this.commands) {
 				if ((vCommand.getParent() != null && vCommand.getParent() == command)) {
 					String cmd = vCommand.getSubCommands().get(0);
-					if (vCommand.getPermission() == null || sender.hasPermission(vCommand.getPermission()))
-						if (startWith.length() == 0 || cmd.startsWith(startWith))
+					if (vCommand.getPermission() == null || sender.hasPermission(vCommand.getPermission())) {
+						if (startWith.length() == 0 || cmd.startsWith(startWith)) {
 							tabCompleter.add(cmd);
+						}
+					}
 				}
 			}
 			return tabCompleter.size() == 0 ? null : tabCompleter;
 
-		} else if (type.equals(CommandType.SUCCESS))
+		} else if (type.equals(CommandType.SUCCESS)) {
 			return command.toTab(this.plugin, sender, args);
+		}
 
 		return null;
 	}
 
 	/**
-	 * Enregistrer la commande whitout plugin.yml
-	 * This method will allow to register a command in the spigot without using the plugin.yml
-	 * This saves time and understanding, the plugin.yml file is clearer
+	 * Enregistrer la commande whitout plugin.yml This method will allow to
+	 * register a command in the spigot without using the plugin.yml This saves
+	 * time and understanding, the plugin.yml file is clearer
 	 * 
-	 * @param string - Main command 
-	 * @param vCommand - Command object	 
-	 * @param aliases - Command aliases
+	 * @param string
+	 *            - Main command
+	 * @param vCommand
+	 *            - Command object
+	 * @param aliases
+	 *            - Command aliases
 	 */
 	public void registerCommand(String string, VCommand vCommand, List<String> aliases) {
 		try {
