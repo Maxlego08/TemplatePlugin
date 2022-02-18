@@ -8,6 +8,7 @@ public enum Plugins {
 	PLACEHOLDER("PlaceholderAPI"),
 	CITIZENS("Citizens"),
 	TRANSLATIONAPI("TranslationAPI"),
+	ZTRANSLATOR("zTranslator"),
 	
 	;
 

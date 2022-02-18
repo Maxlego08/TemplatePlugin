@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
-public class PapiUtils {
+public class PapiUtils extends TranslationHelper{
 
 	private final transient boolean usePlaceHolder;
 
