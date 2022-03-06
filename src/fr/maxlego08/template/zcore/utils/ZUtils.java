@@ -48,6 +48,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.potion.PotionEffectType;
 
+import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
@@ -571,6 +572,7 @@ public abstract class ZUtils extends MessageUtils {
 		Random random = new Random();
 		return element.get(random.nextInt(element.size() - 1));
 	}
+
 	/**
 	 * 
 	 * @param message
@@ -1167,6 +1169,40 @@ public abstract class ZUtils extends MessageUtils {
 		player.getPlayer().getActivePotionEffects().forEach(e -> {
 			player.getPlayer().removePotionEffect(e.getType());
 		});
+	}
+
+	/**
+	 * Create a progress bar
+	 * https://www.spigotmc.org/threads/progress-bars-and-percentages.276020/
+	 * 
+	 * @param current
+	 * @param max
+	 * @param totalBars
+	 * @param symbol
+	 * @param completedColor
+	 * @param notCompletedColor
+	 * @return string
+	 */
+	public String getProgressBar(int current, int max, int totalBars, char symbol, String completedColor,
+			String notCompletedColor) {
+		float percent = (float) current / max;
+		int progressBars = (int) (totalBars * percent);
+
+		return Strings.repeat(completedColor + symbol, progressBars)
+				+ Strings.repeat(notCompletedColor + symbol, totalBars - progressBars);
+	}
+
+	/**
+	 * Create a progress bar
+	 * 
+	 * @param current
+	 * @param max
+	 * @param progressBar
+	 * @return string
+	 */
+	public String getProgressBar(int current, int max, ProgressBar progressBar) {
+		return this.getProgressBar(current, max, progressBar.getLenght(), progressBar.getSymbol(),
+				progressBar.getCompletedColor(), progressBar.getNotCompletedColor());
 	}
 
 }
