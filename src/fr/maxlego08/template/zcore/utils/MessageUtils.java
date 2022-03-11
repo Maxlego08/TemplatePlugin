@@ -91,7 +91,7 @@ public abstract class MessageUtils extends LocationUtils {
 				int fadeInTime = message.getStart();
 				int showTime = message.getTime();
 				int fadeOutTime = message.getEnd();
-				this.title(player, title, subTitle, fadeInTime, showTime, fadeOutTime);
+				this.title(player, this.getMessage(title, args), this.getMessage(subTitle, args), fadeInTime, showTime, fadeOutTime);
 				break;
 			default:
 				break;
