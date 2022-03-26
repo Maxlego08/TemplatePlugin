@@ -153,11 +153,13 @@ public class MessageLoader extends YamlUtils implements Saveable {
 				break;
 			}
 
-			return;
 		}
-
-		for (String newKey : configuration.getConfigurationSection(key + ".").getKeys(false))
-			loadMessage(configuration, key + "." + newKey);
+		
+		if (configuration.isConfigurationSection(key + ".")) {
+			for (String newKey : configuration.getConfigurationSection(key + ".").getKeys(false)) {
+				loadMessage(configuration, key + "." + newKey);
+			}
+		}
 	}
 
 }
