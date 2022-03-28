@@ -12,7 +12,7 @@ import fr.maxlego08.template.zcore.utils.ZUtils;
 
 public abstract class YamlUtils extends ZUtils {
 
-	protected final JavaPlugin plugin;
+	protected transient final JavaPlugin plugin;
 
 	/**
 	 * @param plugin
