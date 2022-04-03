@@ -1,8 +1,10 @@
 package fr.maxlego08.template.zcore.utils;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -73,6 +75,15 @@ public abstract class MessageUtils extends LocationUtils {
 
 			Player player = (Player) sender;
 			switch (message.getType()) {
+			case CENTER:
+				if (message.getMessages().size() > 0) {
+					message.getMessages()
+							.forEach(msg -> sender.sendMessage(this.getCenteredMessage(getMessage(msg, args))));
+				} else {
+					sender.sendMessage(this.getCenteredMessage(getMessage(message, args)));
+				}
+
+				break;
 			case ACTION:
 				this.actionMessage(player, message, args);
 				break;
@@ -91,7 +102,8 @@ public abstract class MessageUtils extends LocationUtils {
 				int fadeInTime = message.getStart();
 				int showTime = message.getTime();
 				int fadeOutTime = message.getEnd();
-				this.title(player, this.getMessage(title, args), this.getMessage(subTitle, args), fadeInTime, showTime, fadeOutTime);
+				this.title(player, this.getMessage(title, args), this.getMessage(subTitle, args), fadeInTime, showTime,
+						fadeOutTime);
 				break;
 			default:
 				break;
@@ -208,4 +220,64 @@ public abstract class MessageUtils extends LocationUtils {
 		}
 	}
 
+	private final transient static int CENTER_PX = 154;
+
+	/**
+	 * 
+	 * @param message
+	 * @return message
+	 */
+	protected String getCenteredMessage(String message) {
+		if (message == null || message.equals(""))
+			return "";
+		message = ChatColor.translateAlternateColorCodes('&', message);
+
+		int messagePxSize = 0;
+		boolean previousCode = false;
+		boolean isBold = false;
+
+		for (char c : message.toCharArray()) {
+			if (c == '§') {
+				previousCode = true;
+				continue;
+			} else if (previousCode == true) {
+				previousCode = false;
+				if (c == 'l' || c == 'L') {
+					isBold = true;
+					continue;
+				} else
+					isBold = false;
+			} else {
+				DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
+				messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+				messagePxSize++;
+			}
+		}
+
+		int halvedMessageSize = messagePxSize / 2;
+		int toCompensate = CENTER_PX - halvedMessageSize;
+		int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+		int compensated = 0;
+		StringBuilder sb = new StringBuilder();
+		while (compensated < toCompensate) {
+			sb.append(" ");
+			compensated += spaceLength;
+		}
+		return sb.toString() + message;
+	}
+
+	protected void broadcastCenterMessage(List<String> messages) {
+		messages.stream().map(e -> e = getCenteredMessage(e)).forEach(e -> {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				messageWO(player, e);
+			}
+		});
+	}
+	
+	protected void broadcastAction(String message) {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			ActionBar.sendActionBar(player, papi(message, player));
+		}
+	}
+	
 }

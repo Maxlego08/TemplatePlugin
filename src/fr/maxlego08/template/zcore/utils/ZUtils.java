@@ -1216,4 +1216,41 @@ public abstract class ZUtils extends MessageUtils {
 				progressBar.getCompletedColor(), progressBar.getNotCompletedColor());
 	}
 
+	/**
+	 * Allows you to check if an inventory will contain armor or items
+	 * 
+	 * @param player
+	 * @return boolean
+	 */
+	protected boolean inventoryHasItem(Player player) {
+
+		ItemStack itemStack = player.getInventory().getBoots();
+		if (itemStack != null) {
+			return true;
+		}
+
+		itemStack = player.getInventory().getChestplate();
+		if (itemStack != null) {
+			return true;
+		}
+
+		itemStack = player.getInventory().getLeggings();
+		if (itemStack != null) {
+			return true;
+		}
+
+		itemStack = player.getInventory().getHelmet();
+		if (itemStack != null) {
+			return true;
+		}
+
+		for (ItemStack itemStack1 : player.getInventory().getContents()) {
+			if (itemStack1 != null) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 }
