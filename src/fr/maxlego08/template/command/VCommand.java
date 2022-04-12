@@ -256,6 +256,15 @@ public abstract class VCommand extends Arguments {
 		this.ignoreParent = this.parent == null ? true : false;
 		this.ignoreArgs = true;
 	}
+	
+	/*
+	 * Ajouter un argument obligatoire
+	 */
+	protected void addRequireArg(String message, CollectionBiConsumer runnable) {
+		this.addRequireArg(message);
+		int index = this.requireArgs.size();
+		this.addCompletion(index - 1, runnable);
+	}
 
 	/**
 	 * Ajouter un argument optionel
