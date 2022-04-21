@@ -141,14 +141,15 @@ public abstract class MessageUtils extends LocationUtils {
 	}
 
 	protected String getMessage(String message, Object... args) {
-		if (args.length % 2 != 0)
+		if (args.length % 2 != 0) {
 			System.err.println("Impossible to apply the method for messages.");
-		else
+		} else {
 			for (int a = 0; a < args.length; a += 2) {
 				String replace = args[a].toString();
 				String to = args[a + 1].toString();
 				message = message.replace(replace, to);
 			}
+		}
 		return message;
 	}
 

@@ -7,8 +7,8 @@ public class TimerBuilder {
 	public static String getFormatLongDays(long temps) {
 		long totalSecs = temps / 1000L;
 
-		long days = totalSecs % 86400l / 3600l;
-		long hours = totalSecs / 3600L;
+		long days = totalSecs / 86400l;
+		long hours = totalSecs % 86400l / 3600l;
 		long minutes = totalSecs % 3600L / 60L;
 		long seconds = totalSecs % 60L;
 
