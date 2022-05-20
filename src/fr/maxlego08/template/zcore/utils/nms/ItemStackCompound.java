@@ -281,6 +281,7 @@ public class ItemStackCompound {
 
 		V1_8_8("getTag", "setTag", "hasKey", "getBoolean", "getFloat", "getDouble", "getLong", "getInt", "getString",
 				"setBoolean", "setFloat", "setDouble", "setLong", "setInt", "setString"),
+		V1_18_2("t", "c", "e", "q", "j", "k", "i", "h", "l", "c", "c", "c", "c", "c", "c"),
 		// V1_8_8("", "", "", "", "", "", "", "", "", "", "", "", "", "", ""),
 
 		;

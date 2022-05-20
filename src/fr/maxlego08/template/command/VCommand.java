@@ -271,6 +271,17 @@ public abstract class VCommand extends Arguments {
 	 * 
 	 * @param message
 	 */
+	protected void addOptionalArg(String message, CollectionBiConsumer runnable) {
+		this.addOptionalArg(message);
+		int index = this.requireArgs.size() + this.optionalArgs.size();
+		this.addCompletion(index - 1, runnable);
+	}
+	
+	/**
+	 * Ajouter un argument optionel
+	 * 
+	 * @param message
+	 */
 	protected void addOptionalArg(String message) {
 		this.optionalArgs.add(message);
 		this.ignoreParent = this.parent == null ? true : false;
