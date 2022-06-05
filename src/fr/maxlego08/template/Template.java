@@ -1,7 +1,7 @@
 package fr.maxlego08.template;
 
 import fr.maxlego08.template.command.CommandManager;
-import fr.maxlego08.template.inventory.InventoryManager;
+import fr.maxlego08.template.inventory.ZInventoryManager;
 import fr.maxlego08.template.listener.AdapterListener;
 import fr.maxlego08.template.save.Config;
 import fr.maxlego08.template.save.MessageLoader;
@@ -22,7 +22,7 @@ public class Template extends ZPlugin {
 		this.preEnable();
 
 		this.commandManager = new CommandManager(this);
-		this.inventoryManager = new InventoryManager(this);
+		this.inventoryManager = new ZInventoryManager(this);
 
 		/* Add Listener */
 

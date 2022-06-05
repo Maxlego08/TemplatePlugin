@@ -16,12 +16,14 @@ import org.bukkit.potion.PotionEffect;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import fr.maxlego08.template.Template;
 import fr.maxlego08.template.command.CommandManager;
 import fr.maxlego08.template.command.VCommand;
 import fr.maxlego08.template.exceptions.ListenerNullException;
-import fr.maxlego08.template.inventory.InventoryManager;
+import fr.maxlego08.template.inventory.ZInventoryManager;
 import fr.maxlego08.template.inventory.VInventory;
 import fr.maxlego08.template.listener.ListenerAdapter;
+import fr.maxlego08.template.placeholder.LocalPlaceholder;
 import fr.maxlego08.template.zcore.enums.EnumInventory;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
@@ -42,7 +44,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	private long enableTime;
 
 	protected CommandManager commandManager;
-	protected InventoryManager inventoryManager;
+	protected ZInventoryManager inventoryManager;
 
 	protected void preEnable() {
 
@@ -55,15 +57,19 @@ public abstract class ZPlugin extends JavaPlugin {
 
 		this.gson = getGsonBuilder().create();
 		this.persist = new Persist(this);
+		
+		LocalPlaceholder.getInstance().setPlugin((Template) this);
 	}
 
 	protected void postEnable() {
 
-		if (this.inventoryManager != null)
+		if (this.inventoryManager != null) {
 			this.inventoryManager.sendLog();
+		}
 
-		if (this.commandManager != null)
+		if (this.commandManager != null) {
 			this.commandManager.validCommands();
+		}
 
 		this.log.log(
 				"=== ENABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
@@ -189,7 +195,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	/**
 	 * @return the inventoryManager
 	 */
-	public InventoryManager getInventoryManager() {
+	public ZInventoryManager getInventoryManager() {
 		return inventoryManager;
 	}
 

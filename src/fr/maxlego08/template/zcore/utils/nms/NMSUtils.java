@@ -94,12 +94,9 @@ public class NMSUtils {
 	 * @return boolean
 	 */
 	public static boolean isNewNMSVersion() {
-		switch (String.valueOf(version)) {
-		case "1.17":
-			return true;
-		default:
-			return false;
-		}
+		final double version = getNMSVersion();
+		return !(version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.11
+				|| version == 1.12 || version == 1.13 || version == 1.14 || version == 1.15 || version == 1.16);
 	}
 
 	/**
