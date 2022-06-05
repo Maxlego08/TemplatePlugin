@@ -46,7 +46,7 @@ public class MessageLoader extends YamlUtils implements Saveable {
 
 			configuration.set(path + ".type", message.getType().name());
 
-			if (message.getType().equals(MessageType.TCHAT) || message.getType().equals(MessageType.ACTION)
+			if (message.getType().equals(MessageType.TCHAT) || message.getType().equals(MessageType.ACTION) 
 					|| message.getType().equals(MessageType.CENTER)) {
 
 				if (message.isMessage()) {
@@ -97,7 +97,7 @@ public class MessageLoader extends YamlUtils implements Saveable {
 
 		}
 
-		// Pour avoir directs les news paramètres
+		// Allows you to save new parameters
 		this.save(null);
 	}
 

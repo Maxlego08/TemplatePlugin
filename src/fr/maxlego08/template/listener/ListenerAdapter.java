@@ -74,33 +74,33 @@ public abstract class ListenerAdapter extends ZUtils{
 	protected void onGamemodeChange(PlayerGameModeChangeEvent event, Player player) {
 	}
 
-	public void onDrop(PlayerDropItemEvent event, Player player) {
+	protected void onDrop(PlayerDropItemEvent event, Player player) {
 	}
 
-	public void onPickUp(PlayerPickupItemEvent event, Player player) {
+	protected void onPickUp(PlayerPickupItemEvent event, Player player) {
 	}
 
-	public void onMobSpawn(CreatureSpawnEvent event) {
+	protected void onMobSpawn(CreatureSpawnEvent event) {
 	}
 	
-	public void onDamageByEntity(EntityDamageByEntityEvent event, DamageCause cause, double damage, LivingEntity damager,
+	protected void onDamageByEntity(EntityDamageByEntityEvent event, DamageCause cause, double damage, LivingEntity damager,
 			LivingEntity entity) {
 	}
 
-	public void onPlayerDamagaByPlayer(EntityDamageByEntityEvent event, DamageCause cause, double damage,
+	protected void onPlayerDamagaByPlayer(EntityDamageByEntityEvent event, DamageCause cause, double damage,
 			Player damager, Player entity) {
 	}
 
-	public void onPlayerDamagaByArrow(EntityDamageByEntityEvent event, DamageCause cause, double damage,
+	protected void onPlayerDamagaByArrow(EntityDamageByEntityEvent event, DamageCause cause, double damage,
 			Projectile damager, Player entity) {
 	}
 
-	public void onItemisOnGround(PlayerDropItemEvent event, Player player, Item item, Location location) {
+	protected void onItemisOnGround(PlayerDropItemEvent event, Player player, Item item, Location location) {
 	}
 
-	public void onItemMove(PlayerDropItemEvent event, Player player, Item item, Location location, Block block) {
+	protected void onItemMove(PlayerDropItemEvent event, Player player, Item item, Location location, Block block) {
 	}
 
-	public void onPlayerWalk(PlayerMoveEvent event, Player player, int i) {
+	protected void onPlayerWalk(PlayerMoveEvent event, Player player, int i) {
 	}
 }

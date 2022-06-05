@@ -256,7 +256,7 @@ public abstract class VCommand extends Arguments {
 		this.ignoreParent = this.parent == null ? true : false;
 		this.ignoreArgs = true;
 	}
-	
+
 	/*
 	 * Ajouter un argument obligatoire
 	 */
@@ -276,7 +276,7 @@ public abstract class VCommand extends Arguments {
 		int index = this.requireArgs.size() + this.optionalArgs.size();
 		this.addCompletion(index - 1, runnable);
 	}
-	
+
 	/**
 	 * Ajouter un argument optionel
 	 * 
@@ -491,7 +491,7 @@ public abstract class VCommand extends Arguments {
 	public List<String> toTab(Template plugin, CommandSender sender, String[] args) {
 
 		this.parentCount = this.parentCount(0);
-		
+
 		int currentInex = (args.length - this.parentCount) - 1;
 		Optional<CollectionBiConsumer> optional = this.getCompletionAt(currentInex);
 
@@ -566,6 +566,21 @@ public abstract class VCommand extends Arguments {
 	 */
 	public void addSubCommand(List<String> aliases) {
 		this.subCommands.addAll(aliases);
+	}
+
+	/**
+	 * Allows to send the syntax of the commands
+	 * 
+	 * @param commandString
+	 * @param sender
+	 */
+	public void syntaxMessage() {
+		this.subVCommands.forEach(command -> {
+			if (command.getPermission() == null || hasPermission(sender, command.getPermission())) {
+				message(this.sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%",
+						command.getDescription());
+			}
+		});
 	}
 
 }

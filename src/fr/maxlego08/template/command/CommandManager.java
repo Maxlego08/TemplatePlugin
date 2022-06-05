@@ -56,12 +56,14 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	}
 
 	/**
+	 * Allows you to register a command
+	 * 
 	 * @param string
 	 * @param command
-	 * @return
+	 * @return VCommand
 	 */
 	public VCommand registerCommand(String string, VCommand command) {
-		commands.add(command.addSubCommand(string));
+		this.commands.add(command.addSubCommand(string));
 		this.plugin.getCommand(string).setExecutor(this);
 		this.plugin.getCommand(string).setTabCompleter(this);
 		return command;
@@ -115,14 +117,14 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	 * @return
 	 */
 	private boolean canExecute(String[] args, String cmd, VCommand command, int index) {
-		if (index < 0 && command.getSubCommands().contains(cmd.toLowerCase()))
+		if (index < 0 && command.getSubCommands().contains(cmd.toLowerCase())) {
 			return true;
-		else if (index < 0)
+		} else if (index < 0) {
 			return false;
-		else if (command.getSubCommands().contains(args[index].toLowerCase()))
+		} else if (command.getSubCommands().contains(args[index].toLowerCase())) {
 			return canExecute(args, cmd, command.getParent(), index - 1);
-		else
-			return false;
+		}
+		return false;
 	}
 
 	/**
@@ -144,20 +146,23 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 			message(sender, Message.COMMAND_NO_CONSOLE);
 			return CommandType.DEFAULT;
 		}
+		
 		if (command.getPermission() == null || hasPermission(sender, command.getPermission())) {
 
 			if (command.runAsync) {
 				super.runAsync(this.plugin, () -> {
 					CommandType returnType = command.prePerform(this.plugin, sender, strings);
-					if (returnType == CommandType.SYNTAX_ERROR)
+					if (returnType == CommandType.SYNTAX_ERROR) {
 						message(sender, Message.COMMAND_SYNTAXE_ERROR, "%syntax%", command.getSyntax());
+					}
 				});
 				return CommandType.DEFAULT;
 			}
 
 			CommandType returnType = command.prePerform(this.plugin, sender, strings);
-			if (returnType == CommandType.SYNTAX_ERROR)
+			if (returnType == CommandType.SYNTAX_ERROR) {
 				message(sender, Message.COMMAND_SYNTAXE_ERROR, "%syntax%", command.getSyntax());
+			}
 			return returnType;
 		}
 		message(sender, Message.COMMAND_NO_PERMISSION);
@@ -170,20 +175,6 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 
 	private int getUniqueCommand() {
 		return (int) this.commands.stream().filter(command -> command.getParent() == null).count();
-	}
-
-	/**
-	 * @param commandString
-	 * @param sender
-	 */
-	public void sendHelp(String commandString, CommandSender sender) {
-		this.commands.forEach(command -> {
-			if (isValid(command, commandString)
-					&& (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
-				message(sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%",
-						command.getDescription());
-			}
-		});
 	}
 
 	/**
