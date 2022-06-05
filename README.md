@@ -24,4 +24,5 @@ https://groupez.dev is a marketplace that allows you to sell your plugins withou
 * Custom Event
 * YML Loader (itemstack and button)
 * Scoreboard (https://github.com/MrMicky-FR/FastBoard)
+* Placeholder UTILS
 
