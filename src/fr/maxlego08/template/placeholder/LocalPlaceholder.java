@@ -10,8 +10,7 @@ import org.bukkit.entity.Player;
 import fr.maxlego08.template.Template;
 
 public class LocalPlaceholder {
-
-	@SuppressWarnings("unused")
+	
 	private Template plugin;
 	private final String prefix = "template";
 	private final Pattern pattern = Pattern.compile("[%]([^%]+)[%]");
@@ -97,10 +96,15 @@ public class LocalPlaceholder {
 	 * @return
 	 */
 	public String onRequest(Player player, String string) {
-
-		
-
 		return null;
+	}
+	
+	public String getPrefix() {
+		return prefix;
+	}
+	
+	public Template getPlugin() {
+		return plugin;
 	}
 	
 }
