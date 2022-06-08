@@ -10,23 +10,27 @@ import fr.maxlego08.template.placeholder.Placeholder;
 
 public class PapiUtils extends TranslationHelper {
 
-	private final transient Placeholder placeholder;
+	private transient Placeholder placeholder;
 
-	public PapiUtils() {
-		this.placeholder = Placeholder.getPlaceholder();
-		System.out.println(this.placeholder.getClass());
+	private void mapPlaceholders() {
+		if (this.placeholder == null) {
+			this.placeholder = Placeholder.getPlaceholder();
+		}
 	}
 
 	/**
 	 * 
 	 * @param itemStack
 	 * @param player
-	 * @return itemstack	
+	 * @return itemstack
 	 */
 	protected ItemStack papi(ItemStack itemStack, Player player) {
 
-		if (itemStack == null)
+		if (itemStack == null) {
 			return itemStack;
+		}
+
+		this.mapPlaceholders();
 
 		ItemMeta itemMeta = itemStack.getItemMeta();
 
@@ -50,6 +54,7 @@ public class PapiUtils extends TranslationHelper {
 	 * @return string
 	 */
 	public String papi(String placeHolder, Player player) {
+		this.mapPlaceholders();
 		return this.placeholder.setPlaceholders(player, placeHolder);
 	}
 
@@ -61,6 +66,7 @@ public class PapiUtils extends TranslationHelper {
 	 * @return placeholders
 	 */
 	public List<String> papi(List<String> placeHolder, Player player) {
+		this.mapPlaceholders();
 		return this.placeholder.setPlaceholders(player, placeHolder);
 	}
 
