@@ -20,10 +20,11 @@ import fr.maxlego08.template.Template;
 import fr.maxlego08.template.command.CommandManager;
 import fr.maxlego08.template.command.VCommand;
 import fr.maxlego08.template.exceptions.ListenerNullException;
-import fr.maxlego08.template.inventory.ZInventoryManager;
 import fr.maxlego08.template.inventory.VInventory;
+import fr.maxlego08.template.inventory.ZInventoryManager;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.placeholder.LocalPlaceholder;
+import fr.maxlego08.template.placeholder.Placeholder;
 import fr.maxlego08.template.zcore.enums.EnumInventory;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
@@ -48,6 +49,8 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	protected void preEnable() {
 
+		LocalPlaceholder.getInstance().setPlugin((Template) this);
+		
 		this.enableTime = System.currentTimeMillis();
 
 		this.log.log("=== ENABLE START ===");
@@ -58,7 +61,7 @@ public abstract class ZPlugin extends JavaPlugin {
 		this.gson = getGsonBuilder().create();
 		this.persist = new Persist(this);
 		
-		LocalPlaceholder.getInstance().setPlugin((Template) this);
+		Placeholder.register();
 	}
 
 	protected void postEnable() {

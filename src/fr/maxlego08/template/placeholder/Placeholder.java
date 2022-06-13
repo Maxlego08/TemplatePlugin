@@ -54,4 +54,7 @@ public interface Placeholder {
 
 	}
 
+	static void register() {
+	}
+
 }
