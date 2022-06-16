@@ -105,17 +105,8 @@ public class NMSUtils {
 	 * @return boolean
 	 */
 	public static boolean isHexColor() {
-		switch (String.valueOf(version)) {
-		case "1.21":
-		case "1.20":
-		case "1.19":
-		case "1.18":
-		case "1.17":
-		case "1.16":
-			return true;
-		default:
-			return false;
-		}
+		return !(version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.11
+				|| version == 1.12 || version == 1.13 || version == 1.14 || version == 1.15);
 	}
 	
 }
