@@ -78,9 +78,9 @@ public abstract class MessageUtils extends LocationUtils {
 			case CENTER:
 				if (message.getMessages().size() > 0) {
 					message.getMessages()
-							.forEach(msg -> sender.sendMessage(this.papi(this.getCenteredMessage(getMessage(msg, args)), player)));
+							.forEach(msg -> sender.sendMessage(this.getCenteredMessage(this.papi(getMessage(msg, args), player))));
 				} else {
-					sender.sendMessage(this.papi(this.getCenteredMessage(getMessage(message, args)), player));
+					sender.sendMessage(this.getCenteredMessage(this.papi(getMessage(message, args), player)));
 				}
 
 				break;
