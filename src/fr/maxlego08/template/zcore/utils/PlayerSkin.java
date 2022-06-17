@@ -113,6 +113,8 @@ public class PlayerSkin {
 		double version = NMSUtils.getNMSVersion();
 		if (version == 1.18) {
 			return "fp";
+		} else if (version == 1.19) {
+			return "fz";
 		}
 		return "getProfile";
 	}
