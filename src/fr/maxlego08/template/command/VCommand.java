@@ -55,6 +55,7 @@ public abstract class VCommand extends Arguments {
 	 */
 	private boolean ignoreParent = false;
 	private boolean ignoreArgs = false;
+	private boolean extendedArgs = false;
 	protected boolean runAsync = false;
 	private CommandType tabCompleter = CommandType.DEFAULT;
 
@@ -190,6 +191,10 @@ public abstract class VCommand extends Arguments {
 
 	public void setIgnoreParent(boolean ignoreParent) {
 		this.ignoreParent = ignoreParent;
+	}
+	
+	public void setExtendedArgs(boolean extendedArgs) {
+		this.extendedArgs = extendedArgs;
 	}
 
 	/**
@@ -434,8 +439,7 @@ public abstract class VCommand extends Arguments {
 			}
 		}
 
-		if (this.argsMinLength != 0 && this.argsMaxLength != 0
-				&& !(args.length >= this.argsMinLength && args.length <= this.argsMaxLength)) {
+		if ((this.argsMinLength != 0 && args.length < this.argsMinLength) || this.argsMaxLength != 0 && args.length > this.argsMaxLength && !this.extendedArgs) {
 			return CommandType.SYNTAX_ERROR;
 		}
 
