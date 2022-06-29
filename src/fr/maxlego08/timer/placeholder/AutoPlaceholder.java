@@ -1,4 +1,4 @@
-package fr.maxlego08.timer.placeholder;
+package fr.maxlego08.template.placeholder;
 
 import org.bukkit.entity.Player;
 

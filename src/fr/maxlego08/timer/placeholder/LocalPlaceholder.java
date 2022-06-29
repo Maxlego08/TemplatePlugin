@@ -1,4 +1,4 @@
-package fr.maxlego08.timer.placeholder;
+package fr.maxlego08.template.placeholder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +9,11 @@ import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
-import fr.maxlego08.timer.TimerPlugin;
-import fr.maxlego08.timer.zcore.logger.Logger;
-import fr.maxlego08.timer.zcore.logger.Logger.LogType;
+import fr.maxlego08.template.Template;
 
 public class LocalPlaceholder {
-
-	private TimerPlugin plugin;
+	
+	private Template plugin;
 	private String prefix = "template";
 	private final Pattern pattern = Pattern.compile("[%]([^%]+)[%]");
 	private final List<AutoPlaceholder> autoPlaceholders = new ArrayList<AutoPlaceholder>();
@@ -25,7 +23,7 @@ public class LocalPlaceholder {
 	 * 
 	 * @param plugin
 	 */
-	public void setPlugin(TimerPlugin plugin) {
+	public void setPlugin(Template plugin) {
 		this.plugin = plugin;
 	}
 
@@ -56,12 +54,9 @@ public class LocalPlaceholder {
 	}
 
 	public void setPrefix(String prefix) {
-		if (prefix.contains("_")) {
-			Logger.info("You must not put a _ in the prefix!", LogType.ERROR);
-		}
 		this.prefix = prefix;
 	}
-
+	
 	/**
 	 * 
 	 * @param player
@@ -85,7 +80,7 @@ public class LocalPlaceholder {
 				placeholder = placeholder.replace(stringPlaceholder, replace);
 			}
 		}
-
+		
 		return placeholder;
 	}
 
@@ -108,30 +103,30 @@ public class LocalPlaceholder {
 	 * @return
 	 */
 	public String onRequest(Player player, String string) {
-
+		
 		Optional<AutoPlaceholder> optional = this.autoPlaceholders.stream()
 				.filter(e -> string.startsWith(e.getStartWith())).findFirst();
 		if (optional.isPresent()) {
 
 			AutoPlaceholder autoPlaceholder = optional.get();
-			String value = string.replace(autoPlaceholder.getStartWith() + "_", "");
+			String value = string.replace(autoPlaceholder.getStartWith(), "");
 			return autoPlaceholder.accept(player, value);
 
 		}
-
+		
 		return null;
 	}
-
+	
 	public void register(String startWith, ReturnBiConsumer<Player, String, String> biConsumer) {
 		this.autoPlaceholders.add(new AutoPlaceholder(startWith, biConsumer));
 	}
-
+	
 	public String getPrefix() {
 		return prefix;
 	}
-
-	public TimerPlugin getPlugin() {
+	
+	public Template getPlugin() {
 		return plugin;
 	}
-
+	
 }
