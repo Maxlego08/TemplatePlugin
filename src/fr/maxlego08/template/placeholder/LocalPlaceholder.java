@@ -1,6 +1,8 @@
 package fr.maxlego08.template.placeholder;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -12,8 +14,9 @@ import fr.maxlego08.template.Template;
 public class LocalPlaceholder {
 	
 	private Template plugin;
-	private final String prefix = "template";
+	private String prefix = "template";
 	private final Pattern pattern = Pattern.compile("[%]([^%]+)[%]");
+	private final List<AutoPlaceholder> autoPlaceholders = new ArrayList<AutoPlaceholder>();
 
 	/**
 	 * Set plugin instance
@@ -50,6 +53,10 @@ public class LocalPlaceholder {
 		return instance;
 	}
 
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+	
 	/**
 	 * 
 	 * @param player
@@ -96,7 +103,22 @@ public class LocalPlaceholder {
 	 * @return
 	 */
 	public String onRequest(Player player, String string) {
+		
+		Optional<AutoPlaceholder> optional = this.autoPlaceholders.stream()
+				.filter(e -> string.startsWith(e.getStartWith())).findFirst();
+		if (optional.isPresent()) {
+
+			AutoPlaceholder autoPlaceholder = optional.get();
+			String value = string.replace(autoPlaceholder.getStartWith(), "");
+			return autoPlaceholder.accept(player, value);
+
+		}
+		
 		return null;
+	}
+	
+	public void register(String startWith, ReturnBiConsumer<Player, String, String> biConsumer) {
+		this.autoPlaceholders.add(new AutoPlaceholder(startWith, biConsumer));
 	}
 	
 	public String getPrefix() {
