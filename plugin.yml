@@ -1,7 +1,7 @@
-name: TemplatePlugin
+name: Timer
 author: Maxlego08
-main: fr.maxlego08.template.Template
+main: fr.maxlego08.timer.TimerPlugin
 website: https://groupez.dev
-version: 0.0.5.0
+version: 1.0.0
 api-version: 1.13
 commands:
