@@ -1,7 +1,7 @@
 # Template Plugin
 
 Here is a simple project for the quick creation of minecraft plugin.
-Works from version 1.8 to version 1.17.1
+Works from version 1.8 to version 1.19+
 
 Documentation: https://template.groupez.dev/
 
