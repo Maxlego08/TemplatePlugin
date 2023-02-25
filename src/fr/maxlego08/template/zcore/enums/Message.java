@@ -50,6 +50,8 @@ public enum Message {
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
 	
+	DESCRIPTION_RELOAD("Reload configuration files"),
+	
 	;
 
 	private List<String> messages;

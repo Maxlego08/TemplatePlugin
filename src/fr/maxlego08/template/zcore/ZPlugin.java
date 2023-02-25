@@ -22,6 +22,7 @@ import fr.maxlego08.template.command.VCommand;
 import fr.maxlego08.template.exceptions.ListenerNullException;
 import fr.maxlego08.template.inventory.VInventory;
 import fr.maxlego08.template.inventory.ZInventoryManager;
+import fr.maxlego08.template.listener.AdapterListener;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.placeholder.LocalPlaceholder;
 import fr.maxlego08.template.placeholder.Placeholder;
@@ -50,7 +51,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	protected void preEnable() {
 
 		LocalPlaceholder.getInstance().setPlugin((Template) this);
-		
+
 		this.enableTime = System.currentTimeMillis();
 
 		this.log.log("=== ENABLE START ===");
@@ -60,8 +61,15 @@ public abstract class ZPlugin extends JavaPlugin {
 
 		this.gson = getGsonBuilder().create();
 		this.persist = new Persist(this);
-		
+
 		Placeholder.register();
+
+		this.commandManager = new CommandManager((Template) this);
+		this.inventoryManager = new ZInventoryManager((Template) this);
+
+		/* Add Listener */
+		this.addListener(new AdapterListener((Template) this));
+		this.addListener(this.inventoryManager);
 	}
 
 	protected void postEnable() {
@@ -242,6 +250,14 @@ public abstract class ZPlugin extends JavaPlugin {
 	 */
 	protected void registerInventory(EnumInventory inventory, VInventory vInventory) {
 		inventoryManager.registerInventory(inventory, vInventory);
+	}
+	
+	public void loadFiles(){
+		getSavers().forEach(save -> save.load(this.persist));
+	}
+	
+	public void saveFiles(){
+		getSavers().forEach(save -> save.save(this.persist));
 	}
 
 }

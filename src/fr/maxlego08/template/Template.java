@@ -1,8 +1,7 @@
 package fr.maxlego08.template;
 
-import fr.maxlego08.template.command.CommandManager;
-import fr.maxlego08.template.inventory.ZInventoryManager;
-import fr.maxlego08.template.listener.AdapterListener;
+import fr.maxlego08.template.command.commands.CommandTemplate;
+import fr.maxlego08.template.placeholder.LocalPlaceholder;
 import fr.maxlego08.template.save.Config;
 import fr.maxlego08.template.save.MessageLoader;
 import fr.maxlego08.template.zcore.ZPlugin;
@@ -19,25 +18,19 @@ public class Template extends ZPlugin {
 	@Override
 	public void onEnable() {
 
+		LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
+		placeholder.setPrefix("template");
+
 		this.preEnable();
 
-		this.commandManager = new CommandManager(this);
-		this.inventoryManager = new ZInventoryManager(this);
-
-		/* Add Listener */
-
-		this.addListener(new AdapterListener(this));
-		this.addListener(inventoryManager);
 		this.registerCommand("template", new CommandTemplate(this));
 
-		/* Add Saver */
 		this.addSave(Config.getInstance());
 		this.addSave(new MessageLoader(this));
-		// addSave(new CooldownBuilder());
-
-		this.getSavers().forEach(saver -> saver.load(this.getPersist()));
 		
-		this.postEnable();
+		this.loadFiles();
+		
+		this.postEnable();		
 	}
 
 	@Override
@@ -45,10 +38,9 @@ public class Template extends ZPlugin {
 
 		this.preDisable();
 
-		this.getSavers().forEach(saver -> saver.save(this.getPersist()));
+		this.saveFiles();
 
 		this.postDisable();
-
 	}
 
 }
