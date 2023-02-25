@@ -32,6 +32,7 @@ import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.gson.LocationAdapter;
 import fr.maxlego08.template.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.template.zcore.utils.plugins.Plugins;
+import fr.maxlego08.template.zcore.utils.storage.NoReloadable;
 import fr.maxlego08.template.zcore.utils.storage.Persist;
 import fr.maxlego08.template.zcore.utils.storage.Saveable;
 
@@ -239,7 +240,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param aliases
 	 */
 	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
-		commandManager.registerCommand(command, vCommand, Arrays.asList(aliases));
+		this.commandManager.registerCommand(command, vCommand, Arrays.asList(aliases));
 	}
 
 	/**
@@ -249,15 +250,32 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param vInventory
 	 */
 	protected void registerInventory(EnumInventory inventory, VInventory vInventory) {
-		inventoryManager.registerInventory(inventory, vInventory);
+		this.inventoryManager.registerInventory(inventory, vInventory);
 	}
-	
-	public void loadFiles(){
-		getSavers().forEach(save -> save.load(this.persist));
+
+	/**
+	 * Load files
+	 */
+	public void loadFiles() {
+		this.savers.forEach(save -> save.load(this.persist));
 	}
-	
-	public void saveFiles(){
-		getSavers().forEach(save -> save.save(this.persist));
+
+	/**
+	 * Save files
+	 */
+	public void saveFiles() {
+		this.savers.forEach(save -> save.save(this.persist));
+	}
+
+	/**
+	 * Reload files
+	 */
+	public void reloadFiles() {
+		this.savers.forEach(save -> {
+			if (!(save instanceof NoReloadable)) {
+				save.load(this.persist);
+			}
+		});
 	}
 
 }

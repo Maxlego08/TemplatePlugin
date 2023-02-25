@@ -18,7 +18,7 @@ public class CommandTemplateReload extends VCommand {
 	@Override
 	protected CommandType perform(Template plugin) {
 		
-		plugin.getSavers().forEach(e -> e.load(plugin.getPersist()));
+		plugin.reloadFiles();
 		message(sender, Message.RELOAD);
 		
 		return CommandType.SUCCESS;
