@@ -28,6 +28,7 @@ public class Template extends ZPlugin {
 
 		this.addListener(new AdapterListener(this));
 		this.addListener(inventoryManager);
+		this.registerCommand("template", new CommandTemplate(this));
 
 		/* Add Saver */
 		this.addSave(Config.getInstance());
