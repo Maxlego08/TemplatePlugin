@@ -18,7 +18,7 @@ import fr.maxlego08.template.zcore.utils.builder.ItemBuilder;
 import fr.maxlego08.template.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.template.zcore.utils.inventory.ItemButton;
 
-public abstract class VInventory extends ZUtils implements Cloneable{
+public abstract class VInventory extends ZUtils implements Cloneable {
 
 	protected int id;
 	protected Template plugin;
@@ -29,9 +29,11 @@ public abstract class VInventory extends ZUtils implements Cloneable{
 	protected Inventory inventory;
 	protected String guiName;
 	protected boolean disableClick = true;
+	protected boolean openAsync = false;
 
 	/**
-	 * Id de l'inventaire
+	 * Inventory Id
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -45,53 +47,85 @@ public abstract class VInventory extends ZUtils implements Cloneable{
 	}
 
 	/**
-	 * Permet de créer l'inventaire
+	 * Allows you to create the spigot inventory object
+	 * 
 	 * @param name
 	 * @return this
 	 */
-	protected VInventory createInventory(String name) {
-		return createInventory(name, 54);
+	protected void createInventory(String name) {
+		createInventory(name, 54);
 	}
 
 	/**
-	 * Permet de créer l'inventaire
-	 * @param name
-	 * @param size
+	 * Allows you to create the spigot inventory object
+	 * 
+	 * @param name - Inventory name
+	 * @param size - Inventory Size
 	 * @return this
 	 */
-	protected VInventory createInventory(String name, int size) {
-		guiName = name;
+	protected void createInventory(String name, int size) {
+		this.guiName = name;
 		this.inventory = Bukkit.createInventory(null, size, name);
-		return this;
 	}
 
-	private void createDefaultInventory(){
-		if (inventory == null)
-			inventory = Bukkit.createInventory(null, 54, "§cDefault Inventory");
-	}
-	
 	/**
-	 * Ajout d'un item
-	 * @param slot
-	 * @param item
-	 * @return
+	 * Create default inventory with default size and name
+	 */
+	private void createDefaultInventory() {
+		if (this.inventory == null) {
+			this.inventory = Bukkit.createInventory(null, 54, "Â§cDefault Inventory");
+		}
+	}
+
+	/**
+	 * Adding an item to the inventory
+	 * 
+	 * @param slot - Inventory slot
+	 * @param material - ItemStack material
+	 * @param name - ItemStack name
+	 * @return ItemButton
 	 */
 	public ItemButton addItem(int slot, Material material, String name) {
 		return addItem(slot, new ItemBuilder(material, name).build());
 	}
-	
+
+	/**
+	 * Adding an item to the inventory
+	 * 
+	 * @param slot - Inventory slot
+	 * @param item - ItemBuild
+	 * @return ItemButton
+	 */
+	public ItemButton addItem(int slot, ItemBuilder item) {
+		return addItem(slot, item.build());
+	}
+
+	/**
+	 * Adding an item to the inventory
+	 * Creates the default inventory if it does not exist
+	 * 
+	 * @param slot - Inventory slot
+	 * @param item - ItemStack
+	 * @return ItemButton
+	 */
 	public ItemButton addItem(int slot, ItemStack item) {
-		// Pour éviter les erreurs, on crée un inventaire
-		createDefaultInventory();
 		
-		ItemButton button = new ItemButton(item);
+		createDefaultInventory();
+
+		ItemButton button = new ItemButton(item, slot);
 		this.items.put(slot, button);
-		this.inventory.setItem(slot, item);
+
+		if (this.openAsync) {
+			runAsync(this.plugin, () -> this.inventory.setItem(slot, item));
+		} else {
+			this.inventory.setItem(slot, item);
+		}
 		return button;
 	}
 
 	/**
-	 * Permet de retirer un item de la liste des items
+	 * Allows you to remove an item from the list of items
+	 * 
 	 * @param slot
 	 */
 	public void removeItem(int slot) {
@@ -99,14 +133,15 @@ public abstract class VInventory extends ZUtils implements Cloneable{
 	}
 
 	/**
-	 * Permet de supprimer tous les items
+	 * Allows you to delete all items
 	 */
 	public void clearItem() {
 		this.items.clear();
 	}
 
 	/**
-	 * Permet de récupérer tous les items
+	 * Allows you to retrieve all items
+	 * 
 	 * @return
 	 */
 	public Map<Integer, ItemButton> getItems() {
@@ -114,7 +149,9 @@ public abstract class VInventory extends ZUtils implements Cloneable{
 	}
 
 	/**
-	 * Si le click dans l'inventaire est désactivé (se qui est par default) alors il va retourner vrai
+	 * If the click in the inventory is disabled (which is the default)
+	 * then it will return true
+	 * 
 	 * @return vrai ou faux
 	 */
 	public boolean isDisableClick() {
@@ -122,7 +159,8 @@ public abstract class VInventory extends ZUtils implements Cloneable{
 	}
 
 	/**
-	 * Changer le fait de pouvoir cliquer dans l'inventaire
+	 * Change the ability to click in the inventory
+	 * 
 	 * @param disableClick
 	 */
 	protected void setDisableClick(boolean disableClick) {
@@ -130,7 +168,8 @@ public abstract class VInventory extends ZUtils implements Cloneable{
 	}
 
 	/**
-	 * Permet de récupérer le joueur
+	 * Allows to recover the player
+	 * 
 	 * @return player
 	 */
 	public Player getPlayer() {
@@ -138,7 +177,8 @@ public abstract class VInventory extends ZUtils implements Cloneable{
 	}
 
 	/**
-	 * Permet de récupérer la page
+	 * Allows you to retrieve the page
+	 * 
 	 * @return the page
 	 */
 	public int getPage() {
@@ -166,24 +206,40 @@ public abstract class VInventory extends ZUtils implements Cloneable{
 		return guiName;
 	}
 
-	protected InventoryResult preOpenInventory(Template main, Player player, int page, Object... args) throws InventoryOpenException{
-		
+	protected InventoryResult preOpenInventory(Template main, Player player, int page, Object... args)
+			throws InventoryOpenException {
+
 		this.page = page;
 		this.args = args;
 		this.player = player;
 		this.plugin = main;
-		
+
 		return openInventory(main, player, page, args);
 	}
-	
-	public abstract InventoryResult openInventory(Template main, Player player, int page, Object... args) throws InventoryOpenException;
 
-	protected abstract void onClose(InventoryCloseEvent event, Template plugin, Player player);
+	public abstract InventoryResult openInventory(Template main, Player player, int page, Object... args)
+			throws InventoryOpenException;
 
-	protected abstract void onDrag(InventoryDragEvent event, Template plugin, Player player);
+	/**
+	 * 
+	 * @param event
+	 * @param plugin
+	 * @param player
+	 */
+	protected void onClose(InventoryCloseEvent event, Template plugin, Player player) {
+	}
+
+	/**
+	 * 
+	 * @param event
+	 * @param plugin
+	 * @param player
+	 */
+	protected void onDrag(InventoryDragEvent event, Template plugin, Player player) {
+	}
 
 	@Override
-	protected VInventory clone()  {
+	protected VInventory clone() {
 		try {
 			return (VInventory) getClass().newInstance();
 		} catch (InstantiationException e) {

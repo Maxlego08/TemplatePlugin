@@ -1,23 +1,27 @@
 package fr.maxlego08.template.scoreboard;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.template.zcore.utils.ZUtils;
-import fr.maxlego08.template.zcore.utils.interfaces.ListConsumer;
+import fr.maxlego08.template.zcore.utils.interfaces.CollectionConsumer;
 
 public class ScoreBoardManager extends ZUtils {
 
+	private final Plugin plugin;
 	private final Map<Player, FastBoard> boards = new HashMap<Player, FastBoard>();
 	private final long schedulerMillisecond;
 	private boolean isRunning = false;
-	private ListConsumer<Player> lines;
+	private CollectionConsumer<Player> lines;
 
-	public ScoreBoardManager(long schedulerMillisecond) {
+	public ScoreBoardManager(Plugin plugin, long schedulerMillisecond) {
 		super();
 		this.schedulerMillisecond = schedulerMillisecond;
+		this.plugin = plugin;
 	}
 
 	/**
@@ -25,29 +29,38 @@ public class ScoreBoardManager extends ZUtils {
 	 */
 	public void schedule() {
 
-		if (isRunning)
+		if (this.isRunning) {
 			return;
+		}
 
-		isRunning = true;
+		this.isRunning = true;
 
-		scheduleFix(schedulerMillisecond, (task, canRun) -> {
+		scheduleFix(this.plugin, this.schedulerMillisecond, (task, canRun) -> {
 
 			// If the task cannot continue then we do not update the scoreboard
 			if (!canRun)
 				return;
 
-			if (!isRunning) {
+			if (!this.isRunning) {
 				task.cancel();
 				return;
 			}
 
 			// if the addition of the lines is null then we stop the task
-			if (lines == null) {
+			if (this.lines == null) {
 				task.cancel();
 				return;
 			}
 
-			boards.forEach((player, board) -> board.updateLines(lines.accept(player)));
+			Iterator<FastBoard> iterator = this.boards.values().iterator();
+			while (iterator.hasNext()) {
+				FastBoard b = iterator.next();
+				if (b.isDeleted() || !b.getPlayer().isOnline()) {
+					this.boards.remove(b.getPlayer());
+				}
+			}
+
+			this.boards.forEach((player, board) -> board.updateLines(this.lines.accept(player)));
 
 		});
 	}
@@ -61,16 +74,18 @@ public class ScoreBoardManager extends ZUtils {
 	 */
 	public FastBoard createBoard(Player player, String title) {
 
-		if (hasBoard(player))
-			return getBoard(player);
+		if (this.hasBoard(player)) {
+			return this.getBoard(player);
+		}
 
 		FastBoard board = new FastBoard(player);
 		board.updateTitle(title);
 
-		if (lines != null)
-			board.updateLines(lines.accept(player));
+		if (this.lines != null) {
+			board.updateLines(this.lines.accept(player));
+		}
 
-		boards.put(player, board);
+		this.boards.put(player, board);
 
 		return board;
 
@@ -83,11 +98,18 @@ public class ScoreBoardManager extends ZUtils {
 	 * @return
 	 */
 	public boolean delete(Player player) {
-		if (!hasBoard(player))
+
+		if (!this.hasBoard(player)) {
 			return false;
+		}
+
 		FastBoard board = getBoard(player);
-		board.delete();
-		return true;
+		if (!board.isDeleted()) {
+			board.delete();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -95,14 +117,20 @@ public class ScoreBoardManager extends ZUtils {
 	 * 
 	 * @param player
 	 * @param title
-	 * @return
+	 * @return boolean
 	 */
 	public boolean updateTitle(Player player, String title) {
-		if (!hasBoard(player))
+
+		if (!hasBoard(player)) {
 			return false;
+		}
+
 		FastBoard board = getBoard(player);
-		board.updateTitle(title);
-		return true;
+		if (!board.isDeleted()) {
+			board.updateTitle(title);
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -110,60 +138,68 @@ public class ScoreBoardManager extends ZUtils {
 	 * 
 	 * @param player
 	 * @param title
-	 * @return
+	 * @return boolean
 	 */
 	public boolean updateLine(Player player, int line, String string) {
-		if (!hasBoard(player))
+
+		if (!hasBoard(player)) {
 			return false;
+		}
+
 		FastBoard board = getBoard(player);
-		board.updateLine(line, string);
-		return true;
+		if (!board.isDeleted()) {
+			board.updateLine(line, string);
+			return true;
+		}
+		return false;
 	}
 
 	/**
+	 * Check if player has board
 	 * 
 	 * @param player
 	 * @return {@link Boolean}
 	 */
 	public boolean hasBoard(Player player) {
-		return boards.containsKey(player);
+		return this.boards.containsKey(player);
 	}
 
 	/**
+	 * Return player's board
 	 * 
 	 * @param player
 	 * @return {@link FastBoard}
 	 */
 	public FastBoard getBoard(Player player) {
-		return boards.getOrDefault(player, null);
+		return this.boards.getOrDefault(player, null);
 	}
 
 	/**
 	 * @return the boards
 	 */
 	public Map<Player, FastBoard> getBoards() {
-		return boards;
+		return this.boards;
 	}
 
 	/**
 	 * @return the schedulerMillisecond
 	 */
 	public long getSchedulerMillisecond() {
-		return schedulerMillisecond;
+		return this.schedulerMillisecond;
 	}
 
 	/**
 	 * @return the isRunning
 	 */
 	public boolean isRunning() {
-		return isRunning;
+		return this.isRunning;
 	}
 
 	/**
 	 * @return the lines
 	 */
-	public ListConsumer<Player> getLines() {
-		return lines;
+	public CollectionConsumer<Player> getLines() {
+		return this.lines;
 	}
 
 	/**
@@ -178,15 +214,15 @@ public class ScoreBoardManager extends ZUtils {
 	 * @param lines
 	 *            the lines to set
 	 */
-	public void setLines(ListConsumer<Player> lines) {
+	public void setLines(CollectionConsumer<Player> lines) {
 		this.lines = lines;
 	}
-	
+
 	/**
 	 * @param lines
 	 *            the lines to set
 	 */
-	public void setLinesAndSchedule(ListConsumer<Player> lines) {
+	public void setLinesAndSchedule(CollectionConsumer<Player> lines) {
 		this.lines = lines;
 		this.schedule();
 	}

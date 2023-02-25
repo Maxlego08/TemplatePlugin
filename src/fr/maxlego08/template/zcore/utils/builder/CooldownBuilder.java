@@ -91,7 +91,7 @@ public class CooldownBuilder implements Saveable {
 	public static boolean isCooldown(String key, UUID uuid) {
 
 		createCooldown(key);
-		Map<UUID, Long> map = new HashMap<>();
+		Map<UUID, Long> map = cooldowns.get(key);
 
 		return (map.containsKey(uuid)) && (System.currentTimeMillis() <= ((Long) map.get(uuid)).longValue());
 	}
@@ -115,7 +115,7 @@ public class CooldownBuilder implements Saveable {
 	public static long getCooldown(String key, UUID uuid) {
 
 		createCooldown(key);
-		Map<UUID, Long> map = new HashMap<>();
+		Map<UUID, Long> map = cooldowns.get(key);
 
 		return ((Long) map.getOrDefault(uuid, 0l)).longValue() - System.currentTimeMillis();
 	}

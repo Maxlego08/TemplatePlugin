@@ -2,12 +2,12 @@ package fr.maxlego08.template.zcore;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,83 +16,85 @@ import org.bukkit.potion.PotionEffect;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import fr.maxlego08.template.Template;
 import fr.maxlego08.template.command.CommandManager;
 import fr.maxlego08.template.command.VCommand;
-import fr.maxlego08.template.inventory.InventoryManager;
+import fr.maxlego08.template.exceptions.ListenerNullException;
 import fr.maxlego08.template.inventory.VInventory;
+import fr.maxlego08.template.inventory.ZInventoryManager;
+import fr.maxlego08.template.listener.AdapterListener;
 import fr.maxlego08.template.listener.ListenerAdapter;
-import fr.maxlego08.template.scoreboard.ScoreBoardManager;
-import fr.maxlego08.template.zcore.enums.Inventory;
+import fr.maxlego08.template.placeholder.LocalPlaceholder;
+import fr.maxlego08.template.placeholder.Placeholder;
+import fr.maxlego08.template.zcore.enums.EnumInventory;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
-import fr.maxlego08.template.zcore.utils.gson.ItemStackAdapter;
 import fr.maxlego08.template.zcore.utils.gson.LocationAdapter;
 import fr.maxlego08.template.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.template.zcore.utils.plugins.Plugins;
 import fr.maxlego08.template.zcore.utils.storage.Persist;
 import fr.maxlego08.template.zcore.utils.storage.Saveable;
-import net.milkbowl.vault.economy.Economy;
 
 public abstract class ZPlugin extends JavaPlugin {
 
 	private final Logger log = new Logger(this.getDescription().getFullName());
+	private final List<Saveable> savers = new ArrayList<>();
+	private final List<ListenerAdapter> listenerAdapters = new ArrayList<>();
+
 	private Gson gson;
 	private Persist persist;
-	private static ZPlugin plugin;
 	private long enableTime;
-	private List<Saveable> savers = new ArrayList<>();
-	private List<ListenerAdapter> listenerAdapters = new ArrayList<>();
-	private Economy economy = null;
 
 	protected CommandManager commandManager;
-	protected InventoryManager inventoryManager;
-	protected ScoreBoardManager scoreboardManager;
+	protected ZInventoryManager inventoryManager;
 
-	public ZPlugin() {
-		plugin = this;
-	}
+	protected void preEnable() {
 
-	protected boolean preEnable() {
+		LocalPlaceholder.getInstance().setPlugin((Template) this);
 
-		enableTime = System.currentTimeMillis();
+		this.enableTime = System.currentTimeMillis();
 
-		log.log("=== ENABLE START ===");
-		log.log("Plugin Version V<&>c" + getDescription().getVersion(), LogType.INFO);
+		this.log.log("=== ENABLE START ===");
+		this.log.log("Plugin Version V<&>c" + getDescription().getVersion(), LogType.INFO);
 
-		getDataFolder().mkdirs();
+		this.getDataFolder().mkdirs();
 
-		gson = getGsonBuilder().create();
-		persist = new Persist(this);
+		this.gson = getGsonBuilder().create();
+		this.persist = new Persist(this);
 
-		if (getPlugin(Plugins.VAULT) != null)
-			economy = getProvider(Economy.class);
+		Placeholder.register();
 
-		return true;
+		this.commandManager = new CommandManager((Template) this);
+		this.inventoryManager = new ZInventoryManager((Template) this);
 
+		/* Add Listener */
+		this.addListener(new AdapterListener((Template) this));
+		this.addListener(this.inventoryManager);
 	}
 
 	protected void postEnable() {
 
-		if (inventoryManager != null)
-			inventoryManager.sendLog();
+		if (this.inventoryManager != null) {
+			this.inventoryManager.sendLog();
+		}
 
-		if (commandManager != null)
-			commandManager.registerCommands();
+		if (this.commandManager != null) {
+			this.commandManager.validCommands();
+		}
 
-		log.log("=== ENABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
+		this.log.log(
+				"=== ENABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
 	}
 
 	protected void preDisable() {
-
-		enableTime = System.currentTimeMillis();
-		log.log("=== DISABLE START ===");
-
+		this.enableTime = System.currentTimeMillis();
+		this.log.log("=== DISABLE START ===");
 	}
 
 	protected void postDisable() {
-
-		log.log("=== DISABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
+		this.log.log(
+				"=== DISABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
 	}
 
@@ -104,9 +106,8 @@ public abstract class ZPlugin extends JavaPlugin {
 	public GsonBuilder getGsonBuilder() {
 		return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls()
 				.excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.VOLATILE)
-				.registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter())
-				.registerTypeAdapter(PotionEffect.class, new PotionEffectAdapter())
-				.registerTypeAdapter(Location.class, new LocationAdapter());
+				.registerTypeAdapter(PotionEffect.class, new PotionEffectAdapter(this))
+				.registerTypeAdapter(Location.class, new LocationAdapter(this));
 	}
 
 	/**
@@ -116,7 +117,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	 */
 	public void addListener(Listener listener) {
 		if (listener instanceof Saveable)
-			addSave((Saveable) listener);
+			this.addSave((Saveable) listener);
 		Bukkit.getPluginManager().registerEvents(listener, this);
 	}
 
@@ -126,9 +127,11 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param adapter
 	 */
 	public void addListener(ListenerAdapter adapter) {
+		if (adapter == null)
+			throw new ListenerNullException("Warning, your listener is null");
 		if (adapter instanceof Saveable)
-			addSave((Saveable) adapter);
-		listenerAdapters.add(adapter);
+			this.addSave((Saveable) adapter);
+		this.listenerAdapters.add(adapter);
 	}
 
 	/**
@@ -171,10 +174,6 @@ public abstract class ZPlugin extends JavaPlugin {
 		return savers;
 	}
 
-	public static ZPlugin z() {
-		return plugin;
-	}
-
 	/**
 	 * 
 	 * @param classz
@@ -187,10 +186,6 @@ public abstract class ZPlugin extends JavaPlugin {
 			return null;
 		}
 		return provider.getProvider() != null ? (T) provider.getProvider() : null;
-	}
-
-	public Economy getEconomy() {
-		return economy;
 	}
 
 	/**
@@ -211,18 +206,12 @@ public abstract class ZPlugin extends JavaPlugin {
 	/**
 	 * @return the inventoryManager
 	 */
-	public InventoryManager getInventoryManager() {
+	public ZInventoryManager getInventoryManager() {
 		return inventoryManager;
 	}
 
 	/**
-	 * @return the scoreboardManager
-	 */
-	public ScoreBoardManager getScoreboardManager() {
-		return scoreboardManager;
-	}
-
-	/**
+	 * Check if plugin is enable
 	 * 
 	 * @param pluginName
 	 * @return
@@ -233,6 +222,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	}
 
 	/**
+	 * Get plugin for plugins enum
 	 * 
 	 * @param pluginName
 	 * @return
@@ -249,7 +239,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param aliases
 	 */
 	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
-		commandManager.registerCommand(command, vCommand, aliases);
+		commandManager.registerCommand(command, vCommand, Arrays.asList(aliases));
 	}
 
 	/**
@@ -258,8 +248,16 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param inventory
 	 * @param vInventory
 	 */
-	protected void registerInventory(Inventory inventory, VInventory vInventory) {
-		inventoryManager.addInventory(inventory, vInventory);
+	protected void registerInventory(EnumInventory inventory, VInventory vInventory) {
+		inventoryManager.registerInventory(inventory, vInventory);
+	}
+	
+	public void loadFiles(){
+		getSavers().forEach(save -> save.load(this.persist));
+	}
+	
+	public void saveFiles(){
+		getSavers().forEach(save -> save.save(this.persist));
 	}
 
 }

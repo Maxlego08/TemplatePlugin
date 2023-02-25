@@ -9,32 +9,74 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionType;
 
 import fr.maxlego08.template.exceptions.ItemEnchantException;
 import fr.maxlego08.template.exceptions.ItemFlagException;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
 import fr.maxlego08.template.zcore.utils.ZUtils;
+import fr.maxlego08.template.zcore.utils.nms.NMSUtils;
 
-public class ItemStackYAMLoader extends ZUtils implements Loader<ItemStack>{
+@SuppressWarnings("deprecation")
+public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
-	@SuppressWarnings("deprecation")
+	/**
+	 * Load ItemStack
+	 */
 	public ItemStack load(YamlConfiguration configuration, String path) {
 
-		int id = configuration.getInt(path + "id", 0);
-		int data = configuration.getInt(path + ".data", 0);
-		int amount = configuration.getInt(path + ".amount", 1);
-		short durability = (short) configuration.getInt(path + ".durability", 0);
+		int data = configuration.getInt(path + "data", 0);
+		int amount = configuration.getInt(path + "amount", 1);
+		short durability = (short) configuration.getInt(path + "durability", 0);
+		int modelID = configuration.getInt(path + "modelID", 0);
+		Material material = null;
 
-		if (id == 0)
+		int value = configuration.getInt(path + "material", 0);
+		if (value != 0)
+			material = getMaterial(value);
+
+		if (material == null) {
+			String str = configuration.getString(path + "material", null);
+			if (str == null)
+				return null;
+			material = Material.getMaterial(str.toUpperCase());
+		}
+
+		if (modelID < 0)
+			modelID = 0;
+
+		ItemStack item = null;
+
+		if (material == null || material.equals(Material.AIR))
 			return null;
 
-		Material material = getMaterial(id);
+		item = new ItemStack(material, amount, (byte) data);
 
-		ItemStack item = new ItemStack(material, amount, (byte) data);
+		if (configuration.contains(path + "url")) {
 
-		item.setDurability(durability);
+			item = createSkull(configuration.getString(path + "url"));
+
+		} else if (configuration.contains(path + "potion")) {
+
+			PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
+			int level = configuration.getInt(path + "level", 1);
+			boolean splash = configuration.getBoolean(path + "splash", false);
+			boolean extended = configuration.getBoolean(path + "extended", false);
+
+			item = new Potion(type, level, splash, extended).toItemStack(amount);
+
+		}
+
+		// Si aprÃ¨s tout l'item est null alors fuck off
+		if (item == null)
+			return null;
+
+		if (durability != 0)
+			item.setDurability(durability);
 
 		ItemMeta meta = item.getItemMeta();
 
@@ -50,6 +92,18 @@ public class ItemStackYAMLoader extends ZUtils implements Loader<ItemStack>{
 			meta.setDisplayName(color(displayName));
 
 		List<String> enchants = configuration.getStringList(path + "enchants");
+
+		boolean isGlowing = configuration.getBoolean(path + "glow");
+
+		if (isGlowing && NMSUtils.getNMSVersion() != 1.7) {
+
+			meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+		}
+
+		if (modelID > 0)
+			meta.setCustomModelData(modelID);
 
 		// Permet de charger l'enchantement de l'item
 		if (enchants.size() != 0) {
@@ -78,7 +132,12 @@ public class ItemStackYAMLoader extends ZUtils implements Loader<ItemStack>{
 						throw new ItemEnchantException(
 								"an error occurred while loading the enchantment " + enchantString);
 
-					meta.addEnchant(enchantment, level, true);
+					if (material.equals(Material.ENCHANTED_BOOK)) {
+
+						((EnchantmentStorageMeta) meta).addStoredEnchant(enchantment, level, true);
+
+					} else
+						meta.addEnchant(enchantment, level, true);
 
 				} catch (ItemEnchantException e) {
 					e.printStackTrace();
@@ -89,8 +148,8 @@ public class ItemStackYAMLoader extends ZUtils implements Loader<ItemStack>{
 
 		List<String> flags = configuration.getStringList(path + "flags");
 
-		// Permet de charger les diff�rents flags
-		if (flags.size() != 0) {
+		// Permet de charger les diffÃ©rents flags
+		if (flags.size() != 0 && NMSUtils.getNMSVersion() != 1.7) {
 
 			for (String flagString : flags) {
 
@@ -113,10 +172,11 @@ public class ItemStackYAMLoader extends ZUtils implements Loader<ItemStack>{
 		item.setItemMeta(meta);
 
 		return item;
-
 	}
 
-	@SuppressWarnings("deprecation")
+	/**
+	 * 
+	 */
 	public void save(ItemStack item, YamlConfiguration configuration, String path) {
 
 		if (item == null) {
@@ -124,22 +184,33 @@ public class ItemStackYAMLoader extends ZUtils implements Loader<ItemStack>{
 			return;
 		}
 
-		configuration.set(path + "id", item.getType().getId());
+		configuration.set(path + "material", item.getType().name());
 		configuration.set(path + "data", item.getData().getData());
 		configuration.set(path + "amount", item.getAmount());
 		configuration.set(path + "durability", item.getDurability());
 		ItemMeta meta = item.getItemMeta();
 		if (meta.hasDisplayName())
-			configuration.set(path + "name", meta.getDisplayName().replace("&", "�"));
+			configuration.set(path + "name", meta.getDisplayName().replace("§", "&"));
 		if (meta.hasLore())
 			configuration.set(path + "lore", colorReverse(meta.getLore()));
-		if (meta.getItemFlags().size() != 0)
+		if (NMSUtils.getNMSVersion() != 1.7 && meta.getItemFlags().size() != 0)
 			configuration.set(path + "flags",
 					meta.getItemFlags().stream().map(flag -> flag.name()).collect(Collectors.toList()));
 		if (meta.hasEnchants()) {
 			List<String> enchantList = new ArrayList<>();
 			meta.getEnchants().forEach((enchant, level) -> enchantList.add(enchant.getName() + "," + level));
 			configuration.set(path + "enchants", enchantList);
+		}
+
+		if (meta instanceof EnchantmentStorageMeta && ((EnchantmentStorageMeta) meta).hasStoredEnchants()) {
+			List<String> enchantList = new ArrayList<>();
+			((EnchantmentStorageMeta) meta).getStoredEnchants()
+					.forEach((enchant, level) -> enchantList.add(enchant.getName() + "," + level));
+
+			configuration.set(path + "enchants", enchantList);
+		}
+		if (NMSUtils.hasBarrel() && meta.hasCustomModelData()) {
+			configuration.set(path + "modelID", meta.getCustomModelData());
 		}
 
 	}

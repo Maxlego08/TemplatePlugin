@@ -19,6 +19,7 @@ import fr.maxlego08.template.zcore.ZPlugin;
 
 public class LocationAdapter extends TypeAdapter<Location> {
 
+	private final ZPlugin plugin;
 	private static Type seriType = new TypeToken<Map<String, Object>>() {
 	}.getType();
 
@@ -29,7 +30,12 @@ public class LocationAdapter extends TypeAdapter<Location> {
 	private static String YAW = "yaw";
 	private static String PITCH = "pitch";
 
-	public LocationAdapter() {
+	/**
+	 * @param plugin
+	 */
+	public LocationAdapter(ZPlugin plugin) {
+		super();
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -58,11 +64,11 @@ public class LocationAdapter extends TypeAdapter<Location> {
 		serial.put(Z, Double.toString(location.getZ()));
 		serial.put(YAW, Float.toString(location.getYaw()));
 		serial.put(PITCH, Float.toString(location.getPitch()));
-		return ZPlugin.z().getGson().toJson(serial);
+		return plugin.getGson().toJson(serial);
 	}
 
 	private Location fromRaw(String raw) {
-		Map<String, Object> keys = ZPlugin.z().getGson().fromJson(raw, seriType);
+		Map<String, Object> keys = this.plugin.getGson().fromJson(raw, seriType);
 		World w = Bukkit.getWorld((String) keys.get(NAME));
 		return new Location(w, Double.parseDouble((String) keys.get(X)), Double.parseDouble((String) keys.get(Y)),
 				Double.parseDouble((String) keys.get(Z)), Float.parseFloat((String) keys.get(YAW)),

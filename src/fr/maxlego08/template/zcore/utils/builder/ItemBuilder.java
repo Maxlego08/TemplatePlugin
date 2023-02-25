@@ -70,7 +70,7 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 	 * @param amount
 	 */
 	public ItemBuilder(Material material, int amount) {
-		this(material, 0, amount);
+		this(material, amount, 0);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 	 * @param data
 	 */
 	public ItemBuilder(Material material, int amount, int data) {
-		this(material, data, amount, null);
+		this(material, amount, data, null);
 	}
 
 	/**

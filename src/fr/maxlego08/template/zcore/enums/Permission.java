@@ -1,6 +1,8 @@
 package fr.maxlego08.template.zcore.enums;
 
 public enum Permission {
+	
+	EXAMPLE_PERMISSION
 
 	;
 

@@ -1,42 +1,28 @@
 package fr.maxlego08.template.zcore.utils.inventory;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 
-import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.maxlego08.template.zcore.utils.builder.ItemBuilder;
-
 public class ItemButton {
 
+	private final int slot;
 	private final ItemStack displayItem;
 	private Consumer<InventoryClickEvent> onClick;
 	private Consumer<InventoryClickEvent> onMiddleClick;
 	private Consumer<InventoryClickEvent> onLeftClick;
 	private Consumer<InventoryClickEvent> onRightClick;
 
-	public ItemButton(ItemStack displayItem) {
+	public ItemButton(ItemStack displayItem, int slot) {
 		super();
 		this.displayItem = displayItem;
+		this.slot = slot;
 	}
 
-	public ItemButton(Material material, int id, String name, String... lore) {
-		this(new ItemBuilder(material, id, 1, name, Arrays.asList(lore), null, null).build());
-	}
-
-	public ItemButton(Material material, String name, String... lore) {
-		this(new ItemBuilder(material, name).setLore(lore).build());
-	}
-
-	public ItemButton(Material material) {
-		this(new ItemBuilder(material).build());
-	}
-
-	public ItemButton(Material material, String name) {
-		this(new ItemBuilder(material, name).build());
+	public int getSlot() {
+		return slot;
 	}
 
 	public ItemButton setClick(Consumer<InventoryClickEvent> onClick) {
@@ -73,6 +59,7 @@ public class ItemButton {
 
 	/**
 	 * Permet de gérer le click du joueur
+	 * 
 	 * @param event
 	 */
 	public void onClick(InventoryClickEvent event) {

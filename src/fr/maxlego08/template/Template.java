@@ -1,12 +1,10 @@
 package fr.maxlego08.template;
 
-import fr.maxlego08.template.command.CommandManager;
-import fr.maxlego08.template.inventory.InventoryManager;
-import fr.maxlego08.template.listener.AdapterListener;
+import fr.maxlego08.template.command.commands.CommandTemplate;
+import fr.maxlego08.template.placeholder.LocalPlaceholder;
 import fr.maxlego08.template.save.Config;
-import fr.maxlego08.template.scoreboard.ScoreBoardManager;
+import fr.maxlego08.template.save.MessageLoader;
 import fr.maxlego08.template.zcore.ZPlugin;
-import fr.maxlego08.template.zcore.utils.builder.CooldownBuilder;
 
 /**
  * System to create your plugins very simply Projet:
@@ -20,40 +18,29 @@ public class Template extends ZPlugin {
 	@Override
 	public void onEnable() {
 
-		preEnable();
+		LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
+		placeholder.setPrefix("template");
 
-		commandManager = new CommandManager(this);
+		this.preEnable();
 
-		if (!isEnabled())
-			return;
-		inventoryManager = InventoryManager.getInstance();
+		this.registerCommand("template", new CommandTemplate(this));
 
-		scoreboardManager = new ScoreBoardManager(1000);
+		this.addSave(Config.getInstance());
+		this.addSave(new MessageLoader(this));
 		
-		/* Add Listener */
-
-		addListener(new AdapterListener(this));
-		addListener(inventoryManager);
-
-		/* Add Saver */
-		addSave(Config.getInstance());
-		addSave(new CooldownBuilder());
-
-		getSavers().forEach(saver -> saver.load(getPersist()));
-
-		postEnable();
-
+		this.loadFiles();
+		
+		this.postEnable();		
 	}
 
 	@Override
 	public void onDisable() {
 
-		preDisable();
+		this.preDisable();
 
-		getSavers().forEach(saver -> saver.save(getPersist()));
+		this.saveFiles();
 
-		postDisable();
-
+		this.postDisable();
 	}
 
 }

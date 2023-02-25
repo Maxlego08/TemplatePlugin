@@ -2,25 +2,32 @@ package fr.maxlego08.template.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.Template;
+import fr.maxlego08.template.save.Config;
 import fr.maxlego08.template.zcore.enums.Message;
 import fr.maxlego08.template.zcore.enums.Permission;
 import fr.maxlego08.template.zcore.utils.commands.Arguments;
+import fr.maxlego08.template.zcore.utils.commands.CollectionBiConsumer;
 import fr.maxlego08.template.zcore.utils.commands.CommandType;
 import fr.maxlego08.template.zcore.utils.commands.Tab;
 
 public abstract class VCommand extends Arguments {
 
+	protected final Template plugin;
+
 	/**
 	 * Permission used for the command, if it is a null then everyone can
 	 * execute the command
 	 */
-	private Permission permission;
+	private String permission;
 
 	/**
 	 * Mother command of this command
@@ -48,31 +55,45 @@ public abstract class VCommand extends Arguments {
 	 */
 	private boolean ignoreParent = false;
 	private boolean ignoreArgs = false;
-	protected boolean DEBUG = false;
+	private boolean extendedArgs = false;
 	protected boolean runAsync = false;
-	protected CommandType tabCompleter = CommandType.DEFAULT;
+	private CommandType tabCompleter = CommandType.DEFAULT;
 
 	/**
 	 * This is the person who executes the command
 	 */
-	public CommandSender sender;
-	public Player player;
+	protected CommandSender sender;
+	protected Player player;
 
-	private String syntaxe;
-
+	private String syntax;
 	private String description;
-
 	private int argsMinLength;
 	private int argsMaxLength;
+
+	protected Map<Integer, CollectionBiConsumer> tabCompletions = new HashMap<>();
+
+	/**
+	 * @param plugin
+	 */
+	public VCommand(Template plugin) {
+		super();
+		this.plugin = plugin;
+	}
 
 	//
 	// GETTER
 	//
 
+	public Optional<CollectionBiConsumer> getCompletionAt(int index) {
+		return Optional.ofNullable(this.tabCompletions.getOrDefault(index, null));
+	}
+
 	/**
+	 * Return command permission
+	 * 
 	 * @return the permission
 	 */
-	public Permission getPermission() {
+	public String getPermission() {
 		return permission;
 	}
 
@@ -130,13 +151,15 @@ public abstract class VCommand extends Arguments {
 	}
 
 	/**
-	 * @return the syntaxe
+	 * Return the generate or custom syntax
+	 * 
+	 * @return the syntax
 	 */
-	public String getSyntaxe() {
-		if (syntaxe == null) {
-			syntaxe = generateDefaultSyntaxe("");
+	public String getSyntax() {
+		if (syntax == null) {
+			syntax = generateDefaultSyntax("");
 		}
-		return syntaxe;
+		return syntax;
 	}
 
 	public boolean isIgnoreArgs() {
@@ -169,13 +192,26 @@ public abstract class VCommand extends Arguments {
 	public void setIgnoreParent(boolean ignoreParent) {
 		this.ignoreParent = ignoreParent;
 	}
+	
+	public void setExtendedArgs(boolean extendedArgs) {
+		this.extendedArgs = extendedArgs;
+	}
 
 	/**
-	 * @param syntaxe
-	 *            the syntaxe to set
+	 * @param syntax
+	 *            the syntax to set
 	 */
-	protected VCommand setSyntaxe(String syntaxe) {
-		this.syntaxe = syntaxe;
+	protected VCommand setSyntax(String syntax) {
+		this.syntax = syntax;
+		return this;
+	}
+
+	/**
+	 * @param permission
+	 *            the permission to set
+	 */
+	protected VCommand setPermission(String permission) {
+		this.permission = permission;
 		return this;
 	}
 
@@ -184,7 +220,7 @@ public abstract class VCommand extends Arguments {
 	 *            the permission to set
 	 */
 	protected VCommand setPermission(Permission permission) {
-		this.permission = permission;
+		this.permission = permission.getPermission();
 		return this;
 	}
 
@@ -222,8 +258,28 @@ public abstract class VCommand extends Arguments {
 	 */
 	protected void addRequireArg(String message) {
 		this.requireArgs.add(message);
-		this.ignoreParent = parent == null ? true : false;
+		this.ignoreParent = this.parent == null ? true : false;
 		this.ignoreArgs = true;
+	}
+
+	/*
+	 * Ajouter un argument obligatoire
+	 */
+	protected void addRequireArg(String message, CollectionBiConsumer runnable) {
+		this.addRequireArg(message);
+		int index = this.requireArgs.size();
+		this.addCompletion(index - 1, runnable);
+	}
+
+	/**
+	 * Ajouter un argument optionel
+	 * 
+	 * @param message
+	 */
+	protected void addOptionalArg(String message, CollectionBiConsumer runnable) {
+		this.addOptionalArg(message);
+		int index = this.requireArgs.size() + this.optionalArgs.size();
+		this.addCompletion(index - 1, runnable);
 	}
 
 	/**
@@ -233,7 +289,7 @@ public abstract class VCommand extends Arguments {
 	 */
 	protected void addOptionalArg(String message) {
 		this.optionalArgs.add(message);
-		this.ignoreParent = parent == null ? true : false;
+		this.ignoreParent = this.parent == null ? true : false;
 		this.ignoreArgs = true;
 	}
 
@@ -253,7 +309,7 @@ public abstract class VCommand extends Arguments {
 	 * @return first command
 	 */
 	public String getFirst() {
-		return subCommands.get(0);
+		return this.subCommands.get(0);
 	}
 
 	//
@@ -279,7 +335,7 @@ public abstract class VCommand extends Arguments {
 	 */
 	public VCommand addSubCommand(VCommand command) {
 		command.setParent(this);
-		plugin.getCommandManager().addCommand(command);
+		this.plugin.getCommandManager().registerCommand(command);
 		this.subVCommands.add(command);
 		return this;
 	}
@@ -296,39 +352,53 @@ public abstract class VCommand extends Arguments {
 	}
 
 	/**
-	 * Permet de générer la syntaxe de la commande manuellement Mais vous pouvez
-	 * la mettre vous même avec le setSyntaxe()
+	 * Add a {@link CollectionBiConsumer} to the index for the tab completion
 	 * 
-	 * @param syntaxe
-	 * @return generate syntaxe
+	 * @param index
+	 * @param runnable
 	 */
-	private String generateDefaultSyntaxe(String syntaxe) {
-
-		String tmpString = subCommands.get(0);
-
-		boolean update = syntaxe.equals("");
-
-		if (requireArgs.size() != 0 && update)
-			for (String requireArg : requireArgs) {
-				requireArg = "<" + requireArg + ">";
-				syntaxe += " " + requireArg;
-			}
-		if (optionalArgs.size() != 0 && update)
-			for (String optionalArg : optionalArgs) {
-				optionalArg = "[<" + optionalArg + ">]";
-				syntaxe += " " + optionalArg;
-			}
-
-		tmpString += syntaxe;
-
-		if (parent == null)
-			return "/" + tmpString;
-
-		return parent.generateDefaultSyntaxe(" " + tmpString);
+	public void addCompletion(int index, CollectionBiConsumer runnable) {
+		this.tabCompletions.put(index, runnable);
+		this.setTabCompletor();
 	}
 
 	/**
-	 * Permet de savoir le nombre de parent de façon récursive
+	 * Allows you to generate the syntax of the command manually But you you can
+	 * set it yourself with the setSyntax()
+	 * 
+	 * @param syntax
+	 * @return generate syntax
+	 */
+	private String generateDefaultSyntax(String syntax) {
+
+		String tmpString = subCommands.get(0);
+
+		boolean update = syntax.equals("");
+
+		if (requireArgs.size() != 0 && update) {
+			for (String requireArg : requireArgs) {
+				requireArg = "<" + requireArg + ">";
+				syntax += " " + requireArg;
+			}
+		}
+		if (optionalArgs.size() != 0 && update) {
+			for (String optionalArg : optionalArgs) {
+				optionalArg = "[<" + optionalArg + ">]";
+				syntax += " " + optionalArg;
+			}
+		}
+
+		tmpString += syntax;
+
+		if (parent == null) {
+			return "/" + tmpString;
+		}
+
+		return parent.generateDefaultSyntax(" " + tmpString);
+	}
+
+	/**
+	 * Allows to know the number of parents in a recursive way
 	 * 
 	 * @param defaultParent
 	 * @return
@@ -337,21 +407,30 @@ public abstract class VCommand extends Arguments {
 		return parent == null ? defaultParent : parent.parentCount(defaultParent + 1);
 	}
 
-	public CommandType prePerform(Template main, CommandSender commandSender, String[] args) {
+	/**
+	 * Allows you to manage the arguments and check that the command is valid
+	 * 
+	 * @param plugin
+	 * @param commandSender
+	 * @param args
+	 * @return
+	 */
+	public CommandType prePerform(Template plugin, CommandSender commandSender, String[] args) {
 
-		// On met à jour le nombre d'argument en fonction du nombre de parent
+		// We update the number of arguments according to the number of parents
 
-		parentCount = parentCount(0);
-		argsMaxLength = requireArgs.size() + optionalArgs.size() + parentCount;
-		argsMinLength = requireArgs.size() + parentCount;
+		this.parentCount = this.parentCount(0);
+		this.argsMaxLength = this.requireArgs.size() + this.optionalArgs.size() + this.parentCount;
+		this.argsMinLength = this.requireArgs.size() + this.parentCount;
 
-		// On génère le syntaxe de base s'il y est impossible de la trouver
-		if (syntaxe == null)
-			syntaxe = generateDefaultSyntaxe("");
+		// We generate the basic syntax if it is impossible to find it
+		if (this.syntax == null) {
+			this.syntax = generateDefaultSyntax("");
+		}
 
 		this.args = args;
 
-		String defaultString = argAsString(0);
+		String defaultString = super.argAsString(0);
 
 		if (defaultString != null) {
 			for (VCommand subCommand : subVCommands) {
@@ -360,35 +439,37 @@ public abstract class VCommand extends Arguments {
 			}
 		}
 
-		if (argsMinLength != 0 && argsMaxLength != 0
-				&& !(args.length >= argsMinLength && args.length <= argsMaxLength)) {
+		if ((this.argsMinLength != 0 && args.length < this.argsMinLength) || this.argsMaxLength != 0 && args.length > this.argsMaxLength && !this.extendedArgs) {
 			return CommandType.SYNTAX_ERROR;
 		}
 
 		this.sender = commandSender;
-		if (sender instanceof Player)
-			player = (Player) commandSender;
+		if (this.sender instanceof Player) {
+			this.player = (Player) commandSender;
+		}
 
 		try {
-			return perform(main);
+			return perform(plugin);
 		} catch (Exception e) {
-			if (DEBUG)
+			if (Config.enableDebug)
 				e.printStackTrace();
 			return CommandType.SYNTAX_ERROR;
 		}
 	}
 
 	/**
-	 * method that allows you to execute the command
+	 * Method that allows you to execute the command
 	 */
-	protected abstract CommandType perform(Template main);
+	protected abstract CommandType perform(Template plugin);
 
 	public boolean sameSubCommands() {
-		if (parent == null)
+		if (this.parent == null) {
 			return false;
-		for (String command : subCommands)
-			if (parent.getSubCommands().contains(command))
+		}
+		for (String command : this.subCommands) {
+			if (this.parent.getSubCommands().contains(command))
 				return true;
+		}
 		return false;
 	}
 
@@ -404,13 +485,28 @@ public abstract class VCommand extends Arguments {
 	}
 
 	/**
+	 * Generate tab completion
 	 * 
 	 * @param plugin
-	 * @param sender2
+	 * @param sender
 	 * @param args
 	 * @return
 	 */
-	public List<String> toTab(Template plugin, CommandSender sender2, String[] args) {
+	public List<String> toTab(Template plugin, CommandSender sender, String[] args) {
+
+		this.parentCount = this.parentCount(0);
+
+		int currentInex = (args.length - this.parentCount) - 1;
+		Optional<CollectionBiConsumer> optional = this.getCompletionAt(currentInex);
+
+		if (optional.isPresent()) {
+
+			CollectionBiConsumer collectionRunnable = optional.get();
+			String startWith = args[args.length - 1];
+			return this.generateList(collectionRunnable.accept(sender, args), startWith);
+
+		}
+
 		return null;
 	}
 
@@ -444,7 +540,7 @@ public abstract class VCommand extends Arguments {
 	 * @return
 	 */
 	protected List<String> generateList(List<String> defaultList, String startWith) {
-		return generateList(defaultList, startWith, Tab.START);
+		return generateList(defaultList, startWith, Tab.CONTAINS);
 	}
 
 	/**
@@ -457,12 +553,38 @@ public abstract class VCommand extends Arguments {
 	 */
 	protected List<String> generateList(List<String> defaultList, String startWith, Tab tab) {
 		List<String> newList = new ArrayList<>();
-		for (String str : defaultList)
+		for (String str : defaultList) {
 			if (startWith.length() == 0
 					|| (tab.equals(Tab.START) ? str.toLowerCase().startsWith(startWith.toLowerCase())
-							: str.toLowerCase().contains(startWith.toLowerCase())))
+							: str.toLowerCase().contains(startWith.toLowerCase()))) {
 				newList.add(str);
+			}
+		}
 		return newList.size() == 0 ? null : newList;
+	}
+
+	/**
+	 * Add list of aliases
+	 * 
+	 * @param aliases
+	 */
+	public void addSubCommand(List<String> aliases) {
+		this.subCommands.addAll(aliases);
+	}
+
+	/**
+	 * Allows to send the syntax of the commands
+	 * 
+	 * @param commandString
+	 * @param sender
+	 */
+	public void syntaxMessage() {
+		this.subVCommands.forEach(command -> {
+			if (command.getPermission() == null || hasPermission(sender, command.getPermission())) {
+				message(this.sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%",
+						command.getDescription());
+			}
+		});
 	}
 
 }
