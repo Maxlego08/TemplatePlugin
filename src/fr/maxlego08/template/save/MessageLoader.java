@@ -44,7 +44,9 @@ public class MessageLoader extends YamlUtils implements Saveable {
 
 			String path = "messages." + message.name().toLowerCase().replace("_", ".");
 
-			configuration.set(path + ".type", message.getType().name());
+			if (message.getType() != MessageType.TCHAT) {
+				configuration.set(path + ".type", message.getType().name());
+			}
 
 			if (message.getType().equals(MessageType.TCHAT) || message.getType().equals(MessageType.ACTION)
 					|| message.getType().equals(MessageType.CENTER)) {
@@ -111,7 +113,7 @@ public class MessageLoader extends YamlUtils implements Saveable {
 		if (configuration.contains(key + ".type")) {
 
 			try {
-				MessageType messageType = MessageType.valueOf(configuration.getString(key + ".type").toUpperCase());
+				MessageType messageType = MessageType.valueOf(configuration.getString(key + ".type", "TCHAT").toUpperCase());
 				String keys = key.substring("messages.".length(), key.length());
 				Message enumMessage = Message.valueOf(keys.toUpperCase().replace(".", "_"));
 				enumMessage.setType(messageType);
