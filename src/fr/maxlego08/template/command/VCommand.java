@@ -241,6 +241,11 @@ public abstract class VCommand extends Arguments {
 		this.consoleCanUse = consoleCanUse;
 		return this;
 	}
+	
+	protected VCommand onlyPlayers(){
+		this.consoleCanUse = false;
+		return this;
+	}
 
 	/**
 	 * Mettre la description de la commande
