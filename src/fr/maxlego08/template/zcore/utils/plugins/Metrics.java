@@ -280,7 +280,8 @@ public class Metrics {
     /**
      * Collects the data and sends it afterwards.
      */
-    private void submitData() {
+    @SuppressWarnings("deprecation")
+	private void submitData() {
         final JsonObject data = getServerData();
 
         JsonArray pluginData = new JsonArray();
