@@ -100,6 +100,19 @@ public class NMSUtils {
 	}
 
 	/**
+	 * 
+	 * Check if server vesion is new version
+	 * 
+	 * @return boolean
+	 */
+	public static boolean isNewNBTVersion() {
+		final double version = getNMSVersion();
+		return !(version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.11
+				|| version == 1.12 || version == 1.13 || version == 1.14 || version == 1.15 || version == 1.16
+				|| version == 1.17);
+	}
+
+	/**
 	 * Allows to check if the version has the colors in hex
 	 * 
 	 * @return boolean
@@ -108,5 +121,5 @@ public class NMSUtils {
 		return !(version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.11
 				|| version == 1.12 || version == 1.13 || version == 1.14 || version == 1.15);
 	}
-	
+
 }

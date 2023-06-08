@@ -74,6 +74,7 @@ public class PlayerSkin {
 		return new String[] { texture, signature };
 	}
 
+	@SuppressWarnings("deprecation")
 	public static String[] getFromName(String name) {
 		try {
 			URL url_0 = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
