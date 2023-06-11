@@ -25,7 +25,6 @@ import fr.maxlego08.template.inventory.ZInventoryManager;
 import fr.maxlego08.template.listener.AdapterListener;
 import fr.maxlego08.template.listener.ListenerAdapter;
 import fr.maxlego08.template.placeholder.LocalPlaceholder;
-import fr.maxlego08.template.placeholder.Placeholder;
 import fr.maxlego08.template.zcore.enums.EnumInventory;
 import fr.maxlego08.template.zcore.logger.Logger;
 import fr.maxlego08.template.zcore.logger.Logger.LogType;
@@ -62,8 +61,6 @@ public abstract class ZPlugin extends JavaPlugin {
 
 		this.gson = getGsonBuilder().create();
 		this.persist = new Persist(this);
-
-		Placeholder.register();
 
 		this.commandManager = new CommandManager((Template) this);
 		this.inventoryManager = new ZInventoryManager((Template) this);

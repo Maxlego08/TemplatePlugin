@@ -101,7 +101,7 @@ public class NMSUtils {
 
 	/**
 	 * 
-	 * Check if server vesion is new version
+	 * Check if server version is new version
 	 * 
 	 * @return boolean
 	 */

@@ -9,16 +9,13 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public interface Placeholder {
-
-	Placeholder API = new Api();
-	Placeholder LOCAL = new Local();
 	
 	String setPlaceholders(Player player, String string);
 
 	List<String> setPlaceholders(Player player, List<String> list);
 
 	static Placeholder getPlaceholder() {
-		return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? API : LOCAL;
+		return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? new Api() : new Local();
 	}
 
 	class Api implements Placeholder {
@@ -52,9 +49,6 @@ public interface Placeholder {
 			return LocalPlaceholder.getInstance().setPlaceholders(player, list);
 		}
 
-	}
-
-	static void register() {
 	}
 
 }
