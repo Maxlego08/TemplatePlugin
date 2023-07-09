@@ -4,6 +4,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,6 +39,7 @@ import fr.maxlego08.template.zcore.utils.storage.Saveable;
 
 public abstract class ZPlugin extends JavaPlugin {
 
+	public static final ExecutorService service = Executors.newFixedThreadPool(5);
 	private final Logger log = new Logger(this.getDescription().getFullName());
 	private final List<Saveable> savers = new ArrayList<>();
 	private final List<ListenerAdapter> listenerAdapters = new ArrayList<>();
