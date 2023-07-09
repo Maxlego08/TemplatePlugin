@@ -240,7 +240,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param aliases
 	 */
 	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
-		this.commandManager.registerCommand(command, vCommand, Arrays.asList(aliases));
+		this.commandManager.registerCommand(this, command, vCommand, Arrays.asList(aliases));
 	}
 
 	/**
