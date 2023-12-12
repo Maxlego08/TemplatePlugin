@@ -7,9 +7,9 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.template.zcore.utils.storage.Persist;
-import fr.maxlego08.template.zcore.utils.storage.Saveable;
+import fr.maxlego08.template.zcore.utils.storage.Savable;
 
-public class CooldownBuilder implements Saveable {
+public class CooldownBuilder implements Savable {
 
 	public static Map<String, Map<UUID, Long>> cooldowns = new HashMap<>();
 

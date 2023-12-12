@@ -238,14 +238,12 @@ public abstract class MessageUtils extends LocationUtils {
 		boolean isBold = false;
 
 		for (char c : message.toCharArray()) {
-			if (c == 'ง') {
+			if (c == 'ยง') {
 				previousCode = true;
-				continue;
-			} else if (previousCode == true) {
+			} else if (previousCode) {
 				previousCode = false;
 				if (c == 'l' || c == 'L') {
 					isBold = true;
-					continue;
 				} else
 					isBold = false;
 			} else {

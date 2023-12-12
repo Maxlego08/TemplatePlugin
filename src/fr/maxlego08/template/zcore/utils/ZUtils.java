@@ -607,13 +607,13 @@ public abstract class ZUtils extends MessageUtils {
 		Matcher matcher = pattern.matcher(message);
 		while (matcher.find()) {
 			String color = message.substring(matcher.start(), matcher.end());
-			String colorReplace = color.replace("§x", "#");
-			colorReplace = colorReplace.replace("§", "");
+			String colorReplace = color.replace("Â§x", "#");
+			colorReplace = colorReplace.replace("Â§", "");
 			message = message.replace(color, colorReplace);
 			matcher = pattern.matcher(message);
 		}
 
-		return message == null ? null : message.replace("§", "&");
+		return message == null ? null : message.replace("Â§", "&");
 	}
 
 	/**
@@ -884,7 +884,7 @@ public abstract class ZUtils extends MessageUtils {
 	protected boolean isCooldown(Player player, String cooldown, int timer) {
 		if (CooldownBuilder.isCooldown(cooldown, player)) {
 			ActionBar.sendActionBar(player,
-					String.format("§cVous devez attendre encore §6%s §cavant de pouvoir faire cette action.",
+					String.format("ï¿½cVous devez attendre encore ï¿½6%s ï¿½cavant de pouvoir faire cette action.",
 							timerFormat(player, cooldown)));
 			return true;
 		}
@@ -898,7 +898,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return
 	 */
 	protected String toList(Stream<String> list) {
-		return toList(list.collect(Collectors.toList()), "§e", "§6");
+		return toList(list.collect(Collectors.toList()), "ï¿½e", "ï¿½6");
 	}
 
 	/**
@@ -906,7 +906,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return
 	 */
 	protected String toList(List<String> list) {
-		return toList(list, "§e", "§6§n");
+		return toList(list, "ï¿½e", "ï¿½6ï¿½n");
 	}
 
 	/**
@@ -938,7 +938,7 @@ public abstract class ZUtils extends MessageUtils {
 	 */
 	protected String removeColor(String message) {
 		for (ChatColor color : ChatColor.values())
-			message = message.replace("§" + color.getChar(), "").replace("&" + color.getChar(), "");
+			message = message.replace("ï¿½" + color.getChar(), "").replace("&" + color.getChar(), "");
 		return message;
 	}
 
@@ -1073,7 +1073,7 @@ public abstract class ZUtils extends MessageUtils {
 			return head;
 
 		SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+		GameProfile profile = new GameProfile(UUID.randomUUID(), "random_name");
 
 		profile.getProperties().put("textures", new Property("textures", url));
 

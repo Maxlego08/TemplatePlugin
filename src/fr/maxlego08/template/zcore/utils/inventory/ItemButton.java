@@ -58,7 +58,7 @@ public class ItemButton {
 	}
 
 	/**
-	 * Permet de gérer le click du joueur
+	 * Permet de gÃ©rer le click du joueur
 	 * 
 	 * @param event
 	 */
