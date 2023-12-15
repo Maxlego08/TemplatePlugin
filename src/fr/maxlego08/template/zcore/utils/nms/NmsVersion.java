@@ -42,6 +42,8 @@ public enum NmsVersion {
     V_1_20(1200),
     V_1_20_1(1201),
     V_1_20_2(1202),
+    V_1_20_3(1204),
+    V_1_20_4(1203),
     V_1_21(1210),
 
     ;
@@ -137,6 +139,15 @@ public enum NmsVersion {
      */
     public boolean isHexVersion() {
         return version >= 1160;
+    }
+
+    /**
+     * Checks if the current version is an Attribute version.
+     *
+     * @return True if the version is Attribute, else False.
+     */
+    public boolean isAttributeVersion() {
+        return version != 1880;
     }
 
     /**
