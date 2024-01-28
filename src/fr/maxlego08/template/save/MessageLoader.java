@@ -145,7 +145,6 @@ public class MessageLoader extends YamlUtils implements Savable {
             Message enumMessage = Message.valueOf(keys.toUpperCase().replace(".", "_"));
             enumMessage.setType(messageType);
 
-            System.out.println("Loaded: " + enumMessage);
             this.loadedMessages.add(enumMessage);
 
             switch (messageType) {
