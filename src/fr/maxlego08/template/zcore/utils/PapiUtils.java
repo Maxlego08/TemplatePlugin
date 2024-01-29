@@ -10,14 +10,6 @@ import fr.maxlego08.template.placeholder.Placeholder;
 
 public class PapiUtils extends TranslationHelper {
 
-	private transient Placeholder placeholder;
-
-	private void mapPlaceholders() {
-		if (this.placeholder == null) {
-			this.placeholder = Placeholder.getPlaceholder();
-		}
-	}
-
 	/**
 	 * 
 	 * @param itemStack
@@ -30,16 +22,14 @@ public class PapiUtils extends TranslationHelper {
 			return itemStack;
 		}
 
-		this.mapPlaceholders();
-
 		ItemMeta itemMeta = itemStack.getItemMeta();
 
 		if (itemMeta.hasDisplayName()) {
-			itemMeta.setDisplayName(this.placeholder.setPlaceholders(player, itemMeta.getDisplayName()));
+			itemMeta.setDisplayName(Placeholder.getPlaceholder().setPlaceholders(player, itemMeta.getDisplayName()));
 		}
 
 		if (itemMeta.hasLore()) {
-			itemMeta.setLore(this.placeholder.setPlaceholders(player, itemMeta.getLore()));
+			itemMeta.setLore(Placeholder.getPlaceholder().setPlaceholders(player, itemMeta.getLore()));
 		}
 
 		itemStack.setItemMeta(itemMeta);
@@ -54,8 +44,7 @@ public class PapiUtils extends TranslationHelper {
 	 * @return string
 	 */
 	public String papi(String placeHolder, Player player) {
-		this.mapPlaceholders();
-		return this.placeholder.setPlaceholders(player, placeHolder);
+		return Placeholder.getPlaceholder().setPlaceholders(player, placeHolder);
 	}
 
 	/**
@@ -66,8 +55,7 @@ public class PapiUtils extends TranslationHelper {
 	 * @return placeholders
 	 */
 	public List<String> papi(List<String> placeHolder, Player player) {
-		this.mapPlaceholders();
-		return this.placeholder.setPlaceholders(player, placeHolder);
+		return Placeholder.getPlaceholder().setPlaceholders(player, placeHolder);
 	}
 
 }
