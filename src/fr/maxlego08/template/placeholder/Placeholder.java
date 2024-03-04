@@ -1,25 +1,21 @@
 package fr.maxlego08.template.placeholder;
 
-import java.util.List;
-
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import java.util.List;
 
 public interface Placeholder {
 
-	Placeholder API = new Api();
-	Placeholder LOCAL = new Local();
-	
+	static Placeholder getPlaceholder() {
+		return LP.placeholder == null ? LP.placeholder = (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? new Api() : new Local()) : LP.placeholder;
+	}
+
 	String setPlaceholders(Player player, String string);
 
 	List<String> setPlaceholders(Player player, List<String> list);
-
-	static Placeholder getPlaceholder() {
-		return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? API : LOCAL;
-	}
 
 	class Api implements Placeholder {
 
@@ -27,7 +23,7 @@ public interface Placeholder {
 			PlaceholderExpansion expansion = new DistantPlaceholder(LocalPlaceholder.getInstance());
 			expansion.register();
 		}
-		
+
 		@Override
 		public String setPlaceholders(Player player, String string) {
 			return PlaceholderAPI.setPlaceholders(player, string);
@@ -54,7 +50,8 @@ public interface Placeholder {
 
 	}
 
-	static void register() {
+	class LP {
+		public static Placeholder placeholder;
 	}
 
 }

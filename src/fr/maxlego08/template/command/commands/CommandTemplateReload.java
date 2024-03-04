@@ -10,7 +10,7 @@ public class CommandTemplateReload extends VCommand {
 
 	public CommandTemplateReload(Template plugin) {
 		super(plugin);
-		this.setPermission(Permission.EXAMPLE_PERMISSION);
+		this.setPermission(Permission.EXAMPLE_PERMISSION_RELOAD);
 		this.addSubCommand("reload", "rl");
 		this.setDescription(Message.DESCRIPTION_RELOAD);
 	}

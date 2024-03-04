@@ -98,6 +98,9 @@ public enum DefaultFontInfo{
 	    COMMA(',', 1),
 	    SPACE(' ', 3),
 	    DEFAULT('a', 5),
+	    
+	    
+	;
 	
 	private char character;
 	private int length;

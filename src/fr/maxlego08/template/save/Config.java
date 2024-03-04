@@ -1,9 +1,9 @@
 package fr.maxlego08.template.save;
 
 import fr.maxlego08.template.zcore.utils.storage.Persist;
-import fr.maxlego08.template.zcore.utils.storage.Saveable;
+import fr.maxlego08.template.zcore.utils.storage.Savable;
 
-public class Config implements Saveable {
+public class Config implements Savable {
 
 	public static boolean enableDebug = true;
 	public static boolean enableDebugTime = false;

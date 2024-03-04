@@ -8,39 +8,38 @@ import fr.maxlego08.template.zcore.ZPlugin;
 
 /**
  * System to create your plugins very simply Projet:
- * https://github.com/Maxlego08/TemplatePlugin
- * 
- * @author Maxlego08
+ * <a href="https://github.com/Maxlego08/TemplatePlugin">https://github.com/Maxlego08/TemplatePlugin</a>
  *
+ * @author Maxlego08
  */
 public class Template extends ZPlugin {
 
-	@Override
-	public void onEnable() {
+    @Override
+    public void onEnable() {
 
-		LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
-		placeholder.setPrefix("template");
+        LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
+        placeholder.setPrefix("template");
 
-		this.preEnable();
+        this.preEnable();
 
-		this.registerCommand("template", new CommandTemplate(this));
+        this.registerCommand("template", new CommandTemplate(this));
 
-		this.addSave(Config.getInstance());
-		this.addSave(new MessageLoader(this));
-		
-		this.loadFiles();
-		
-		this.postEnable();		
-	}
+        this.addSave(Config.getInstance());
+        this.addSave(new MessageLoader(this));
 
-	@Override
-	public void onDisable() {
+        this.loadFiles();
 
-		this.preDisable();
+        this.postEnable();
+    }
 
-		this.saveFiles();
+    @Override
+    public void onDisable() {
 
-		this.postDisable();
-	}
+        this.preDisable();
+
+        this.saveFiles();
+
+        this.postDisable();
+    }
 
 }

@@ -25,6 +25,20 @@ import fr.maxlego08.template.zcore.utils.commands.CommandType;
 
 public class CommandManager extends ZUtils implements CommandExecutor, TabCompleter {
 
+	private static CommandMap commandMap;
+    private static Constructor<? extends PluginCommand> constructor;
+
+    static {
+        try {
+            Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            bukkitCommandMap.setAccessible(true);
+            commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+            constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
+            constructor.setAccessible(true);
+        } catch (Exception ignored) {
+        }
+    }
+	
 	private final Template plugin;
 	private final List<VCommand> commands = new ArrayList<VCommand>();
 
@@ -258,44 +272,30 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	}
 
 	/**
-	 * Enregistrer la commande whitout plugin.yml This method will allow to
-	 * register a command in the spigot without using the plugin.yml This saves
-	 * time and understanding, the plugin.yml file is clearer
-	 * 
-	 * @param string
-	 *            - Main command
-	 * @param vCommand
-	 *            - Command object
-	 * @param aliases
-	 *            - Command aliases
-	 */
-	public void registerCommand(String string, VCommand vCommand, List<String> aliases) {
-		try {
-			Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-			bukkitCommandMap.setAccessible(true);
+     * Register spigot command without plugin.yml This method will allow to
+     * register a command in the spigot without using the plugin.yml This saves
+     * time and understanding, the plugin.yml file is clearer
+     *
+     * @param string   - Main command
+     * @param vCommand - Command object
+     * @param aliases  - Command aliases
+     */
+    public void registerCommand(Plugin plugin, String string, VCommand vCommand, List<String> aliases) {
+        try {
+            PluginCommand command = constructor.newInstance(string, this.plugin);
+            command.setExecutor(this);
+            command.setTabCompleter(this);
+            command.setAliases(aliases);
 
-			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+            commands.add(vCommand.addSubCommand(string));
+            vCommand.addSubCommand(aliases);
 
-			Class<? extends PluginCommand> class1 = PluginCommand.class;
-			Constructor<? extends PluginCommand> constructor = class1.getDeclaredConstructor(String.class,
-					Plugin.class);
-			constructor.setAccessible(true);
-
-			PluginCommand command = constructor.newInstance(string, this.plugin);
-			command.setExecutor(this);
-			command.setTabCompleter(this);
-			command.setAliases(aliases);
-
-			commands.add(vCommand.addSubCommand(string));
-			vCommand.addSubCommand(aliases);
-
-			if (!commandMap.register(command.getName(), this.plugin.getDescription().getName(), command)) {
-				Logger.info("Unable to add the command " + vCommand.getSyntax());
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+            if (!commandMap.register(command.getName(), plugin.getDescription().getName(), command)) {
+                Logger.info("Unable to add the command " + vCommand.getSyntax());
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
 
 }
