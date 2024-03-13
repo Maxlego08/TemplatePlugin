@@ -1,8 +1,7 @@
 package fr.maxlego08.template.placeholder;
 
-import org.bukkit.entity.Player;
-
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.entity.Player;
 
 public class DistantPlaceholder extends PlaceholderExpansion {
 

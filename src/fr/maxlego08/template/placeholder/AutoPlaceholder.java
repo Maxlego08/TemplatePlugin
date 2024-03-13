@@ -4,35 +4,48 @@ import org.bukkit.entity.Player;
 
 public class AutoPlaceholder {
 
-	private final String startWith;
-	private final ReturnBiConsumer<Player, String, String> biConsumer;
+    private final String startWith;
+    private final ReturnBiConsumer<Player, String, String> biConsumer;
+    private final ReturnConsumer<Player, String> consumer;
 
-	/**
-	 * @param startWith
-	 * @param biConsumer
-	 */
-	public AutoPlaceholder(String startWith, ReturnBiConsumer<Player, String, String> biConsumer) {
-		super();
-		this.startWith = startWith;
-		this.biConsumer = biConsumer;
-	}
+    public AutoPlaceholder(String startWith, ReturnBiConsumer<Player, String, String> biConsumer) {
+        super();
+        this.startWith = startWith;
+        this.biConsumer = biConsumer;
+        this.consumer = null;
+    }
 
-	/**
-	 * @return the startWith
-	 */
-	public String getStartWith() {
-		return startWith;
-	}
+    public AutoPlaceholder(String startWith, ReturnConsumer<Player, String> consumer) {
+        this.startWith = startWith;
+        this.biConsumer = null;
+        this.consumer = consumer;
+    }
 
-	/**
-	 * @return the biConsumer
-	 */
-	public ReturnBiConsumer<Player, String, String> getBiConsumer() {
-		return biConsumer;
-	}
+    /**
+     * @return the startWith
+     */
+    public String getStartWith() {
+        return startWith;
+    }
 
-	public String accept(Player player, String value) {
-		return this.biConsumer.accept(player, value);
-	}
+    /**
+     * @return the biConsumer
+     */
+    public ReturnBiConsumer<Player, String, String> getBiConsumer() {
+        return biConsumer;
+    }
 
+    public ReturnConsumer<Player, String> getConsumer() {
+        return this.consumer;
+    }
+
+    public String accept(Player player, String value) {
+        if (this.consumer != null) return this.consumer.accept(player);
+        if (this.biConsumer != null) return this.biConsumer.accept(player, value);
+        return "Error with consumer !";
+    }
+
+    public boolean startsWith(String string) {
+        return this.consumer != null ? this.startWith.equalsIgnoreCase(string) : this.startWith.startsWith(string);
+    }
 }
