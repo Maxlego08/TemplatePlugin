@@ -46,6 +46,6 @@ public class AutoPlaceholder {
     }
 
     public boolean startsWith(String string) {
-        return this.consumer != null ? this.startWith.equalsIgnoreCase(string) : this.startWith.startsWith(string);
+        return this.consumer != null ? this.startWith.equalsIgnoreCase(string) : string.startsWith(this.startWith);
     }
 }
