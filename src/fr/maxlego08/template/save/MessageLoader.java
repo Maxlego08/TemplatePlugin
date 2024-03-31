@@ -106,7 +106,6 @@ public class MessageLoader extends YamlUtils implements Savable {
 
         if (!configuration.contains("messages")) {
             this.save(null);
-            return;
         }
 
         this.loadedMessages.clear();
