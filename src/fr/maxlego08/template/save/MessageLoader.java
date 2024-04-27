@@ -48,8 +48,8 @@ public class MessageLoader extends YamlUtils implements Savable {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException exception) {
+                exception.printStackTrace();
             }
         }
 
@@ -58,7 +58,9 @@ public class MessageLoader extends YamlUtils implements Savable {
 
             if (!message.isUse()) continue;
 
-            String path = "messages." + message.name().toLowerCase().replace("_", ".");
+            String path = message.name().toLowerCase().replace("_", "-");
+
+            if (configuration.contains(path)) continue;
 
             if (message.getType() != MessageType.TCHAT) {
                 configuration.set(path + ".type", message.getType().name());
@@ -66,9 +68,17 @@ public class MessageLoader extends YamlUtils implements Savable {
             if (message.getType().equals(MessageType.TCHAT) || message.getType().equals(MessageType.ACTION) || message.getType().equals(MessageType.CENTER)) {
 
                 if (message.isMessage()) {
-                    configuration.set(path + ".messages", colorReverse(message.getMessages()));
+                    if (message.getType() != MessageType.TCHAT) {
+                        configuration.set(path + ".messages", colorReverse(message.getMessages()));
+                    } else {
+                        configuration.set(path, colorReverse(message.getMessages()));
+                    }
                 } else {
-                    configuration.set(path + ".message", colorReverse(message.getMessage()));
+                    if (message.getType() != MessageType.TCHAT) {
+                        configuration.set(path + ".message", colorReverse(message.getMessage()));
+                    } else {
+                        configuration.set(path, colorReverse(message.getMessage()));
+                    }
                 }
             } else if (message.getType().equals(MessageType.TITLE)) {
 
@@ -82,10 +92,11 @@ public class MessageLoader extends YamlUtils implements Savable {
 
         try {
             configuration.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
 
+        loadMessages(configuration);
     }
 
     /**
@@ -103,15 +114,17 @@ public class MessageLoader extends YamlUtils implements Savable {
         }
 
         YamlConfiguration configuration = getConfig(file);
+        this.save(null);
 
-        if (!configuration.contains("messages")) {
-            this.save(null);
-        }
+        loadMessages(configuration);
+    }
+
+    private void loadMessages(YamlConfiguration configuration) {
 
         this.loadedMessages.clear();
 
-        for (String key : configuration.getConfigurationSection("messages.").getKeys(false)) {
-            loadMessage(configuration, "messages." + key);
+        for (String key : configuration.getKeys(false)) {
+            loadMessage(configuration, key);
         }
 
         boolean canSave = false;
@@ -139,59 +152,52 @@ public class MessageLoader extends YamlUtils implements Savable {
     private void loadMessage(YamlConfiguration configuration, String key) {
         try {
 
-            MessageType messageType = MessageType.valueOf(configuration.getString(key + ".type", "TCHAT").toUpperCase());
-            String keys = key.substring("messages.".length());
-            Message enumMessage = Message.valueOf(keys.toUpperCase().replace(".", "_"));
-            enumMessage.setType(messageType);
+            Message message = Message.valueOf(key.toUpperCase().replace("-", "_"));
 
-            this.loadedMessages.add(enumMessage);
+            if (configuration.contains(key + ".type")) {
 
-            switch (messageType) {
-                case ACTION: {
-                    String message = configuration.getString(key + ".message");
-                    enumMessage.setMessage(color(message));
-                    break;
-                }
-                case CENTER:
-                case TCHAT: {
-                    if (configuration.contains(key + ".messages")) {
-                        List<String> messages = configuration.getStringList(key + ".messages");
-                        enumMessage.setMessages(color(messages));
-                        enumMessage.setMessage(null);
-                    } else {
-                        String message = configuration.getString(key + ".message");
-                        enumMessage.setMessage(color(message));
-                        enumMessage.setMessages(new ArrayList<String>());
+                MessageType messageType = MessageType.valueOf(configuration.getString(key + ".type", "TCHAT").toUpperCase());
+                message.setType(messageType);
+                switch (messageType) {
+                    case ACTION:
+                    case TCHAT_AND_ACTION: {
+                        message.setMessage(configuration.getString(key + ".message"));
                     }
-                    break;
+                    case CENTER:
+                    case TCHAT:
+                    case WITHOUT_PREFIX: {
+                        List<String> messages = configuration.getStringList(key + ".messages");
+                        if (messages.isEmpty()) {
+                            message.setMessage(configuration.getString(key + ".message"));
+                        } else message.setMessages(messages);
+                    }
+                    case TITLE: {
+                        String title = configuration.getString(key + ".title");
+                        String subtitle = configuration.getString(key + ".subtitle");
+                        int fadeInTime = configuration.getInt(key + ".fadeInTime");
+                        int showTime = configuration.getInt(key + ".showTime");
+                        int fadeOutTime = configuration.getInt(key + ".fadeOutTime");
+                        Map<String, Object> titles = new HashMap<>();
+                        titles.put("title", color(title));
+                        titles.put("subtitle", color(subtitle));
+                        titles.put("start", fadeInTime);
+                        titles.put("time", showTime);
+                        titles.put("end", fadeOutTime);
+                        titles.put("isUse", true);
+                        message.setTitles(titles);
+                    }
                 }
-                case TITLE: {
-                    String title = configuration.getString(key + ".title");
-                    String subtitle = configuration.getString(key + ".subtitle");
-                    int fadeInTime = configuration.getInt(key + ".fadeInTime");
-                    int showTime = configuration.getInt(key + ".showTime");
-                    int fadeOutTime = configuration.getInt(key + ".fadeOutTime");
-                    Map<String, Object> titles = new HashMap<String, Object>();
-                    titles.put("title", color(title));
-                    titles.put("subtitle", color(subtitle));
-                    titles.put("start", fadeInTime);
-                    titles.put("time", showTime);
-                    titles.put("end", fadeOutTime);
-                    titles.put("isUse", true);
-                    enumMessage.setTitles(titles);
-                    break;
-                }
-                default:
-                    break;
+
+            } else {
+                message.setType(MessageType.TCHAT);
+                List<String> messages = configuration.getStringList(key);
+                if (messages.isEmpty()) {
+                    message.setMessage(configuration.getString(key));
+                } else message.setMessages(messages);
             }
 
+            this.loadedMessages.add(message);
         } catch (Exception ignored) {
-        }
-
-        if (configuration.isConfigurationSection(key + ".")) {
-            for (String newKey : configuration.getConfigurationSection(key + ".").getKeys(false)) {
-                loadMessage(configuration, key + "." + newKey);
-            }
         }
     }
 

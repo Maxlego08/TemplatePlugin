@@ -1,6 +1,7 @@
 package fr.maxlego08.template.zcore.utils;
 
 import fr.maxlego08.template.zcore.enums.Message;
+import fr.maxlego08.template.zcore.enums.MessageType;
 import fr.maxlego08.template.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.template.zcore.utils.players.ActionBar;
 import org.bukkit.Bukkit;
@@ -11,6 +12,8 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Allows you to manage messages sent to players and the console
@@ -48,6 +51,18 @@ public abstract class MessageUtils extends LocationUtils {
         sender.sendMessage(Message.PREFIX.msg() + getMessage(message, args));
     }
 
+    private void message(CommandSender sender, String message) {
+        sender.sendMessage(color(message));
+    }
+
+    private void sendTchatMessage(Player player, Message message, Object... args) {
+        if (message.getMessages().size() > 0) {
+            message.getMessages().forEach(msg -> message(player, this.papi(getMessage(msg, args), player)));
+        } else {
+            message(player, this.papi((message.getType() == MessageType.WITHOUT_PREFIX ? "" : Message.PREFIX.msg()) + getMessage(message, args), player));
+        }
+    }
+
     /**
      * Allows you to send a message to a command sender
      *
@@ -61,9 +76,9 @@ public abstract class MessageUtils extends LocationUtils {
 
         if (sender instanceof ConsoleCommandSender) {
             if (message.getMessages().size() > 0) {
-                message.getMessages().forEach(msg -> sender.sendMessage(Message.PREFIX.msg() + getMessage(msg, args)));
+                message.getMessages().forEach(msg -> message(sender, getMessage(msg, args)));
             } else {
-                sender.sendMessage(Message.PREFIX.msg() + getMessage(message, args));
+                message(sender, Message.PREFIX.msg() + getMessage(message, args));
             }
         } else {
 
@@ -81,16 +96,15 @@ public abstract class MessageUtils extends LocationUtils {
                 case ACTION:
                     this.actionMessage(player, message, args);
                     break;
+                case TCHAT_AND_ACTION:
+                    this.actionMessage(player, message, args);
+                    sendTchatMessage(player, message, args);
+                    break;
                 case TCHAT:
-                    if (message.getMessages().size() > 0) {
-                        message.getMessages()
-                                .forEach(msg -> sender.sendMessage(this.papi(Message.PREFIX.msg() + getMessage(msg, args), player)));
-                    } else {
-                        sender.sendMessage(this.papi(Message.PREFIX.msg() + getMessage(message, args), player));
-                    }
+                case WITHOUT_PREFIX:
+                    sendTchatMessage(player, message, args);
                     break;
                 case TITLE:
-                    // title message management
                     String title = message.getTitle();
                     String subTitle = message.getSubTitle();
                     int fadeInTime = message.getStart();
@@ -101,17 +115,10 @@ public abstract class MessageUtils extends LocationUtils {
                     break;
                 default:
                     break;
-
             }
-
         }
     }
 
-    /**
-     * @param player
-     * @param message
-     * @param args
-     */
     protected void broadcast(Message message, Object... args) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             message(player, message, args);
@@ -119,13 +126,8 @@ public abstract class MessageUtils extends LocationUtils {
         message(Bukkit.getConsoleSender(), message, args);
     }
 
-    /**
-     * @param player
-     * @param message
-     * @param args
-     */
     protected void actionMessage(Player player, Message message, Object... args) {
-        ActionBar.sendActionBar(player, this.papi(getMessage(message, args), player));
+        ActionBar.sendActionBar(player, color(this.papi(getMessage(message, args), player)));
     }
 
     protected String getMessage(Message message, Object... args) {
@@ -265,6 +267,21 @@ public abstract class MessageUtils extends LocationUtils {
         for (Player player : Bukkit.getOnlinePlayers()) {
             ActionBar.sendActionBar(player, papi(message, player));
         }
+    }
+
+    protected String color(String message) {
+        if (message == null)
+            return null;
+        if (NMSUtils.isHexColor()) {
+            Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+            Matcher matcher = pattern.matcher(message);
+            while (matcher.find()) {
+                String color = message.substring(matcher.start(), matcher.end());
+                message = message.replace(color, net.md_5.bungee.api.ChatColor.of(color) + "");
+                matcher = pattern.matcher(message);
+            }
+        }
+        return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', message);
     }
 
 }
