@@ -162,6 +162,7 @@ public class MessageLoader extends YamlUtils implements Savable {
                     case ACTION:
                     case TCHAT_AND_ACTION: {
                         message.setMessage(configuration.getString(key + ".message"));
+                        break;
                     }
                     case CENTER:
                     case TCHAT:
@@ -170,6 +171,7 @@ public class MessageLoader extends YamlUtils implements Savable {
                         if (messages.isEmpty()) {
                             message.setMessage(configuration.getString(key + ".message"));
                         } else message.setMessages(messages);
+                        break;
                     }
                     case TITLE: {
                         String title = configuration.getString(key + ".title");
@@ -185,6 +187,7 @@ public class MessageLoader extends YamlUtils implements Savable {
                         titles.put("end", fadeOutTime);
                         titles.put("isUse", true);
                         message.setTitles(titles);
+                        break;
                     }
                 }
 
