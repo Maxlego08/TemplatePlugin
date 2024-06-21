@@ -10,6 +10,20 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.List;
+
+/**
+ * Creates and manages a smooth BossBar animation for a group of players.
+ * Extends {@link BukkitRunnable} to handle the timing and updates of the BossBar.
+ */
 public class BarAnimation extends BukkitRunnable {
 
     private final BossBar bossBar;
@@ -19,9 +33,11 @@ public class BarAnimation extends BukkitRunnable {
     /**
      * Creates a new smooth BossBar animation for a group of players.
      *
-     * @param players The list of players to display the BossBar to.
-     * @param text    The text to display on the BossBar.
-     * @param seconds The total duration of the animation in seconds.
+     * @param players  the list of players to display the BossBar to.
+     * @param text     the text to display on the BossBar.
+     * @param seconds  the total duration of the animation in seconds.
+     * @param barColor the color of the BossBar.
+     * @param barStyle the style of the BossBar.
      */
     public BarAnimation(List<Player> players, String text, int seconds, BarColor barColor, BarStyle barStyle) {
         this.bossBar = Bukkit.createBossBar(text, barColor, barStyle);
@@ -37,6 +53,10 @@ public class BarAnimation extends BukkitRunnable {
         this.runTaskTimer(JavaPlugin.getProvidingPlugin(getClass()), 0L, 1L);
     }
 
+    /**
+     * The task to run on each tick. Updates the BossBar's progress.
+     * Cancels the task and removes the BossBar when the time runs out.
+     */
     @Override
     public void run() {
         double progress = remainingTime / totalTime;

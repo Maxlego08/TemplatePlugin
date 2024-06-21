@@ -13,7 +13,7 @@ import fr.maxlego08.template.zcore.utils.interfaces.CollectionConsumer;
 public class ScoreBoardManager extends ZUtils {
 
 	private final Plugin plugin;
-	private final Map<Player, FastBoard> boards = new HashMap<Player, FastBoard>();
+	private final Map<Player, FastBoard> boards = new HashMap<>();
 	private final long schedulerMillisecond;
 	private boolean isRunning = false;
 	private CollectionConsumer<Player> lines;

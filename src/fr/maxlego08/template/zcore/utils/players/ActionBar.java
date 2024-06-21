@@ -1,11 +1,10 @@
 package fr.maxlego08.template.zcore.utils.players;
 
+import fr.maxlego08.template.zcore.utils.nms.NmsVersion;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import fr.maxlego08.template.zcore.utils.nms.NMSUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -13,7 +12,6 @@ import java.lang.reflect.Method;
 
 public class ActionBar {
 
-    private static final double nmsVersion = NMSUtils.getNMSVersion();
     private static Class<?> craftPlayerClass;
     private static Class<?> packetClass;
     private static Method getHandleMethod;
@@ -48,10 +46,8 @@ public class ActionBar {
             return;
         }
 
-        if (nmsVersion != 1.7 && nmsVersion != 1.8 && nmsVersion != 1.9) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                    new TextComponent(TextComponent.fromLegacyText(message)));
-
+        if (NmsVersion.nmsVersion.getVersion() >= NmsVersion.V_1_10.getVersion()) {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(TextComponent.fromLegacyText(message)));
             return;
         }
 

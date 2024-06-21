@@ -37,11 +37,11 @@ public abstract class VCommand extends Arguments {
 	/**
 	 * Are all sub commands used
 	 */
-	private List<String> subCommands = new ArrayList<String>();
-	protected List<VCommand> subVCommands = new ArrayList<VCommand>();
+	private final List<String> subCommands = new ArrayList<>();
+	protected List<VCommand> subVCommands = new ArrayList<>();
 
-	private List<String> requireArgs = new ArrayList<String>();
-	private List<String> optionalArgs = new ArrayList<String>();
+	private List<String> requireArgs = new ArrayList<>();
+	private List<String> optionalArgs = new ArrayList<>();
 
 	/**
 	 * If this variable is false the command will not be able to use this
@@ -375,32 +375,27 @@ public abstract class VCommand extends Arguments {
 	 * @return generate syntax
 	 */
 	private String generateDefaultSyntax(String syntax) {
+		boolean update = syntax.isEmpty();
 
-		String tmpString = subCommands.get(0);
-
-		boolean update = syntax.equals("");
-
-		if (requireArgs.size() != 0 && update) {
-			for (String requireArg : requireArgs) {
-				requireArg = "<" + requireArg + ">";
-				syntax += " " + requireArg;
-			}
-		}
-		if (optionalArgs.size() != 0 && update) {
-			for (String optionalArg : optionalArgs) {
-				optionalArg = "[<" + optionalArg + ">]";
-				syntax += " " + optionalArg;
-			}
+		StringBuilder syntaxBuilder = new StringBuilder();
+		if (update) {
+			appendRequiredArguments(syntaxBuilder);
+			appendOptionalArguments(syntaxBuilder);
+			syntax = syntaxBuilder.toString().trim();
 		}
 
-		tmpString += syntax;
-
-		if (parent == null) {
-			return "/" + tmpString;
-		}
-
-		return parent.generateDefaultSyntax(" " + tmpString);
+		String tmpString = subCommands.get(0) + syntax;
+		return parent == null ? "/" + tmpString : parent.generateDefaultSyntax(" " + tmpString);
 	}
+
+	private void appendRequiredArguments(StringBuilder syntaxBuilder) {
+		requireArgs.forEach(arg -> syntaxBuilder.append(" <").append(arg).append(">"));
+	}
+
+	private void appendOptionalArguments(StringBuilder syntaxBuilder) {
+		optionalArgs.forEach(arg -> syntaxBuilder.append(" [<").append(arg).append(">"));
+	}
+
 
 	/**
 	 * Allows to know the number of parents in a recursive way
