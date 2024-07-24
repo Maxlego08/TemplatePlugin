@@ -1,7 +1,7 @@
 # Template Plugin
 
 Here is a simple project for the quick creation of minecraft plugin.
-Works from version 1.8 to version 1.19+
+Works from version 1.8 to version 1.21+
 
 Documentation: https://drawerPlugin.groupez.dev/
 
