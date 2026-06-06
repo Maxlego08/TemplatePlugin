@@ -3,6 +3,6 @@ author: Maxlego08
 main: fr.maxlego08.template.Template
 website: https://groupez.dev
 description: Default plugin developed by GroupeZ
-version: 1.0.0
+version: ${version}
 api-version: 1.13
-commands:
+#commands:
